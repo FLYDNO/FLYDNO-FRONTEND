@@ -115,10 +115,7 @@
           <p class="text-slate-400 mt-1">Administrer dine aktive prisvarsler for flyreiser over hele verden.</p>
         </div>
         <button onclick="openModal()" class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-primary/20 whitespace-nowrap">
-          <span class="ms" style="font-size:20px">add</span>Legg til nytt varsel
-        <button onclick="openAlertModal()" class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-primary/20">
-          <span class="material-symbols-outlined">add</span>
-          <span>Legg til nytt varsel</span>
+          <span class="ms" style="font-size:20px">add</span> Legg til nytt varsel
         </button>
       </div>
 
@@ -144,59 +141,6 @@
           <span class="ms text-slate-700" style="font-size:48px">notifications_off</span>
           <p class="text-slate-300 font-bold">Ingen treff ennå</p>
           <p class="text-slate-600 text-sm max-w-xs">Når varsler dine matcher nye deals dukker de opp her – synkronisert i sanntid fra databasen.</p>
-        <h3 class="text-white text-2xl font-bold mb-6">Nylige treff</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Hit Card 1 -->
-          <div class="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden hover:border-primary/50 transition-all cursor-pointer">
-            <div class="h-32 w-full relative">
-              <img alt="New York City skyline" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMyQ7Ej_HvzjUGYDimJD_eeZgup8ctf5DG9qJl9dAShyN0auUjybhzlxz3-Sg3-LC-Vp-baSRT4egzQ0yFSoUwmQOf1HXbb_VQwbAnrAJQU6gbCHQR2rXljso05jywLtYhYWnMYbaLbNb-fgYQiDj4j1osnBCRB5aFiAPnQGVHax-qWgVR_QgvKfGE6CKPFbwR3W-WuFl1feLOIZ2ZcPPzdPiXophgnKjQnO2fAmmRufjW2I3a4Q9aNdA8nCrqzbumaKxaOrFYqHOC"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
-              <div class="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Tilgjengelig nå</div>
-            </div>
-            <div class="p-4">
-              <div class="flex justify-between items-start mb-1">
-                <div>
-                  <h4 class="font-bold text-white">New York 🇺🇸</h4>
-                  <p class="text-xs text-slate-500">fra 🇳🇴 Oslo (OSL → JFK)</p>
-                </div>
-                <p class="text-primary font-black">4 290 kr</p>
-              </div>
-              <div class="flex items-center gap-2 text-xs text-slate-400 mb-4 mt-2">
-                <span class="material-symbols-outlined text-sm">calendar_month</span>
-                <span>12. Okt - 19. Okt</span>
-              </div>
-              <button onclick="showToast('Åpner tilbud fra Norwegian — OSL → JFK', 'info')" class="w-full py-2 bg-[#2a2a2a] hover:bg-primary text-white text-sm font-bold rounded-lg transition-colors">Se tilbud</button>
-            </div>
-          </div>
-          <!-- Hit Card 2 -->
-          <div class="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden hover:border-primary/50 transition-all cursor-pointer">
-            <div class="h-32 w-full relative">
-              <img alt="London Big Ben" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAumTOdngZO2sKCQWqh5hWkF_O5cqp17fSZ6JtS2zcc9wVotKAMgPn0flGE4gcCBgAXFjRIMiIJctoNM0DDJK6GsQMmyGvvHcrc92_747biMzkJn13JNfQ8p4egYZjiRqS9W7RhiPJ-G3npza1LX4eCs3JgnAyyXo3q_VReXGeH09o-HQBUsTZTA4dRId_vxjCfTBVL_ELPcGtY_DXjWRQyyaTmGzF_1kMZV4Cvalofz8UcPBxrT1MP842wvbsnGAWfmw7GKt4-liYX"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
-              <div class="absolute top-2 right-2 bg-slate-700 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Utgått</div>
-            </div>
-            <div class="p-4 opacity-75">
-              <div class="flex justify-between items-start mb-1">
-                <div>
-                  <h4 class="font-bold text-white">London 🇬🇧</h4>
-                  <p class="text-xs text-slate-500">fra 🇳🇴 Bergen (BGO → LHR)</p>
-                </div>
-                <p class="text-slate-400 font-black">980 kr</p>
-              </div>
-              <div class="flex items-center gap-2 text-xs text-slate-400 mb-4 mt-2">
-                <span class="material-symbols-outlined text-sm">calendar_month</span>
-                <span>05. Nov - 08. Nov</span>
-              </div>
-              <button class="w-full py-2 bg-[#2a2a2a] text-slate-500 text-sm font-bold rounded-lg cursor-not-allowed">Ikke tilgjengelig</button>
-            </div>
-          </div>
-          <!-- Add New -->
-          <div onclick="openAlertModal()" class="border-2 border-dashed border-[#1e1e1e] rounded-xl flex flex-col items-center justify-center p-6 hover:bg-white/5 transition-colors cursor-pointer group">
-            <div class="w-12 h-12 rounded-full border-2 border-dashed border-[#1e1e1e] flex items-center justify-center text-slate-500 group-hover:border-primary group-hover:text-primary mb-3">
-              <span class="material-symbols-outlined">add</span>
-            </div>
-            <p class="text-slate-400 font-medium group-hover:text-slate-200">Opprett nytt søk</p>
-          </div>
         </div>
       </div>
 
