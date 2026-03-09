@@ -28,6 +28,10 @@
   .faq-item.open .faq-answer { max-height: 200px; padding-bottom: 16px; }
   .faq-icon { transition: transform 0.3s; }
   .faq-item.open .faq-icon { transform: rotate(45deg); }
+  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 100; display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; box-shadow: 0 8px 32px rgba(0,0,0,0.4); transform: translateY(80px); opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); pointer-events: none; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-success { background: #111; border: 1px solid rgba(34,197,94,0.3); color: #22c55e; }
+  .toast-error { background: #111; border: 1px solid rgba(239,68,68,0.3); color: #ef4444; }
 </style>
 </head>
 <body class="text-slate-100 min-h-screen">
@@ -93,12 +97,12 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
-        <button class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
         </button>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <button onclick="window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
           <span class="ms" style="font-size:16px">logout</span>
           Logg ut
         </button>
@@ -216,15 +220,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Fullt navn</label>
-            <input class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="Ola Nordmann" type="text"/>
+            <input id="contactName" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="Ola Nordmann" type="text"/>
           </div>
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-slate-300">E-postadresse</label>
-            <input class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="ola@eksempel.no" type="email"/>
+            <input id="contactEmail" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="ola@eksempel.no" type="email"/>
           </div>
           <div class="md:col-span-2 space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Emne</label>
-            <select class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-400">
+            <select id="contactTopic" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-400">
               <option>Velg kategori</option>
               <option>Spørsmål om abonnement</option>
               <option>Problem med deals</option>
@@ -234,10 +238,10 @@
           </div>
           <div class="md:col-span-2 space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Melding</label>
-            <textarea class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600 resize-none" rows="4" placeholder="Beskriv spørsmålet ditt..."></textarea>
+            <textarea id="contactMessage" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600 resize-none" rows="4" placeholder="Beskriv spørsmålet ditt..."></textarea>
           </div>
           <div class="md:col-span-2">
-            <button class="flex items-center gap-2 bg-[#ff6b00] hover:bg-[#e55f00] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#ff6b00]/20 text-sm">
+            <button onclick="sendMessage()" id="sendBtn" class="flex items-center gap-2 bg-[#ff6b00] hover:bg-[#e55f00] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#ff6b00]/20 text-sm">
               Send melding
               <span class="ms" style="font-size:18px">send</span>
             </button>
@@ -266,5 +270,48 @@
     </div>
   </main>
 </div>
+<!-- Toast notification -->
+<div id="toast" class="toast toast-success">
+  <span class="ms" style="font-size:18px" id="toastIcon">check_circle</span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  const icon = document.getElementById('toastIcon');
+  t.className = 'toast ' + (type === 'error' ? 'toast-error' : 'toast-success');
+  icon.textContent = type === 'error' ? 'error' : 'check_circle';
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function sendMessage() {
+  const name = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const topic = document.getElementById('contactTopic').value;
+  const message = document.getElementById('contactMessage').value.trim();
+
+  if (!name) { showToast('Vennligst skriv inn fullt navn.', 'error'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Vennligst oppgi en gyldig e-postadresse.', 'error'); return; }
+  if (topic === 'Velg kategori') { showToast('Vennligst velg en kategori.', 'error'); return; }
+  if (!message) { showToast('Vennligst skriv en melding.', 'error'); return; }
+
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="ms" style="font-size:18px">hourglass_empty</span> Sender...';
+
+  setTimeout(() => {
+    document.getElementById('contactName').value = '';
+    document.getElementById('contactEmail').value = '';
+    document.getElementById('contactTopic').value = 'Velg kategori';
+    document.getElementById('contactMessage').value = '';
+    btn.disabled = false;
+    btn.innerHTML = 'Send melding <span class="ms" style="font-size:18px">send</span>';
+    showToast('Meldingen er sendt! Vi svarer innen 24 timer.', 'success');
+  }, 800);
+}
+</script>
 </body>
 </html>
