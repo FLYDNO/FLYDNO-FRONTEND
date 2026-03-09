@@ -11,7 +11,7 @@
     darkMode: "class",
     theme: {
       extend: {
-        colors: { "primary": "#ff6b00", "bg": "#050505", "surface": "#111111", "surface-dark": "#111111", "background-dark": "#0e0e0e", "border": "#1e1e1e", "dark": "#1e1e1e", "border-dark": "#1e1e1e" },
+        colors: { "primary": "#ff6b00", "bg": "#050505", "surface": "#111111", "border": "#1e1e1e" },
         fontFamily: { "sans": ["DM Sans", "sans-serif"] }
       }
     }
@@ -23,9 +23,12 @@
   .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
   .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00; color: #ff6b00; }
   .nav-link { border-left: 3px solid transparent; }
-  /* Toggle switch – eksplisitt orange når checked */
   input[type="checkbox"].peer:checked ~ .toggle-track { background-color: #ff6b00 !important; }
   ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
+  .month-chip.selected { background: rgba(255,107,0,0.15); border-color: rgba(255,107,0,0.5); color: #ff6b00; }
+  #destSuggestions { display: none; }
+  #destSuggestions:not(:empty) { display: block; }
+  input[type=range] { accent-color: #ff6b00; }
 </style>
 </head>
 <body class="text-slate-100 min-h-screen">
@@ -70,7 +73,7 @@
         </a>
       </div>
     </nav>
-        <div class="p-3 mt-auto border-t border-[#1e1e1e]">
+    <div class="p-3 mt-auto border-t border-[#1e1e1e]">
       <div class="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
         <div class="overflow-hidden flex-1 min-w-0">
           <p class="text-sm font-semibold truncate">Marius Jensen</p>
@@ -91,9 +94,9 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
+        <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
         <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
-          <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
         </button>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
         <button onclick="window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
@@ -103,161 +106,44 @@
       </div>
     </div>
 
-<div class="max-w-5xl mx-auto px-8 py-10">
+    <div class="max-w-5xl mx-auto px-8 py-10">
 
       <!-- Header -->
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-        <div class="space-y-2">
-          <h2 class="text-white text-4xl font-black tracking-tight">Dine varsler</h2>
-          <p class="text-slate-400 text-base">Administrer dine aktive prisvarsler for flyreiser over hele verden.</p>
+        <div>
+          <h2 class="text-4xl font-black tracking-tight">Dine varsler</h2>
+          <p class="text-slate-400 mt-1">Administrer dine aktive prisvarsler for flyreiser over hele verden.</p>
         </div>
+        <button onclick="openModal()" class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-primary/20 whitespace-nowrap">
+          <span class="ms" style="font-size:20px">add</span>Legg til nytt varsel
         <button onclick="openAlertModal()" class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-primary/20">
           <span class="material-symbols-outlined">add</span>
           <span>Legg til nytt varsel</span>
         </button>
       </div>
 
-      <!-- Stats Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <!-- Stats -->
+      <div class="grid grid-cols-2 gap-4 mb-8">
         <div class="bg-[#111] border border-[#1e1e1e] p-4 rounded-xl">
           <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Aktive varsler</p>
-          <p class="text-2xl font-bold mt-1" id="activeCount">3</p>
+          <p class="text-2xl font-bold mt-1" id="activeCount">0</p>
         </div>
         <div class="bg-[#111] border border-[#1e1e1e] p-4 rounded-xl">
           <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Treff siste 24t</p>
-          <p class="text-2xl font-bold mt-1 text-green-500">12</p>
+          <p class="text-2xl font-bold mt-1 text-green-500">0</p>
         </div>
       </div>
 
-      <!-- Alert Table -->
-      <div class="bg-[#111] rounded-2xl border border-[#1e1e1e] overflow-hidden shadow-2xl">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-white/5 border-b border-[#1e1e1e]">
-                <th class="px-6 py-4 text-slate-300 text-sm font-semibold">Rute</th>
-                <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Reisemåned</th>
-                <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Rabattgrense</th>
-                <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Status</th>
-                <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-right">Handlinger</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#1e1e1e]">
-              <!-- Row 1 – aktiv -->
-              <tr id="row-1" class="hover:bg-white/5 transition-all duration-300 group">
-                <td class="px-6 py-5">
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-primary/10 rounded-lg text-primary"><span class="material-symbols-outlined text-xl">flight_takeoff</span></div>
-                    <div>
-                      <p class="text-white font-bold">New York 🇺🇸 <span class="text-slate-500 font-normal text-xs">(JFK)</span></p>
-                      <p class="text-xs text-slate-500">fra 🇳🇴 Oslo (OSL)</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
-                      <span class="material-symbols-outlined" style="font-size:13px">calendar_month</span>Jul · Aug
-                    </span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">30–80%</span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input checked class="bg-[#111] text-slate-100 sr-only peer" type="checkbox" onchange="toggleRow('row-1', this.checked)"/>
-                      <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
-                  </div>
-                </td>
-                <td class="px-6 py-5 text-right">
-                  <button class="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">edit</span></button>
-                  <button class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">delete</span></button>
-                </td>
-              </tr>
-              <!-- Row 2 – aktiv -->
-              <tr id="row-2" class="hover:bg-white/5 transition-all duration-300 group">
-                <td class="px-6 py-5">
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-primary/10 rounded-lg text-primary"><span class="material-symbols-outlined text-xl">flight_takeoff</span></div>
-                    <div>
-                      <p class="text-white font-bold">London 🇬🇧 <span class="text-slate-500 font-normal text-xs">(LHR)</span></p>
-                      <p class="text-xs text-slate-500">fra 🇳🇴 Bergen (BGO)</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
-                      <span class="material-symbols-outlined" style="font-size:13px">calendar_month</span>Sep
-                    </span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">30–80%</span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input checked class="bg-[#111] text-slate-100 sr-only peer" type="checkbox" onchange="toggleRow('row-2', this.checked)"/>
-                      <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
-                  </div>
-                </td>
-                <td class="px-6 py-5 text-right">
-                  <button class="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">edit</span></button>
-                  <button class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">delete</span></button>
-                </td>
-              </tr>
-              <!-- Row 3 – starter inaktiv -->
-              <tr id="row-3" class="transition-all duration-300 group opacity-40">
-                <td class="px-6 py-5">
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-white/5 rounded-lg text-slate-500"><span class="material-symbols-outlined text-xl">flight_takeoff</span></div>
-                    <div>
-                      <p class="text-slate-400 font-bold">Dubai 🇦🇪 <span class="text-slate-600 font-normal text-xs">(DXB)</span></p>
-                      <p class="text-xs text-slate-600">fra Stavanger (SVG)</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-600 border border-white/5">
-                      <span class="material-symbols-outlined" style="font-size:13px">calendar_month</span>Des
-                    </span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-500 border border-white/5">30–80%</span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input class="bg-[#111] text-slate-100 sr-only peer" type="checkbox" onchange="toggleRow('row-3', this.checked)"/>
-                      <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
-                  </div>
-                </td>
-                <td class="px-6 py-5 text-right">
-                  <button class="text-slate-600 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">edit</span></button>
-                  <button class="text-slate-600 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">delete</span></button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <!-- Alerts rendered here -->
+      <div id="alertsContainer"></div>
 
-      <!-- Recent Hits -->
+      <!-- Nylige treff -->
       <div class="mt-12">
+        <h3 class="text-2xl font-bold mb-6">Nylige treff</h3>
+        <div class="bg-[#111] border border-[#1e1e1e] rounded-2xl p-12 flex flex-col items-center gap-3 text-center">
+          <span class="ms text-slate-700" style="font-size:48px">notifications_off</span>
+          <p class="text-slate-300 font-bold">Ingen treff ennå</p>
+          <p class="text-slate-600 text-sm max-w-xs">Når varsler dine matcher nye deals dukker de opp her – synkronisert i sanntid fra databasen.</p>
         <h3 class="text-white text-2xl font-bold mb-6">Nylige treff</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <!-- Hit Card 1 -->
@@ -317,6 +203,61 @@
     </div>
   </main>
 </div>
+
+<!-- Add Alert Modal -->
+<div id="modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this)closeModal()">
+  <div class="bg-[#111] border border-[#1e1e1e] rounded-2xl w-full max-w-md shadow-2xl">
+    <div class="p-6 border-b border-[#1e1e1e] flex justify-between items-center">
+      <h3 class="text-lg font-bold">Nytt varsel</h3>
+      <button onclick="closeModal()" class="text-slate-500 hover:text-white transition-colors p-1"><span class="ms" style="font-size:20px">close</span></button>
+    </div>
+    <div class="p-6 space-y-5">
+
+      <!-- Destination -->
+      <div class="relative">
+        <label class="text-sm font-medium text-slate-300 block mb-1.5">Destinasjon</label>
+        <input id="destInput" type="text" autocomplete="off" placeholder="Søk etter by eller flyplass..."
+          class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-100 placeholder:text-slate-600"
+          oninput="filterDest(this.value)" onblur="setTimeout(()=>document.getElementById('destSuggestions').innerHTML='',200)"/>
+        <div id="destSuggestions" class="absolute top-full left-0 right-0 mt-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden z-20 max-h-48 overflow-y-auto shadow-2xl"></div>
+        <input type="hidden" id="destCode"/>
+        <input type="hidden" id="destFlag"/>
+      </div>
+
+      <!-- From airport -->
+      <div>
+        <label class="text-sm font-medium text-slate-300 block mb-1.5">Fra flyplass</label>
+        <select id="fromAirport" class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-100">
+          <option value="OSL">Oslo (OSL)</option>
+          <option value="BGO">Bergen (BGO)</option>
+          <option value="TRD">Trondheim (TRD)</option>
+          <option value="SVG">Stavanger (SVG)</option>
+          <option value="TOS">Tromsø (TOS)</option>
+          <option value="TRF">Torp / Sandefjord (TRF)</option>
+          <option value="KRS">Kristiansand (KRS)</option>
+        </select>
+      </div>
+
+      <!-- Travel months -->
+      <div>
+        <label class="text-sm font-medium text-slate-300 block mb-2">Reisemåned(er) <span class="text-slate-600 font-normal">(valgfritt)</span></label>
+        <div id="monthChips" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- Discount threshold -->
+      <div>
+        <label class="text-sm font-medium text-slate-300 block mb-2">
+          Minimum rabatt: <span id="discountDisplay" class="text-primary font-bold">50%</span>
+        </label>
+        <input type="range" id="discountSlider" min="30" max="80" value="50" step="5" class="w-full h-2"
+          oninput="document.getElementById('discountDisplay').textContent=this.value+'%'"/>
+        <div class="flex justify-between text-xs text-slate-600 mt-1.5"><span>30%</span><span>55%</span><span>80%</span></div>
+      </div>
+
+    </div>
+    <div class="px-6 pb-6 flex gap-3">
+      <button onclick="closeModal()" class="flex-1 py-2.5 rounded-xl border border-[#1e1e1e] text-slate-400 hover:text-white font-semibold text-sm transition-colors">Avbryt</button>
+      <button onclick="submitAlert()" class="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-sm transition-colors shadow-lg shadow-primary/20">Opprett varsel</button>
 <!-- Toast -->
 <div id="toast" style="position:fixed;bottom:24px;right:24px;z-index:200;display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.4);background:#111;border:1px solid rgba(34,197,94,0.3);color:#22c55e;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;">
   <span class="material-symbols-outlined" style="font-size:18px" id="toastIcon">check_circle</span>
@@ -363,6 +304,15 @@
   </div>
 </div>
 
+<!-- Confirm Delete Modal -->
+<div id="confirmModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this)closeConfirm()">
+  <div class="bg-[#111] border border-[#1e1e1e] rounded-2xl w-full max-w-sm shadow-2xl p-6 text-center">
+    <span class="ms text-slate-400 mb-3 block" style="font-size:40px">delete</span>
+    <h3 class="text-lg font-bold mb-1">Slett varsel?</h3>
+    <p class="text-slate-400 text-sm mb-6">Dette kan ikke angres.</p>
+    <div class="flex gap-3">
+      <button onclick="closeConfirm()" class="flex-1 py-2.5 rounded-xl border border-[#1e1e1e] text-slate-400 hover:text-white font-semibold text-sm transition-colors">Avbryt</button>
+      <button id="confirmDeleteBtn" class="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition-colors">Slett</button>
 <!-- Delete Alert Modal -->
 <div id="deleteAlertModal" onclick="if(event.target===this)closeDeleteAlertModal()" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
   <div style="background:#111;border:1px solid #1e1e1e;border-radius:16px;padding:32px;max-width:400px;width:90%;margin:auto;">
@@ -379,6 +329,60 @@
 </div>
 
 <script>
+const DESTINATIONS = [
+  { name: 'Alicante',      code: 'ALC', flag: '🇪🇸' },
+  { name: 'Amsterdam',     code: 'AMS', flag: '🇳🇱' },
+  { name: 'Aten',          code: 'ATH', flag: '🇬🇷' },
+  { name: 'Bali',          code: 'DPS', flag: '🇮🇩' },
+  { name: 'Bangkok',       code: 'BKK', flag: '🇹🇭' },
+  { name: 'Barcelona',     code: 'BCN', flag: '🇪🇸' },
+  { name: 'Berlin',        code: 'BER', flag: '🇩🇪' },
+  { name: 'Bogotá',        code: 'BOG', flag: '🇨🇴' },
+  { name: 'Cape Town',     code: 'CPT', flag: '🇿🇦' },
+  { name: 'Dubai',         code: 'DXB', flag: '🇦🇪' },
+  { name: 'Dubrovnik',     code: 'DBV', flag: '🇭🇷' },
+  { name: 'Istanbul',      code: 'IST', flag: '🇹🇷' },
+  { name: 'Kairo',         code: 'CAI', flag: '🇪🇬' },
+  { name: 'Lisboa',        code: 'LIS', flag: '🇵🇹' },
+  { name: 'London',        code: 'LHR', flag: '🇬🇧' },
+  { name: 'Los Angeles',   code: 'LAX', flag: '🇺🇸' },
+  { name: 'Madrid',        code: 'MAD', flag: '🇪🇸' },
+  { name: 'Marrakech',     code: 'RAK', flag: '🇲🇦' },
+  { name: 'Miami',         code: 'MIA', flag: '🇺🇸' },
+  { name: 'Milano',        code: 'MXP', flag: '🇮🇹' },
+  { name: 'Mexico City',   code: 'MEX', flag: '🇲🇽' },
+  { name: 'Mumbai',        code: 'BOM', flag: '🇮🇳' },
+  { name: 'New York',      code: 'JFK', flag: '🇺🇸' },
+  { name: 'Paris',         code: 'CDG', flag: '🇫🇷' },
+  { name: 'Praha',         code: 'PRG', flag: '🇨🇿' },
+  { name: 'Reykjavik',     code: 'KEF', flag: '🇮🇸' },
+  { name: 'Rio de Janeiro',code: 'GIG', flag: '🇧🇷' },
+  { name: 'Roma',          code: 'FCO', flag: '🇮🇹' },
+  { name: 'Seoul',         code: 'ICN', flag: '🇰🇷' },
+  { name: 'Singapore',     code: 'SIN', flag: '🇸🇬' },
+  { name: 'Sydney',        code: 'SYD', flag: '🇦🇺' },
+  { name: 'Tokyo',         code: 'NRT', flag: '🇯🇵' },
+  { name: 'Toronto',       code: 'YYZ', flag: '🇨🇦' },
+  { name: 'Wien',          code: 'VIE', flag: '🇦🇹' },
+  { name: 'Zürich',        code: 'ZRH', flag: '🇨🇭' },
+];
+
+const AIRPORT_NAMES = {
+  OSL: 'Oslo', BGO: 'Bergen', TRD: 'Trondheim',
+  SVG: 'Stavanger', TOS: 'Tromsø', TRF: 'Torp', KRS: 'Kristiansand'
+};
+
+const MONTHS = ['Jan','Feb','Mar','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Des'];
+
+let alerts = JSON.parse(localStorage.getItem('flydeals_alerts') || '[]');
+let selectedMonths = [];
+
+function saveAlerts() {
+  localStorage.setItem('flydeals_alerts', JSON.stringify(alerts));
+}
+
+function renderAlerts() {
+  const active = alerts.filter(a => a.active).length;
 let pendingDeleteRowId = null;
 
 function showToast(msg, type) {
@@ -398,20 +402,207 @@ function showToast(msg, type) {
 function updateCount() {
   const active = document.querySelectorAll('tbody tr input[type="checkbox"]:checked').length;
   document.getElementById('activeCount').textContent = active;
-}
 
-function toggleRow(rowId, active) {
-  const row = document.getElementById(rowId);
-  if (active) {
-    row.classList.remove('opacity-40');
-    row.classList.add('hover:bg-white/5');
-  } else {
-    row.classList.add('opacity-40');
-    row.classList.remove('hover:bg-white/5');
+  const container = document.getElementById('alertsContainer');
+  if (alerts.length === 0) {
+    container.innerHTML = `
+      <div class="bg-[#111] border border-[#1e1e1e] rounded-2xl p-14 flex flex-col items-center gap-3 text-center">
+        <span class="ms text-slate-700" style="font-size:52px">notifications_none</span>
+        <p class="text-slate-200 font-bold text-lg mt-1">Ingen aktive varsler</p>
+        <p class="text-slate-500 text-sm">Opprett ditt første varsel for å bli varslet om flydeals.</p>
+        <button onclick="openModal()" class="mt-3 flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-primary/20">
+          <span class="ms" style="font-size:18px">add</span>Opprett varsel
+        </button>
+      </div>`;
+    return;
   }
-  updateCount();
+
+  const rows = alerts.map(a => `
+    <tr id="alert-${a.id}" class="${a.active ? 'hover:bg-white/5' : 'opacity-40'} transition-all duration-300">
+      <td class="px-6 py-5">
+        <div class="flex items-center gap-3">
+          <div class="p-2 ${a.active ? 'bg-primary/10 text-primary' : 'bg-white/5 text-slate-500'} rounded-lg flex-shrink-0">
+            <span class="ms text-xl">flight_takeoff</span>
+          </div>
+          <div>
+            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold">${a.toFlag} ${a.to} <span class="text-slate-500 font-normal text-xs">(${a.toCode})</span></p>
+            <p class="text-xs text-slate-500">fra 🇳🇴 ${AIRPORT_NAMES[a.fromCode] || a.fromCode} (${a.fromCode})</p>
+          </div>
+        </div>
+      </td>
+      <td class="px-6 py-5">
+        <div class="flex justify-center">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
+            <span class="ms" style="font-size:13px">calendar_month</span>${a.months.length ? a.months.join(' · ') : 'Alle'}
+          </span>
+        </div>
+      </td>
+      <td class="px-6 py-5">
+        <div class="flex justify-center">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${a.active ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-white/5 text-slate-500 border border-white/5'}">
+            ≥${a.minDiscount}%
+          </span>
+        </div>
+      </td>
+      <td class="px-6 py-5">
+        <div class="flex justify-center">
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input ${a.active ? 'checked' : ''} class="sr-only peer" type="checkbox" onchange="toggleAlert('${a.id}', this.checked)"/>
+            <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          </label>
+        </div>
+      </td>
+      <td class="px-6 py-5 text-right">
+        <button onclick="askDelete('${a.id}')" class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]">
+          <span class="ms">delete</span>
+        </button>
+      </td>
+    </tr>`).join('');
+
+  container.innerHTML = `
+    <div class="bg-[#111] rounded-2xl border border-[#1e1e1e] overflow-hidden shadow-2xl">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-white/5 border-b border-[#1e1e1e]">
+              <th class="px-6 py-4 text-slate-300 text-sm font-semibold">Rute</th>
+              <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Reisemåned</th>
+              <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Rabattgrense</th>
+              <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Status</th>
+              <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-right">Slett</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#1e1e1e]">${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
 }
 
+function openModal(prefill) {
+  selectedMonths = [];
+  document.getElementById('destInput').value = prefill ? `${prefill.flag} ${prefill.name}` : '';
+  document.getElementById('destCode').value = prefill ? (prefill.code || '') : '';
+  document.getElementById('destFlag').value = prefill ? (prefill.flag || '') : '';
+  document.getElementById('fromAirport').value = 'OSL';
+  document.getElementById('discountSlider').value = 50;
+  document.getElementById('discountDisplay').textContent = '50%';
+  document.getElementById('destSuggestions').innerHTML = '';
+  document.getElementById('destInput').style.borderColor = '';
+
+  document.getElementById('monthChips').innerHTML = MONTHS.map(m =>
+    `<button type="button" class="month-chip px-3 py-1 rounded-full text-xs font-semibold border border-[#2a2a2a] text-slate-400 hover:border-primary/40 transition-all" onclick="toggleMonth('${m}', this)">${m}</button>`
+  ).join('');
+
+  document.getElementById('modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('destInput').focus(), 50);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+}
+
+function filterDest(q) {
+  const box = document.getElementById('destSuggestions');
+  if (!q.trim()) { box.innerHTML = ''; return; }
+  const results = DESTINATIONS.filter(d =>
+    d.name.toLowerCase().includes(q.toLowerCase()) || d.code.toLowerCase().includes(q.toLowerCase())
+  ).slice(0, 8);
+  box.innerHTML = results.map(d =>
+    `<button type="button" onmousedown="selectDest('${d.name}','${d.code}','${d.flag}')"
+      class="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 text-left transition-colors">
+      <span class="text-xl">${d.flag}</span>
+      <span class="font-medium text-slate-100">${d.name}</span>
+      <span class="text-slate-500 ml-auto text-xs">${d.code}</span>
+    </button>`
+  ).join('');
+}
+
+function selectDest(name, code, flag) {
+  document.getElementById('destInput').value = name;
+  document.getElementById('destCode').value = code;
+  document.getElementById('destFlag').value = flag;
+  document.getElementById('destSuggestions').innerHTML = '';
+}
+
+function toggleMonth(m, btn) {
+  if (selectedMonths.includes(m)) {
+    selectedMonths = selectedMonths.filter(x => x !== m);
+    btn.classList.remove('selected');
+  } else {
+    selectedMonths.push(m);
+    btn.classList.add('selected');
+  }
+}
+
+function submitAlert() {
+  const name = document.getElementById('destInput').value.trim();
+  const code = document.getElementById('destCode').value.trim();
+  const flag = document.getElementById('destFlag').value.trim();
+  const fromCode = document.getElementById('fromAirport').value;
+  const discount = parseInt(document.getElementById('discountSlider').value);
+
+  if (!name) {
+    document.getElementById('destInput').style.borderColor = '#ef4444';
+    document.getElementById('destInput').focus();
+    return;
+  }
+  if (!code) {
+    // If user typed freely without selecting, try to match
+    const match = DESTINATIONS.find(d => d.name.toLowerCase() === name.toLowerCase());
+    if (!match) {
+      document.getElementById('destInput').style.borderColor = '#ef4444';
+      document.getElementById('destInput').focus();
+      return;
+    }
+    document.getElementById('destCode').value = match.code;
+    document.getElementById('destFlag').value = match.flag;
+    return submitAlert();
+  }
+
+  alerts.push({
+    id: Date.now().toString(),
+    to: name,
+    toCode: code,
+    toFlag: flag || '✈️',
+    fromCode,
+    months: [...selectedMonths],
+    minDiscount: discount,
+    active: true
+  });
+
+  saveAlerts();
+  renderAlerts();
+  closeModal();
+}
+
+function askDelete(id) {
+  document.getElementById('confirmModal').classList.remove('hidden');
+  document.getElementById('confirmDeleteBtn').onclick = () => confirmDelete(id);
+}
+
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.add('hidden');
+}
+
+function confirmDelete(id) {
+  alerts = alerts.filter(a => a.id !== id);
+  saveAlerts();
+  renderAlerts();
+  closeConfirm();
+}
+
+function toggleAlert(id, active) {
+  const a = alerts.find(x => x.id === id);
+  if (a) { a.active = active; saveAlerts(); renderAlerts(); }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  renderAlerts();
+  // Pre-fill from oppdag.html "Opprett varsel" buttons
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('to')) {
+    openModal({ name: p.get('to'), code: p.get('code') || '', flag: p.get('flag') || '' });
+  }
 function openAlertModal(dest, code, from, price) {
   document.getElementById('alertModalTitle').textContent = dest ? 'Rediger varsel' : 'Legg til nytt varsel';
   if (dest) {
@@ -483,4 +674,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
-

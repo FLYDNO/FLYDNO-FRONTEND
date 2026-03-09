@@ -91,12 +91,12 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
-        <button class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
         </button>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <button onclick="window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
           <span class="ms" style="font-size:16px">logout</span>
           Logg ut
         </button>
@@ -116,13 +116,13 @@
       </div>
 
       <!-- Region filters -->
-      <div class="flex flex-wrap gap-2">
-        <button class="px-4 py-2 rounded-full text-sm font-semibold bg-[#ff6b00] text-white">Alle</button>
-        <button class="px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🌍 Europa</button>
-        <button class="px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🌏 Asia</button>
-        <button class="px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🌎 Amerika</button>
-        <button class="px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🌍 Afrika</button>
-        <button class="px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">❄️ Norden</button>
+      <div id="regionFilters" class="flex flex-wrap gap-2">
+        <button onclick="filterRegion('alle', this)" class="region-btn px-4 py-2 rounded-full text-sm font-semibold bg-[#ff6b00] text-white" data-region="alle">Alle</button>
+        <button onclick="filterRegion('europa', this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all" data-region="europa">🌍 Europa</button>
+        <button onclick="filterRegion('asia', this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all" data-region="asia">🌏 Asia</button>
+        <button onclick="filterRegion('america', this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all" data-region="america">🌎 Amerika</button>
+        <button onclick="filterRegion('africa', this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all" data-region="africa">🌍 Afrika</button>
+        <button onclick="filterRegion('norden', this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all" data-region="norden">❄️ Norden</button>
       </div>
 
       <!-- Featured destinations -->
@@ -134,7 +134,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
           <!-- Card: Barcelona -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="europa" onclick="opprettVarsel('Barcelona','BCN','🇪🇸')">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80" alt="Barcelona"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -161,14 +161,14 @@
                 <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
                 <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Apr 2026</span>
               </div>
-              <button class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+              <button onclick="event.stopPropagation();opprettVarsel('Barcelona','BCN','🇪🇸')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
                 <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
               </button>
             </div>
           </div>
 
           <!-- Card: London -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="europa" onclick="opprettVarsel('London','LHR','🇬🇧')">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80" alt="London"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -192,14 +192,14 @@
                 <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
                 <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Mars 2026</span>
               </div>
-              <button class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+              <button onclick="event.stopPropagation();opprettVarsel('London','LHR','🇬🇧')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
                 <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
               </button>
             </div>
           </div>
 
           <!-- Card: Bangkok -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="asia" onclick="opprettVarsel('Bangkok','BKK','🇹🇭')">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80" alt="Bangkok"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -223,14 +223,14 @@
                 <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
                 <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Mar–Apr 2026</span>
               </div>
-              <button class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+              <button onclick="event.stopPropagation();opprettVarsel('Bangkok','BKK','🇹🇭')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
                 <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
               </button>
             </div>
           </div>
 
           <!-- Card: Dubai -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="asia" onclick="opprettVarsel('Dubai','DXB','🇦🇪')">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80" alt="Dubai"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -254,14 +254,14 @@
                 <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
                 <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>April 2026</span>
               </div>
-              <button class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+              <button onclick="event.stopPropagation();opprettVarsel('Dubai','DXB','🇦🇪')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
                 <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
               </button>
             </div>
           </div>
 
           <!-- Card: New York -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="america" onclick="opprettVarsel('New York','JFK','🇺🇸')">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80" alt="New York"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -285,14 +285,14 @@
                 <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
                 <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Apr–Mai 2026</span>
               </div>
-              <button class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+              <button onclick="event.stopPropagation();opprettVarsel('New York','JFK','🇺🇸')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
                 <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
               </button>
             </div>
           </div>
 
           <!-- Card: Tokyo -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="asia" onclick="opprettVarsel('Tokyo','NRT','🇯🇵')">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80" alt="Tokyo"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -316,7 +316,7 @@
                 <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
                 <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Mai–Jun 2026</span>
               </div>
-              <button class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+              <button onclick="event.stopPropagation();opprettVarsel('Tokyo','NRT','🇯🇵')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
                 <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
               </button>
             </div>
@@ -385,6 +385,29 @@
     </div>
   </main>
 </div>
+
+<script>
+function filterRegion(region, btn) {
+  // Update button styles
+  document.querySelectorAll('.region-btn').forEach(b => {
+    b.className = b.className.replace('bg-[#ff6b00] text-white', 'bg-[#111] border border-[#1e1e1e] text-slate-400');
+  });
+  btn.className = btn.className.replace('bg-[#111] border border-[#1e1e1e] text-slate-400', 'bg-[#ff6b00] text-white');
+
+  // Show/hide cards
+  document.querySelectorAll('.dest-card').forEach(card => {
+    if (region === 'alle' || card.dataset.region === region) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+function opprettVarsel(name, code, flag) {
+  window.location.href = `varsler.html?to=${encodeURIComponent(name)}&code=${encodeURIComponent(code)}&flag=${encodeURIComponent(flag)}`;
+}
+</script>
 </body>
 </html>
 
