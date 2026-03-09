@@ -93,12 +93,12 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
-        <button class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
         </button>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <button onclick="window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
           <span class="ms" style="font-size:16px">logout</span>
           Logg ut
         </button>
@@ -213,19 +213,20 @@
       <section class="bg-[#111] border border-[#1e1e1e] rounded-2xl p-6">
         <h2 class="text-xl font-bold mb-1">Fant du ikke svaret?</h2>
         <p class="text-slate-500 text-sm mb-6">Send oss en melding — vi svarer som regel innen 24 timer.</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="kontakt-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Fullt navn</label>
-            <input class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="Ola Nordmann" type="text"/>
+            <input id="kontakt-navn" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="Ola Nordmann" type="text"/>
           </div>
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-slate-300">E-postadresse</label>
-            <input class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="ola@eksempel.no" type="email"/>
+            <input id="kontakt-epost" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="ola@eksempel.no" type="email"/>
+            <p id="epost-feil" class="text-xs text-red-400 hidden">Skriv inn en gyldig e-postadresse.</p>
           </div>
           <div class="md:col-span-2 space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Emne</label>
-            <select class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-400">
-              <option>Velg kategori</option>
+            <select id="kontakt-emne" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-400">
+              <option value="">Velg kategori</option>
               <option>Spørsmål om abonnement</option>
               <option>Problem med deals</option>
               <option>Teknisk problem</option>
@@ -234,14 +235,23 @@
           </div>
           <div class="md:col-span-2 space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Melding</label>
-            <textarea class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600 resize-none" rows="4" placeholder="Beskriv spørsmålet ditt..."></textarea>
+            <textarea id="kontakt-melding" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600 resize-none" rows="4" placeholder="Beskriv spørsmålet ditt..."></textarea>
           </div>
           <div class="md:col-span-2">
-            <button class="flex items-center gap-2 bg-[#ff6b00] hover:bg-[#e55f00] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#ff6b00]/20 text-sm">
+            <button id="kontakt-send-btn" onclick="sendMelding()" class="flex items-center gap-2 bg-[#ff6b00] hover:bg-[#e55f00] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#ff6b00]/20 text-sm">
               Send melding
               <span class="ms" style="font-size:18px">send</span>
             </button>
           </div>
+        </div>
+        <!-- Success state -->
+        <div id="kontakt-suksess" class="hidden text-center py-8">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2)">
+            <span class="ms text-green-400" style="font-size:28px">check_circle</span>
+          </div>
+          <h3 class="font-bold text-lg mb-1">Melding sendt!</h3>
+          <p class="text-slate-400 text-sm">Vi svarer deg på <span id="suksess-epost" class="text-slate-200 font-medium"></span> innen 24 timer.</p>
+          <button onclick="resetKontaktForm()" class="mt-5 text-sm text-[#ff6b00] hover:underline">Send en ny melding</button>
         </div>
       </section>
 
@@ -266,5 +276,44 @@
     </div>
   </main>
 </div>
+<script>
+function sendMelding() {
+  const navn = document.getElementById('kontakt-navn').value.trim();
+  const epost = document.getElementById('kontakt-epost').value.trim();
+  const emne = document.getElementById('kontakt-emne').value;
+  const melding = document.getElementById('kontakt-melding').value.trim();
+  const epostFeil = document.getElementById('epost-feil');
+
+  // Validate email
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(epost);
+  if (!emailOk) {
+    epostFeil.classList.remove('hidden');
+    document.getElementById('kontakt-epost').style.borderColor = '#ef4444';
+    document.getElementById('kontakt-epost').focus();
+    return;
+  }
+  epostFeil.classList.add('hidden');
+  document.getElementById('kontakt-epost').style.borderColor = '';
+
+  if (!navn || !emne || !melding) {
+    alert('Fyll ut alle feltene før du sender.');
+    return;
+  }
+
+  // Show success
+  document.getElementById('suksess-epost').textContent = epost;
+  document.getElementById('kontakt-form').classList.add('hidden');
+  document.getElementById('kontakt-suksess').classList.remove('hidden');
+}
+
+function resetKontaktForm() {
+  document.getElementById('kontakt-navn').value = '';
+  document.getElementById('kontakt-epost').value = '';
+  document.getElementById('kontakt-emne').value = '';
+  document.getElementById('kontakt-melding').value = '';
+  document.getElementById('kontakt-form').classList.remove('hidden');
+  document.getElementById('kontakt-suksess').classList.add('hidden');
+}
+</script>
 </body>
 </html>
