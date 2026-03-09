@@ -23,7 +23,7 @@
   .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
   .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00; color: #ff6b00; }
   .nav-link { border-left: 3px solid transparent; }
-  /* Toggle switch � eksplisitt orange når checked */
+  /* Toggle switch – eksplisitt orange når checked */
   input[type="checkbox"].peer:checked ~ .toggle-track { background-color: #ff6b00 !important; }
   ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
 </style>
@@ -136,7 +136,6 @@
             <thead>
               <tr class="bg-white/5 border-b border-[#1e1e1e]">
                 <th class="px-6 py-4 text-slate-300 text-sm font-semibold">Rute</th>
-                <th class="px-6 py-4 text-slate-300 text-sm font-semibold">Makspris</th>
                 <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Reisemåned</th>
                 <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Rabattgrense</th>
                 <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Status</th>
@@ -144,18 +143,17 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-[#1e1e1e]">
-              <!-- Row 1 � aktiv -->
+              <!-- Row 1 – aktiv -->
               <tr id="row-1" class="hover:bg-white/5 transition-all duration-300 group">
                 <td class="px-6 py-5">
                   <div class="flex items-center gap-3">
                     <div class="p-2 bg-primary/10 rounded-lg text-primary"><span class="material-symbols-outlined text-xl">flight_takeoff</span></div>
                     <div>
-                      <p class="text-white font-bold">New York �x!��x!� <span class="text-slate-500 font-normal text-xs">(JFK)</span></p>
-                      <p class="text-xs text-slate-500">fra <�<� Oslo (OSL)</p>
+                      <p class="text-white font-bold">New York 🇺🇸 <span class="text-slate-500 font-normal text-xs">(JFK)</span></p>
+                      <p class="text-xs text-slate-500">fra 🇳🇴 Oslo (OSL)</p>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-5"><p class="text-slate-200 font-medium">5 500 kr</p></td>
                 <td class="px-6 py-5">
                   <div class="flex justify-center">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
@@ -165,7 +163,7 @@
                 </td>
                 <td class="px-6 py-5">
                   <div class="flex justify-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">20% rabatt</span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">30–80%</span>
                   </div>
                 </td>
                 <td class="px-6 py-5">
@@ -181,18 +179,17 @@
                   <button class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">delete</span></button>
                 </td>
               </tr>
-              <!-- Row 2 � aktiv -->
+              <!-- Row 2 – aktiv -->
               <tr id="row-2" class="hover:bg-white/5 transition-all duration-300 group">
                 <td class="px-6 py-5">
                   <div class="flex items-center gap-3">
                     <div class="p-2 bg-primary/10 rounded-lg text-primary"><span class="material-symbols-outlined text-xl">flight_takeoff</span></div>
                     <div>
-                      <p class="text-white font-bold">London �x!��x!� <span class="text-slate-500 font-normal text-xs">(LHR)</span></p>
-                      <p class="text-xs text-slate-500">fra <�<� Bergen (BGO)</p>
+                      <p class="text-white font-bold">London 🇬🇧 <span class="text-slate-500 font-normal text-xs">(LHR)</span></p>
+                      <p class="text-xs text-slate-500">fra 🇳🇴 Bergen (BGO)</p>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-5"><p class="text-slate-200 font-medium">1 200 kr</p></td>
                 <td class="px-6 py-5">
                   <div class="flex justify-center">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
@@ -202,7 +199,7 @@
                 </td>
                 <td class="px-6 py-5">
                   <div class="flex justify-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">15% rabatt</span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">30–80%</span>
                   </div>
                 </td>
                 <td class="px-6 py-5">
@@ -218,18 +215,17 @@
                   <button class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">delete</span></button>
                 </td>
               </tr>
-              <!-- Row 3 � starter inaktiv -->
+              <!-- Row 3 – starter inaktiv -->
               <tr id="row-3" class="transition-all duration-300 group opacity-40">
                 <td class="px-6 py-5">
                   <div class="flex items-center gap-3">
                     <div class="p-2 bg-white/5 rounded-lg text-slate-500"><span class="material-symbols-outlined text-xl">flight_takeoff</span></div>
                     <div>
-                      <p class="text-slate-400 font-bold">Dubai �x!��x!� <span class="text-slate-600 font-normal text-xs">(DXB)</span></p>
+                      <p class="text-slate-400 font-bold">Dubai 🇦🇪 <span class="text-slate-600 font-normal text-xs">(DXB)</span></p>
                       <p class="text-xs text-slate-600">fra Stavanger (SVG)</p>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-5"><p class="text-slate-500 font-medium">4 800 kr</p></td>
                 <td class="px-6 py-5">
                   <div class="flex justify-center">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-600 border border-white/5">
@@ -239,7 +235,7 @@
                 </td>
                 <td class="px-6 py-5">
                   <div class="flex justify-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-500 border border-white/5">25% rabatt</span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-500 border border-white/5">30–80%</span>
                   </div>
                 </td>
                 <td class="px-6 py-5">
@@ -274,8 +270,8 @@
             <div class="p-4">
               <div class="flex justify-between items-start mb-1">
                 <div>
-                  <h4 class="font-bold text-white">New York �x!��x!�</h4>
-                  <p class="text-xs text-slate-500">fra <�<� Oslo (OSL �  JFK)</p>
+                  <h4 class="font-bold text-white">New York 🇺🇸</h4>
+                  <p class="text-xs text-slate-500">fra 🇳🇴 Oslo (OSL → JFK)</p>
                 </div>
                 <p class="text-primary font-black">4 290 kr</p>
               </div>
@@ -296,8 +292,8 @@
             <div class="p-4 opacity-75">
               <div class="flex justify-between items-start mb-1">
                 <div>
-                  <h4 class="font-bold text-white">London �x!��x!�</h4>
-                  <p class="text-xs text-slate-500">fra <�<� Bergen (BGO �  LHR)</p>
+                  <h4 class="font-bold text-white">London 🇬🇧</h4>
+                  <p class="text-xs text-slate-500">fra 🇳🇴 Bergen (BGO → LHR)</p>
                 </div>
                 <p class="text-slate-400 font-black">980 kr</p>
               </div>
