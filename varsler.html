@@ -323,31 +323,25 @@ const MONTHS = ['Jan','Feb','Mar','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov
 
 let alerts = JSON.parse(localStorage.getItem('flydeals_alerts') || '[]');
 let selectedMonths = [];
+let pendingDeleteId = null;
 
 function saveAlerts() {
   localStorage.setItem('flydeals_alerts', JSON.stringify(alerts));
 }
 
-function renderAlerts() {
-  const active = alerts.filter(a => a.active).length;
-let pendingDeleteRowId = null;
-
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  const icon = document.getElementById('toastIcon');
-  const colors = { success: ['rgba(34,197,94,0.3)', '#22c55e', 'check_circle'], error: ['rgba(239,68,68,0.3)', '#ef4444', 'error'], info: ['rgba(255,107,0,0.3)', '#ff6b00', 'info'] };
-  const c = colors[type] || colors.success;
-  t.style.border = '1px solid ' + c[0];
-  t.style.color = c[1];
-  icon.textContent = c[2];
-  document.getElementById('toastMsg').textContent = msg;
-  t.style.transform = 'translateY(0)';
-  t.style.opacity = '1';
-  setTimeout(() => { t.style.transform = 'translateY(80px)'; t.style.opacity = '0'; }, 3500);
+function showToast(msg, color) {
+  const t = document.createElement('div');
+  const bg = color === 'green' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
+  const border = color === 'green' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
+  const text = color === 'green' ? '#86efac' : '#fca5a5';
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;background:${bg};border:1px solid ${border};color:${text};padding:12px 20px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);pointer-events:none;`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
 }
 
-function updateCount() {
-  const active = document.querySelectorAll('tbody tr input[type="checkbox"]:checked').length;
+function renderAlerts() {
+  const active = alerts.filter(a => a.active).length;
   document.getElementById('activeCount').textContent = active;
 
   const container = document.getElementById('alertsContainer');
@@ -395,7 +389,7 @@ function updateCount() {
         <div class="flex justify-center">
           <label class="relative inline-flex items-center cursor-pointer">
             <input ${a.active ? 'checked' : ''} class="sr-only peer" type="checkbox" onchange="toggleAlert('${a.id}', this.checked)"/>
-            <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[\'\'] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
           </label>
         </div>
       </td>
@@ -427,7 +421,7 @@ function updateCount() {
 
 function openModal(prefill) {
   selectedMonths = [];
-  document.getElementById('destInput').value = prefill ? `${prefill.flag} ${prefill.name}` : '';
+  document.getElementById('destInput').value = prefill ? (prefill.flag + ' ' + prefill.name) : '';
   document.getElementById('destCode').value = prefill ? (prefill.code || '') : '';
   document.getElementById('destFlag').value = prefill ? (prefill.flag || '') : '';
   document.getElementById('fromAirport').value = 'OSL';
@@ -435,11 +429,9 @@ function openModal(prefill) {
   document.getElementById('discountDisplay').textContent = '50%';
   document.getElementById('destSuggestions').innerHTML = '';
   document.getElementById('destInput').style.borderColor = '';
-
   document.getElementById('monthChips').innerHTML = MONTHS.map(m =>
-    `<button type="button" class="month-chip px-3 py-1 rounded-full text-xs font-semibold border border-[#2a2a2a] text-slate-400 hover:border-primary/40 transition-all" onclick="toggleMonth('${m}', this)">${m}</button>`
+    '<button type="button" class="month-chip px-3 py-1 rounded-full text-xs font-semibold border border-[#2a2a2a] text-slate-400 hover:border-primary/40 transition-all" onclick="toggleMonth(\'' + m + '\', this)">' + m + '</button>'
   ).join('');
-
   document.getElementById('modal').classList.remove('hidden');
   setTimeout(() => document.getElementById('destInput').focus(), 50);
 }
@@ -455,12 +447,10 @@ function filterDest(q) {
     d.name.toLowerCase().includes(q.toLowerCase()) || d.code.toLowerCase().includes(q.toLowerCase())
   ).slice(0, 8);
   box.innerHTML = results.map(d =>
-    `<button type="button" onmousedown="selectDest('${d.name}','${d.code}','${d.flag}')"
-      class="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 text-left transition-colors">
-      <span class="text-xl">${d.flag}</span>
-      <span class="font-medium text-slate-100">${d.name}</span>
-      <span class="text-slate-500 ml-auto text-xs">${d.code}</span>
-    </button>`
+    '<button type="button" onmousedown="selectDest(\'' + d.name + '\',\'' + d.code + '\',\'' + d.flag + '\')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 text-left transition-colors">' +
+    '<span class="text-xl">' + d.flag + '</span>' +
+    '<span class="font-medium text-slate-100">' + d.name + '</span>' +
+    '<span class="text-slate-500 ml-auto text-xs">' + d.code + '</span></button>'
   ).join('');
 }
 
@@ -494,7 +484,6 @@ function submitAlert() {
     return;
   }
   if (!code) {
-    // If user typed freely without selecting, try to match
     const match = DESTINATIONS.find(d => d.name.toLowerCase() === name.toLowerCase());
     if (!match) {
       document.getElementById('destInput').style.borderColor = '#ef4444';
@@ -524,112 +513,41 @@ function submitAlert() {
 }
 
 function askDelete(id) {
+  pendingDeleteId = id;
   document.getElementById('confirmModal').classList.remove('hidden');
-  document.getElementById('confirmDeleteBtn').onclick = () => confirmDelete(id);
 }
 
 function closeConfirm() {
   document.getElementById('confirmModal').classList.add('hidden');
+  pendingDeleteId = null;
 }
 
-function confirmDelete(id) {
-  alerts = alerts.filter(a => a.id !== id);
-  saveAlerts();
-  renderAlerts();
-  closeConfirm();
-  showToast('Varsel slettet', 'red');
+function confirmDelete() {
+  if (pendingDeleteId) {
+    alerts = alerts.filter(a => a.id !== pendingDeleteId);
+    saveAlerts();
+    renderAlerts();
+    closeConfirm();
+    showToast('Varsel slettet', 'red');
+  }
 }
 
 function toggleAlert(id, active) {
   const a = alerts.find(x => x.id === id);
-  if (a) { a.active = active; saveAlerts(); renderAlerts(); showToast(active ? 'Varsel aktivert ✓' : 'Varsel deaktivert', active ? 'green' : 'red'); }
-}
-
-function showToast(msg, color) {
-  const t = document.createElement('div');
-  const bg = color === 'green' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
-  const border = color === 'green' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
-  const text = color === 'green' ? '#86efac' : '#fca5a5';
-  t.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;background:${bg};border:1px solid ${border};color:${text};padding:12px 20px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);pointer-events:none;`;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
+  if (a) {
+    a.active = active;
+    saveAlerts();
+    renderAlerts();
+    showToast(active ? 'Varsel aktivert ✓' : 'Varsel deaktivert', active ? 'green' : 'red');
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   renderAlerts();
-  // Pre-fill from oppdag.html "Opprett varsel" buttons
   const p = new URLSearchParams(window.location.search);
   if (p.get('to')) {
     openModal({ name: p.get('to'), code: p.get('code') || '', flag: p.get('flag') || '' });
   }
-function openAlertModal(dest, code, from, price) {
-  document.getElementById('alertModalTitle').textContent = dest ? 'Rediger varsel' : 'Legg til nytt varsel';
-  if (dest) {
-    document.getElementById('alertTo').value = dest + ' (' + code + ')';
-    document.getElementById('alertPrice').value = price;
-    if (from) document.getElementById('alertFrom').value = from;
-  } else {
-    document.getElementById('alertTo').value = '';
-    document.getElementById('alertPrice').value = '';
-  }
-  document.getElementById('alertModal').style.display = 'flex';
-}
-
-function closeAlertModal() {
-  document.getElementById('alertModal').style.display = 'none';
-}
-
-function saveAlert() {
-  const to = document.getElementById('alertTo').value.trim();
-  const price = document.getElementById('alertPrice').value.trim();
-  if (!to) { showToast('Vennligst oppgi en destinasjon.', 'error'); return; }
-  if (!price || isNaN(price)) { showToast('Vennligst oppgi en gyldig makspris.', 'error'); return; }
-  closeAlertModal();
-  showToast('Varsel lagret for ' + to + '.', 'success');
-  updateCount();
-}
-
-function editAlert(dest, code, from, price) {
-  openAlertModal(dest, code, from, price);
-}
-
-function deleteAlert(rowId, name) {
-  pendingDeleteRowId = rowId;
-  document.getElementById('deleteAlertName').textContent = 'Vil du slette varselet for ' + name + '?';
-  document.getElementById('deleteAlertModal').style.display = 'flex';
-}
-
-function closeDeleteAlertModal() {
-  document.getElementById('deleteAlertModal').style.display = 'none';
-  pendingDeleteRowId = null;
-}
-
-function confirmDeleteAlert() {
-  if (pendingDeleteRowId) {
-    const row = document.getElementById(pendingDeleteRowId);
-    if (row) row.remove();
-    updateCount();
-    showToast('Varselet er slettet.', 'success');
-  }
-  closeDeleteAlertModal();
-}
-
-// Wire up edit/delete buttons to rows
-document.addEventListener('DOMContentLoaded', function() {
-  updateCount();
-  const rowData = [
-    { id: 'row-1', dest: 'New York', code: 'JFK', from: 'OSL', price: '5500' },
-    { id: 'row-2', dest: 'London', code: 'LHR', from: 'BGO', price: '1200' },
-    { id: 'row-3', dest: 'Dubai', code: 'DXB', from: 'SVG', price: '4800' }
-  ];
-  rowData.forEach(function(r) {
-    const row = document.getElementById(r.id);
-    if (!row) return;
-    const btns = row.querySelectorAll('td:last-child button');
-    if (btns[0]) btns[0].onclick = function() { editAlert(r.dest, r.code, r.from, r.price); };
-    if (btns[1]) btns[1].onclick = function() { deleteAlert(r.id, r.dest + ' (' + r.code + ')'); };
-  });
 });
 </script>
 </body>
