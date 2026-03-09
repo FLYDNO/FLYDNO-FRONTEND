@@ -89,12 +89,12 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
-        <button class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
         </button>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <button onclick="window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
           <span class="ms" style="font-size:16px">logout</span>
           Logg ut
         </button>
@@ -139,7 +139,7 @@
               </div>
             </div>
             <div class="pt-4 flex justify-end">
-              <button class="bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-6 rounded-lg transition-colors shadow-lg shadow-primary/20">
+              <button onclick="saveProfile(this)" class="bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-6 rounded-lg transition-colors shadow-lg shadow-primary/20">
                 Lagre endringer
               </button>
             </div>
@@ -193,7 +193,7 @@
                 <p class="text-xs text-slate-500">Neste fornyelse: 24. mai 2026 · Ingen binding</p>
               </div>
               <div class="flex gap-3">
-                <button class="px-4 py-2 rounded-lg bg-red-500/10 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all">Si opp abonnement</button>
+                <button onclick="openModal('cancelModal')" class="px-4 py-2 rounded-lg bg-red-500/10 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all">Si opp abonnement</button>
               </div>
             </div>
           </div>
@@ -206,7 +206,7 @@
               <h3 class="text-lg font-bold text-red-500">Slett konto</h3>
               <p class="text-sm text-slate-400">Dette vil slette alle dine data permanent. Dette kan ikke angres.</p>
             </div>
-            <button class="px-6 py-2.5 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20 whitespace-nowrap">
+            <button onclick="openModal('deleteModal')" class="px-6 py-2.5 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20 whitespace-nowrap">
               Slett min konto
             </button>
           </div>
@@ -222,5 +222,102 @@
     </div>
   </main>
 </div>
+<!-- Toast -->
+<div id="toast" style="position:fixed;bottom:24px;right:24px;z-index:200;display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.4);background:#111;border:1px solid rgba(34,197,94,0.3);color:#22c55e;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;" id="toast">
+  <span class="ms" style="font-size:18px" id="toastIcon">check_circle</span>
+  <span id="toastMsg"></span>
+</div>
+
+<!-- Cancel subscription modal -->
+<div id="cancelModal" onclick="if(event.target===this)closeModal('cancelModal')" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div style="background:#111;border:1px solid #1e1e1e;border-radius:16px;padding:32px;max-width:420px;width:90%;margin:auto;">
+    <div style="width:48px;height:48px;border-radius:50%;background:rgba(239,68,68,0.1);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+      <span class="ms" style="font-size:24px;color:#ef4444;">warning</span>
+    </div>
+    <h3 style="font-size:18px;font-weight:800;margin-bottom:8px;">Si opp abonnement?</h3>
+    <p style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.6;margin-bottom:24px;">Du vil miste tilgangen til FlyDeals ved slutten av nåværende periode (24. mai 2026). Du kan reaktivere abonnementet når som helst.</p>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button onclick="closeModal('cancelModal')" style="padding:10px 20px;border-radius:8px;background:#1e1e1e;color:rgba(255,255,255,0.7);font-weight:600;font-size:14px;border:none;cursor:pointer;">Avbryt</button>
+      <button onclick="confirmCancel()" style="padding:10px 20px;border-radius:8px;background:#ef4444;color:white;font-weight:700;font-size:14px;border:none;cursor:pointer;">Si opp abonnement</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete account modal -->
+<div id="deleteModal" onclick="if(event.target===this)closeModal('deleteModal')" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div style="background:#111;border:1px solid #1e1e1e;border-radius:16px;padding:32px;max-width:420px;width:90%;margin:auto;">
+    <div style="width:48px;height:48px;border-radius:50%;background:rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+      <span class="ms" style="font-size:24px;color:#ef4444;">delete_forever</span>
+    </div>
+    <h3 style="font-size:18px;font-weight:800;margin-bottom:8px;color:#ef4444;">Slett konto permanent</h3>
+    <p style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.6;margin-bottom:16px;">Dette vil slette alle dine data, varsler og historikk for alltid. Denne handlingen kan ikke angres.</p>
+    <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:8px;">Skriv inn <strong style="color:#fff;">SLETT</strong> for å bekrefte:</p>
+    <input id="deleteConfirmInput" placeholder="SLETT" style="width:100%;background:#050505;border:1px solid #1e1e1e;border-radius:8px;padding:10px 14px;color:white;font-size:14px;margin-bottom:20px;outline:none;box-sizing:border-box;" oninput="document.getElementById('confirmDeleteBtn').disabled=this.value!=='SLETT'"/>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button onclick="closeModal('deleteModal')" style="padding:10px 20px;border-radius:8px;background:#1e1e1e;color:rgba(255,255,255,0.7);font-weight:600;font-size:14px;border:none;cursor:pointer;">Avbryt</button>
+      <button id="confirmDeleteBtn" onclick="confirmDelete()" disabled style="padding:10px 20px;border-radius:8px;background:#ef4444;color:white;font-weight:700;font-size:14px;border:none;cursor:pointer;opacity:0.4;transition:opacity 0.2s;">Slett konto</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  const icon = document.getElementById('toastIcon');
+  t.style.border = type === 'error' ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(34,197,94,0.3)';
+  t.style.color = type === 'error' ? '#ef4444' : '#22c55e';
+  icon.textContent = type === 'error' ? 'error' : 'check_circle';
+  document.getElementById('toastMsg').textContent = msg;
+  t.style.transform = 'translateY(0)';
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.transform = 'translateY(80px)'; t.style.opacity = '0'; }, 3500);
+}
+
+function saveProfile(btn) {
+  const orig = btn.textContent;
+  btn.textContent = 'Lagrer...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = orig;
+    btn.disabled = false;
+    showToast('Profilinformasjon lagret.', 'success');
+  }, 600);
+}
+
+function openModal(id) {
+  const m = document.getElementById(id);
+  m.style.display = 'flex';
+  if (id === 'deleteModal') {
+    document.getElementById('deleteConfirmInput').value = '';
+    document.getElementById('confirmDeleteBtn').style.opacity = '0.4';
+    document.getElementById('confirmDeleteBtn').disabled = true;
+  }
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+  this.style.opacity = this.disabled ? '0.4' : '1';
+});
+
+document.getElementById('deleteConfirmInput').addEventListener('input', function() {
+  const btn = document.getElementById('confirmDeleteBtn');
+  btn.disabled = this.value !== 'SLETT';
+  btn.style.opacity = this.value === 'SLETT' ? '1' : '0.4';
+});
+
+function confirmCancel() {
+  closeModal('cancelModal');
+  showToast('Abonnementet er sagt opp. Du beholder tilgangen til 24. mai 2026.', 'success');
+}
+
+function confirmDelete() {
+  closeModal('deleteModal');
+  showToast('Konto slettet. Du blir nå logget ut...', 'success');
+  setTimeout(() => window.location.href = 'login.html', 2000);
+}
+</script>
 </body>
 </html>

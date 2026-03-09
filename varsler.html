@@ -91,12 +91,12 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
-        <button class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
         </button>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <button onclick="window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
           <span class="ms" style="font-size:16px">logout</span>
           Logg ut
         </button>
@@ -111,7 +111,7 @@
           <h2 class="text-white text-4xl font-black tracking-tight">Dine varsler</h2>
           <p class="text-slate-400 text-base">Administrer dine aktive prisvarsler for flyreiser over hele verden.</p>
         </div>
-        <button class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-primary/20">
+        <button onclick="openAlertModal()" class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-primary/20">
           <span class="material-symbols-outlined">add</span>
           <span>Legg til nytt varsel</span>
         </button>
@@ -283,7 +283,7 @@
                 <span class="material-symbols-outlined text-sm">calendar_month</span>
                 <span>12. Okt - 19. Okt</span>
               </div>
-              <button class="w-full py-2 bg-[#2a2a2a] hover:bg-primary text-white text-sm font-bold rounded-lg transition-colors">Se tilbud</button>
+              <button onclick="showToast('Åpner tilbud fra Norwegian — OSL → JFK', 'info')" class="w-full py-2 bg-[#2a2a2a] hover:bg-primary text-white text-sm font-bold rounded-lg transition-colors">Se tilbud</button>
             </div>
           </div>
           <!-- Hit Card 2 -->
@@ -309,7 +309,7 @@
             </div>
           </div>
           <!-- Add New -->
-          <div class="border-2 border-dashed border-[#1e1e1e] rounded-xl flex flex-col items-center justify-center p-6 hover:bg-white/5 transition-colors cursor-pointer group">
+          <div onclick="openAlertModal()" class="border-2 border-dashed border-[#1e1e1e] rounded-xl flex flex-col items-center justify-center p-6 hover:bg-white/5 transition-colors cursor-pointer group">
             <div class="w-12 h-12 rounded-full border-2 border-dashed border-[#1e1e1e] flex items-center justify-center text-slate-500 group-hover:border-primary group-hover:text-primary mb-3">
               <span class="material-symbols-outlined">add</span>
             </div>
@@ -321,9 +321,85 @@
     </div>
   </main>
 </div>
+<!-- Toast -->
+<div id="toast" style="position:fixed;bottom:24px;right:24px;z-index:200;display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.4);background:#111;border:1px solid rgba(34,197,94,0.3);color:#22c55e;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;">
+  <span class="material-symbols-outlined" style="font-size:18px" id="toastIcon">check_circle</span>
+  <span id="toastMsg"></span>
+</div>
+
+<!-- Add/Edit Alert Modal -->
+<div id="alertModal" onclick="if(event.target===this)closeAlertModal()" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div style="background:#111;border:1px solid #1e1e1e;border-radius:16px;padding:32px;max-width:460px;width:90%;margin:auto;">
+    <h3 style="font-size:18px;font-weight:800;margin-bottom:20px;" id="alertModalTitle">Legg til nytt varsel</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+      <div>
+        <label style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);display:block;margin-bottom:6px;">Fra (flyplass)</label>
+        <select id="alertFrom" style="width:100%;background:#050505;border:1px solid #1e1e1e;border-radius:8px;padding:10px 12px;color:white;font-size:14px;outline:none;">
+          <option value="OSL">🇳🇴 Oslo (OSL)</option>
+          <option value="BGO">🇳🇴 Bergen (BGO)</option>
+          <option value="TRD">🇳🇴 Trondheim (TRD)</option>
+          <option value="SVG">🇳🇴 Stavanger (SVG)</option>
+          <option value="TOS">🇳🇴 Tromsø (TOS)</option>
+          <option value="TRF">🇳🇴 Torp (TRF)</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);display:block;margin-bottom:6px;">Destinasjon</label>
+        <input id="alertTo" placeholder="f.eks. London" style="width:100%;background:#050505;border:1px solid #1e1e1e;border-radius:8px;padding:10px 12px;color:white;font-size:14px;outline:none;box-sizing:border-box;"/>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);display:block;margin-bottom:6px;">Makspris (kr)</label>
+        <input id="alertPrice" type="number" placeholder="f.eks. 2500" style="width:100%;background:#050505;border:1px solid #1e1e1e;border-radius:8px;padding:10px 12px;color:white;font-size:14px;outline:none;box-sizing:border-box;"/>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);display:block;margin-bottom:6px;">Reisemåned</label>
+        <select id="alertMonth" style="width:100%;background:#050505;border:1px solid #1e1e1e;border-radius:8px;padding:10px 12px;color:white;font-size:14px;outline:none;">
+          <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option>
+          <option>Mai</option><option>Jun</option><option>Jul</option><option>Aug</option>
+          <option>Sep</option><option>Okt</option><option>Nov</option><option>Des</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px;">
+      <button onclick="closeAlertModal()" style="padding:10px 20px;border-radius:8px;background:#1e1e1e;color:rgba(255,255,255,0.7);font-weight:600;font-size:14px;border:none;cursor:pointer;">Avbryt</button>
+      <button onclick="saveAlert()" style="padding:10px 20px;border-radius:8px;background:#ff6b00;color:white;font-weight:700;font-size:14px;border:none;cursor:pointer;">Lagre varsel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Alert Modal -->
+<div id="deleteAlertModal" onclick="if(event.target===this)closeDeleteAlertModal()" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div style="background:#111;border:1px solid #1e1e1e;border-radius:16px;padding:32px;max-width:400px;width:90%;margin:auto;">
+    <div style="width:48px;height:48px;border-radius:50%;background:rgba(239,68,68,0.1);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+      <span class="material-symbols-outlined" style="font-size:24px;color:#ef4444;">delete</span>
+    </div>
+    <h3 style="font-size:18px;font-weight:800;margin-bottom:8px;">Slett varsel?</h3>
+    <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:24px;" id="deleteAlertName">Dette varselet vil bli slettet.</p>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button onclick="closeDeleteAlertModal()" style="padding:10px 20px;border-radius:8px;background:#1e1e1e;color:rgba(255,255,255,0.7);font-weight:600;font-size:14px;border:none;cursor:pointer;">Avbryt</button>
+      <button onclick="confirmDeleteAlert()" style="padding:10px 20px;border-radius:8px;background:#ef4444;color:white;font-weight:700;font-size:14px;border:none;cursor:pointer;">Slett</button>
+    </div>
+  </div>
+</div>
+
 <script>
+let pendingDeleteRowId = null;
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  const icon = document.getElementById('toastIcon');
+  const colors = { success: ['rgba(34,197,94,0.3)', '#22c55e', 'check_circle'], error: ['rgba(239,68,68,0.3)', '#ef4444', 'error'], info: ['rgba(255,107,0,0.3)', '#ff6b00', 'info'] };
+  const c = colors[type] || colors.success;
+  t.style.border = '1px solid ' + c[0];
+  t.style.color = c[1];
+  icon.textContent = c[2];
+  document.getElementById('toastMsg').textContent = msg;
+  t.style.transform = 'translateY(0)';
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.transform = 'translateY(80px)'; t.style.opacity = '0'; }, 3500);
+}
+
 function updateCount() {
-  const total = document.querySelectorAll('tbody tr input[type="checkbox"]').length;
   const active = document.querySelectorAll('tbody tr input[type="checkbox"]:checked').length;
   document.getElementById('activeCount').textContent = active;
 }
@@ -340,7 +416,74 @@ function toggleRow(rowId, active) {
   updateCount();
 }
 
-document.addEventListener('DOMContentLoaded', updateCount);
+function openAlertModal(dest, code, from, price) {
+  document.getElementById('alertModalTitle').textContent = dest ? 'Rediger varsel' : 'Legg til nytt varsel';
+  if (dest) {
+    document.getElementById('alertTo').value = dest + ' (' + code + ')';
+    document.getElementById('alertPrice').value = price;
+    if (from) document.getElementById('alertFrom').value = from;
+  } else {
+    document.getElementById('alertTo').value = '';
+    document.getElementById('alertPrice').value = '';
+  }
+  document.getElementById('alertModal').style.display = 'flex';
+}
+
+function closeAlertModal() {
+  document.getElementById('alertModal').style.display = 'none';
+}
+
+function saveAlert() {
+  const to = document.getElementById('alertTo').value.trim();
+  const price = document.getElementById('alertPrice').value.trim();
+  if (!to) { showToast('Vennligst oppgi en destinasjon.', 'error'); return; }
+  if (!price || isNaN(price)) { showToast('Vennligst oppgi en gyldig makspris.', 'error'); return; }
+  closeAlertModal();
+  showToast('Varsel lagret for ' + to + '.', 'success');
+  updateCount();
+}
+
+function editAlert(dest, code, from, price) {
+  openAlertModal(dest, code, from, price);
+}
+
+function deleteAlert(rowId, name) {
+  pendingDeleteRowId = rowId;
+  document.getElementById('deleteAlertName').textContent = 'Vil du slette varselet for ' + name + '?';
+  document.getElementById('deleteAlertModal').style.display = 'flex';
+}
+
+function closeDeleteAlertModal() {
+  document.getElementById('deleteAlertModal').style.display = 'none';
+  pendingDeleteRowId = null;
+}
+
+function confirmDeleteAlert() {
+  if (pendingDeleteRowId) {
+    const row = document.getElementById(pendingDeleteRowId);
+    if (row) row.remove();
+    updateCount();
+    showToast('Varselet er slettet.', 'success');
+  }
+  closeDeleteAlertModal();
+}
+
+// Wire up edit/delete buttons to rows
+document.addEventListener('DOMContentLoaded', function() {
+  updateCount();
+  const rowData = [
+    { id: 'row-1', dest: 'New York', code: 'JFK', from: 'OSL', price: '5500' },
+    { id: 'row-2', dest: 'London', code: 'LHR', from: 'BGO', price: '1200' },
+    { id: 'row-3', dest: 'Dubai', code: 'DXB', from: 'SVG', price: '4800' }
+  ];
+  rowData.forEach(function(r) {
+    const row = document.getElementById(r.id);
+    if (!row) return;
+    const btns = row.querySelectorAll('td:last-child button');
+    if (btns[0]) btns[0].onclick = function() { editAlert(r.dest, r.code, r.from, r.price); };
+    if (btns[1]) btns[1].onclick = function() { deleteAlert(r.id, r.dest + ' (' + r.code + ')'); };
+  });
+});
 </script>
 </body>
 </html>

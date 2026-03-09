@@ -90,12 +90,12 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
-        <button class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
         </button>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <button onclick="window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
           <span class="ms" style="font-size:16px">logout</span>
           Logg ut
         </button>
@@ -156,8 +156,8 @@ function filterDeals(filter, btn) {
 function renderDeals() {
   const filtered = currentFilter === 'alle' ? deals : deals.filter(d => d.origin === currentFilter);
   const grid = document.getElementById('dealsGrid');
-  grid.innerHTML = filtered.map(d => `
-    <div class="deal-card bg-[#111] border border-[#1e1e1e] rounded-xl p-3.5 transition-all duration-200 cursor-pointer">
+  grid.innerHTML = filtered.map((d, i) => `
+    <div onclick="openDeal(${i})" class="deal-card bg-[#111] border border-[#1e1e1e] rounded-xl p-3.5 transition-all duration-200 cursor-pointer" data-idx="${i}">
       <div class="flex items-start justify-between mb-2">
         <div>
           <span class="text-sm font-black">${d.to} ${d.flag}</span>
@@ -179,7 +179,74 @@ function renderDeals() {
   `).join('');
 }
 
+let filteredDealsCache = [];
+
+function openDeal(idx) {
+  const filtered = currentFilter === 'alle' ? deals : deals.filter(d => d.origin === currentFilter);
+  const d = filtered[idx];
+  if (!d) return;
+  document.getElementById('modalFlag').textContent = d.flag;
+  document.getElementById('modalRoute').textContent = d.from + ' (' + d.fromCode + ') → ' + d.to + ' (' + d.toCode + ')';
+  document.getElementById('modalPrice').textContent = d.price.toLocaleString('no') + ' kr';
+  document.getElementById('modalOrig').textContent = d.orig.toLocaleString('no') + ' kr';
+  document.getElementById('modalDiscount').textContent = '-' + d.discount + '%';
+  document.getElementById('modalDates').textContent = d.dates;
+  document.getElementById('modalAirline').textContent = d.airline;
+  document.getElementById('modalStops').textContent = d.direct ? 'Direktefly' : '1 stopp';
+  document.getElementById('dealModal').style.display = 'flex';
+}
+
 renderDeals();
+</script>
+<!-- Deal detail modal -->
+<div id="dealModal" onclick="if(event.target===this)document.getElementById('dealModal').style.display='none'" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+  <div style="background:#111;border:1px solid #1e1e1e;border-radius:20px;padding:32px;max-width:440px;width:90%;margin:auto;position:relative;">
+    <button onclick="document.getElementById('dealModal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:22px;line-height:1;">✕</button>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <div style="font-size:48px;line-height:1;" id="modalFlag">🌍</div>
+      <div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.5);font-weight:600;margin-bottom:4px;">FLYRUTE</p>
+        <p style="font-size:16px;font-weight:800;color:white;" id="modalRoute">Oslo → Bangkok</p>
+      </div>
+    </div>
+    <div style="background:#050505;border:1px solid #1e1e1e;border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px;">
+        <span style="font-size:32px;font-weight:900;color:#ff6b00;" id="modalPrice">2 489 kr</span>
+        <span style="font-size:13px;color:rgba(255,255,255,0.35);text-decoration:line-through;" id="modalOrig">4 700 kr</span>
+        <span style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);color:#22c55e;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;" id="modalDiscount">-47%</span>
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.4);">per person, tur-retur</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+      <div style="background:#050505;border:1px solid #1e1e1e;border-radius:10px;padding:12px;">
+        <p style="font-size:11px;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:4px;">PERIODE</p>
+        <p style="font-size:13px;font-weight:700;" id="modalDates">Mar–Apr 2026</p>
+      </div>
+      <div style="background:#050505;border:1px solid #1e1e1e;border-radius:10px;padding:12px;">
+        <p style="font-size:11px;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:4px;">FLYSELSKAP</p>
+        <p style="font-size:13px;font-weight:700;" id="modalAirline">Thai Airways</p>
+      </div>
+      <div style="background:#050505;border:1px solid #1e1e1e;border-radius:10px;padding:12px;">
+        <p style="font-size:11px;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:4px;">STOPP</p>
+        <p style="font-size:13px;font-weight:700;" id="modalStops">Direktefly</p>
+      </div>
+      <div style="background:#050505;border:1px solid #1e1e1e;border-radius:10px;padding:12px;">
+        <p style="font-size:11px;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:4px;">BOOKING</p>
+        <p style="font-size:13px;font-weight:700;color:#22c55e;">Tilgjengelig nå</p>
+      </div>
+    </div>
+    <button onclick="addToAlerts()" style="width:100%;padding:14px;border-radius:12px;background:#ff6b00;color:white;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:10px;transition:background 0.2s;" onmouseover="this.style.background='#e55f00'" onmouseout="this.style.background='#ff6b00'">
+      Legg til varsel for denne ruten
+    </button>
+    <p style="text-center;font-size:12px;color:rgba(255,255,255,0.3);text-align:center;">Book direkte hos flyselskapet — FlyDeals tar ingen provisjon</p>
+  </div>
+</div>
+
+<script>
+function addToAlerts() {
+  document.getElementById('dealModal').style.display = 'none';
+  window.location.href = 'varsler.html';
+}
 </script>
 </body>
 </html>
