@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="dark" lang="no">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: { "primary": "#ff6b00", "bg": "#050505", "surface": "#111111", "border": "#1e1e1e" },
+        fontFamily: { "sans": ["DM Sans", "sans-serif"] }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'DM Sans', sans-serif; background: #050505; }
+  .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00; color: #ff6b00; }
+  .nav-link { border-left: 3px solid transparent; }
+  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
+  .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
+  .faq-item.open .faq-answer { max-height: 200px; padding-bottom: 16px; }
+  .faq-icon { transition: transform 0.3s; }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+</style>
+</head>
+<body class="text-slate-100 min-h-screen">
+<div class="flex h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
+    <div class="p-5 flex items-center gap-3">
+      <div class="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#ff6b00]/20 flex-shrink-0">
+        <span class="ms" style="font-size:18px">flight_takeoff</span>
+      </div>
+      <div>
+        <h1 class="text-base font-bold leading-tight text-white">FlyDeals</h1>
+        <p class="text-[11px] text-slate-500 font-medium">Varsler deg om flydeals</p>
+      </div>
+    </div>
+    <nav class="flex-1 px-3 space-y-0.5 mt-1">
+      <a href="deals.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+        <span class="ms" style="font-size:18px">local_offer</span>
+        <span class="text-sm font-medium">Live Deals</span>
+      </a>
+      <a href="varsler.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+        <span class="ms" style="font-size:18px">notifications</span>
+        <span class="text-sm font-medium">Dine Varsler</span>
+      </a>
+      <a href="oppdag.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+        <span class="ms" style="font-size:18px">explore</span>
+        <span class="text-sm font-medium">Oppdag Ruter</span>
+      </a>
+      <a href="historikk.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+        <span class="ms" style="font-size:18px">history</span>
+        <span class="text-sm font-medium">Historikk</span>
+      </a>
+      <div class="pt-3 mt-2 border-t border-[#1e1e1e] space-y-0.5">
+        <a href="innstillinger.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+          <span class="ms" style="font-size:18px">settings</span>
+          <span class="text-sm font-medium">Innstillinger</span>
+        </a>
+        <a href="brukerstotte.html" class="nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl">
+          <span class="ms ms-fill" style="font-size:18px">help</span>
+          <span class="text-sm font-semibold">Brukerstøtte</span>
+        </a>
+      </div>
+    </nav>
+        <div class="p-3 mt-auto border-t border-[#1e1e1e]">
+      <div class="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
+        <div class="overflow-hidden flex-1 min-w-0">
+          <p class="text-sm font-semibold truncate">Marius Jensen</p>
+          <p class="text-[11px] text-slate-500 truncate">marius@flydeals.no</p>
+        </div>
+        <a href="innstillinger.html" class="text-slate-500 hover:text-[#ff6b00] transition-colors">
+          <span class="ms" style="font-size:16px">settings</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 overflow-y-auto bg-[#050505]">
+    <div class="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-6">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+        <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <button class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+          <span class="ms" style="font-size:20px">notifications</span>
+          <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
+        </button>
+        <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
+        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+          <span class="ms" style="font-size:16px">logout</span>
+          Logg ut
+        </button>
+      </div>
+    </div>
+
+<div class="max-w-3xl mx-auto px-6 py-8 space-y-10">
+
+      <!-- Hero -->
+      <div>
+        <h1 class="text-3xl font-black tracking-tight mb-1">Hvordan kan vi hjelpe?</h1>
+        <p class="text-slate-500">Finn svar i FAQ-en vår, eller send oss en melding.</p>
+      </div>
+
+      <!-- FAQ categories -->
+      <section>
+        <h2 class="text-xl font-bold mb-5">Ofte stilte spørsmål</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
+          <a href="varsler.html" class="p-4 rounded-2xl bg-[#111] border border-[#1e1e1e] hover:border-[#ff6b00]/30 transition-all group flex items-center justify-between">
+            <div class="flex gap-3 items-center">
+              <span class="ms p-2.5 bg-[#ff6b00]/10 text-[#ff6b00] rounded-xl" style="font-size:20px">notifications</span>
+              <div>
+                <h3 class="font-bold text-sm">Administrer varsler</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Legg til, endre eller deaktiver varsler</p>
+              </div>
+            </div>
+            <span class="ms text-slate-500 group-hover:text-[#ff6b00] transition-colors" style="font-size:18px">arrow_forward</span>
+          </a>
+          <a href="innstillinger.html" class="p-4 rounded-2xl bg-[#111] border border-[#1e1e1e] hover:border-[#ff6b00]/30 transition-all group flex items-center justify-between">
+            <div class="flex gap-3 items-center">
+              <span class="ms p-2.5 bg-[#ff6b00]/10 text-[#ff6b00] rounded-xl" style="font-size:20px">mail</span>
+              <div>
+                <h3 class="font-bold text-sm">Endre e-postadresse</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Oppdater kontaktinformasjonen din</p>
+              </div>
+            </div>
+            <span class="ms text-slate-500 group-hover:text-[#ff6b00] transition-colors" style="font-size:18px">arrow_forward</span>
+          </a>
+          <a href="innstillinger.html" class="p-4 rounded-2xl bg-[#111] border border-[#1e1e1e] hover:border-[#ff6b00]/30 transition-all group flex items-center justify-between">
+            <div class="flex gap-3 items-center">
+              <span class="ms p-2.5 bg-[#ff6b00]/10 text-[#ff6b00] rounded-xl" style="font-size:20px">payments</span>
+              <div>
+                <h3 class="font-bold text-sm">Abonnement og betaling</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Se eller si opp abonnementet ditt</p>
+              </div>
+            </div>
+            <span class="ms text-slate-500 group-hover:text-[#ff6b00] transition-colors" style="font-size:18px">arrow_forward</span>
+          </a>
+          <a href="historikk.html" class="p-4 rounded-2xl bg-[#111] border border-[#1e1e1e] hover:border-[#ff6b00]/30 transition-all group flex items-center justify-between">
+            <div class="flex gap-3 items-center">
+              <span class="ms p-2.5 bg-[#ff6b00]/10 text-[#ff6b00] rounded-xl" style="font-size:20px">history</span>
+              <div>
+                <h3 class="font-bold text-sm">Se mottatte deals</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Oversikt over alle deals sendt til deg</p>
+              </div>
+            </div>
+            <span class="ms text-slate-500 group-hover:text-[#ff6b00] transition-colors" style="font-size:18px">arrow_forward</span>
+          </a>
+        </div>
+
+        <!-- FAQ accordion -->
+        <div class="space-y-0 bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden divide-y divide-[#1e1e1e]">
+          <div class="faq-item px-5">
+            <button onclick="this.closest('.faq-item').classList.toggle('open')" class="w-full flex items-center justify-between py-4 text-left">
+              <span class="text-sm font-semibold">Hva er FlyDeals og hva får jeg?</span>
+              <span class="ms faq-icon text-slate-500 flex-shrink-0 ml-4" style="font-size:18px">add</span>
+            </button>
+            <div class="faq-answer">
+              <p class="text-sm text-slate-400 leading-relaxed">FlyDeals overvåker flypriser fra 6 norske flyplasser til 237+ destinasjoner verden over. Når prisene faller betydelig under det normale varsler vi deg på e-post, slik at du kan booke billige flybilletter direkte hos flyselskapet.</p>
+            </div>
+          </div>
+          <div class="faq-item px-5">
+            <button onclick="this.closest('.faq-item').classList.toggle('open')" class="w-full flex items-center justify-between py-4 text-left">
+              <span class="text-sm font-semibold">Hva koster det, og er det bindingstid?</span>
+              <span class="ms faq-icon text-slate-500 flex-shrink-0 ml-4" style="font-size:18px">add</span>
+            </button>
+            <div class="faq-answer">
+              <p class="text-sm text-slate-400 leading-relaxed">149 kr per måned. De første 7 dagene er helt gratis — ingen kredittkort trengs for prøveperioden. Ingen bindingstid, du kan si opp når som helst.</p>
+            </div>
+          </div>
+          <div class="faq-item px-5">
+            <button onclick="this.closest('.faq-item').classList.toggle('open')" class="w-full flex items-center justify-between py-4 text-left">
+              <span class="text-sm font-semibold">Booker FlyDeals flyet for meg?</span>
+              <span class="ms faq-icon text-slate-500 flex-shrink-0 ml-4" style="font-size:18px">add</span>
+            </button>
+            <div class="faq-answer">
+              <p class="text-sm text-slate-400 leading-relaxed">Nei — vi finner dealene, du booker direkte hos flyselskapet. Slik unngår du mellomledd og ekstra gebyrer, og du har full kontroll over bestillingen din.</p>
+            </div>
+          </div>
+          <div class="faq-item px-5">
+            <button onclick="this.closest('.faq-item').classList.toggle('open')" class="w-full flex items-center justify-between py-4 text-left">
+              <span class="text-sm font-semibold">Hvilke flyplasser dekker dere?</span>
+              <span class="ms faq-icon text-slate-500 flex-shrink-0 ml-4" style="font-size:18px">add</span>
+            </button>
+            <div class="faq-answer">
+              <p class="text-sm text-slate-400 leading-relaxed">Oslo (OSL), Bergen (BGO), Trondheim (TRD), Stavanger (SVG), Tromsø (TOS) og Torp/Sandefjord (TRF) — til 237+ destinasjoner verden over.</p>
+            </div>
+          </div>
+          <div class="faq-item px-5">
+            <button onclick="this.closest('.faq-item').classList.toggle('open')" class="w-full flex items-center justify-between py-4 text-left">
+              <span class="text-sm font-semibold">Hva er en «deal»?</span>
+              <span class="ms faq-icon text-slate-500 flex-shrink-0 ml-4" style="font-size:18px">add</span>
+            </button>
+            <div class="faq-answer">
+              <p class="text-sm text-slate-400 leading-relaxed">En deal er en flypris som er vesentlig lavere enn det vi normalt ser for den ruten. Vi viser deg nøyaktig hvor mye du sparer sammenlignet med vanlig pris.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact form -->
+      <section class="bg-[#111] border border-[#1e1e1e] rounded-2xl p-6">
+        <h2 class="text-xl font-bold mb-1">Fant du ikke svaret?</h2>
+        <p class="text-slate-500 text-sm mb-6">Send oss en melding — vi svarer som regel innen 24 timer.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-slate-300">Fullt navn</label>
+            <input class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="Ola Nordmann" type="text"/>
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-slate-300">E-postadresse</label>
+            <input class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="ola@eksempel.no" type="email"/>
+          </div>
+          <div class="md:col-span-2 space-y-1.5">
+            <label class="text-sm font-medium text-slate-300">Emne</label>
+            <select class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-400">
+              <option>Velg kategori</option>
+              <option>Spørsmål om abonnement</option>
+              <option>Problem med deals</option>
+              <option>Teknisk problem</option>
+              <option>Annet</option>
+            </select>
+          </div>
+          <div class="md:col-span-2 space-y-1.5">
+            <label class="text-sm font-medium text-slate-300">Melding</label>
+            <textarea class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600 resize-none" rows="4" placeholder="Beskriv spørsmålet ditt..."></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <button class="flex items-center gap-2 bg-[#ff6b00] hover:bg-[#e55f00] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#ff6b00]/20 text-sm">
+              Send melding
+              <span class="ms" style="font-size:18px">send</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact info -->
+      <div class="flex flex-wrap gap-8 pb-8 border-t border-[#1e1e1e] pt-8">
+        <div class="flex items-center gap-3">
+          <span class="ms text-[#ff6b00]" style="font-size:24px">mail</span>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest font-bold text-slate-500">E-post</p>
+            <p class="font-semibold text-sm"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d2528240d2b213429282c213e632322">[email&#160;protected]</a></p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="ms text-[#ff6b00]" style="font-size:24px">schedule</span>
+          <div>
+                       <p class="text-[10px] uppercase tracking-widest font-bold text-slate-500">Svartid</p>
+            <p class="font-semibold text-sm">Innen 24 timer</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>
