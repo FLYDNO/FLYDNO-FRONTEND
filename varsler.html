@@ -6,6 +6,7 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css"/>
 <script>
   tailwind.config = {
     darkMode: "class",
@@ -321,6 +322,14 @@ const AIRPORT_NAMES = {
   SVG: 'Stavanger', TOS: 'Tromsø', TRF: 'Torp', KRS: 'Kristiansand'
 };
 
+const CC_MAP = {
+  BKK:'th', LHR:'gb', JFK:'us', BCN:'es', AMS:'nl', HND:'jp',
+  KEF:'is', ALC:'es', DXB:'ae', FCO:'it', CDG:'fr', DPS:'id',
+  MAD:'es', ATH:'gr', DUB:'ie', IST:'tr', CPH:'dk', ARN:'se',
+  HEL:'fi', MUC:'de', ZRH:'ch', VIE:'at', OSL:'no', BGO:'no',
+  TRD:'no', SVG:'no', TOS:'no', TRF:'no'
+};
+
 const MONTHS = ['Jan','Feb','Mar','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Des'];
 
 let alerts = JSON.parse(localStorage.getItem('flydeals_alerts') || '[]');
@@ -366,7 +375,7 @@ function renderAlerts() {
         <span class="ms" style="font-size:20px">flight_takeoff</span>
       </div>
       <div class="flex-1 min-w-0">
-        <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold text-sm">${a.toFlag} ${a.to} <span class="text-slate-500 font-normal text-xs">(${a.toCode})</span></p>
+        <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold text-sm"><span class="fi fi-${CC_MAP[a.toCode] || 'un'} fis" style="width:1em;height:0.75em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;margin-right:4px;"></span>${a.to} <span class="text-slate-500 font-normal text-xs">(${a.toCode})</span></p>
         <p class="text-xs text-slate-500 mb-1.5">fra 🇳🇴 ${AIRPORT_NAMES[a.fromCode] || a.fromCode} (${a.fromCode})</p>
         <div class="flex items-center gap-1.5 flex-wrap">
           <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
