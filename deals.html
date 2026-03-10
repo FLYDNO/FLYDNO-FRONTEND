@@ -111,7 +111,7 @@
       </div>
 
       <!-- Airport filters -->
-      <div class="flex flex-wrap gap-2 mb-8">
+      <div class="flex flex-wrap gap-2 mb-3">
         <button onclick="filterDeals('alle',this)" class="filter-btn active px-4 py-2 rounded-full text-sm font-semibold bg-[#ff6b00] text-white transition-all">Alle flyplasser</button>
         <button onclick="filterDeals('OSL',this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🇳🇴 Oslo (OSL)</button>
         <button onclick="filterDeals('BGO',this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🇳🇴 Bergen (BGO)</button>
@@ -121,6 +121,16 @@
         <button onclick="filterDeals('TRF',this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🇳🇴 Torp (TRF)</button>
       </div>
 
+      <!-- Month filters -->
+      <div class="flex flex-wrap items-center gap-2 mb-8">
+        <span class="flex items-center gap-1 text-xs text-slate-600 font-medium pr-1"><span class="ms" style="font-size:14px">calendar_month</span>Måned:</span>
+        <button onclick="filterMonth('alle',this)" class="month-btn active px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20 transition-all">Alle</button>
+        <button onclick="filterMonth('mar',this)" class="month-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Mars</button>
+        <button onclick="filterMonth('apr',this)" class="month-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">April</button>
+        <button onclick="filterMonth('mai',this)" class="month-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Mai</button>
+        <button onclick="filterMonth('jun',this)" class="month-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Juni</button>
+      </div>
+
       <div id="dealsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3"></div>
     </div>
   </main>
@@ -128,21 +138,22 @@
 
 <script>
 const deals = [
-  { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', flag: '🇹🇭', price: 2489, orig: 4700, discount: 47, dates: 'Mar–Apr 2026', airline: 'Thai Airways', direct: true, origin: 'OSL', type: 'tur-retur', foundAt: '2026-03-10T07:15:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+OSL+to+BKK' },
-  { from: 'Bergen', fromCode: 'BGO', to: 'London', toCode: 'LHR', flag: '🇬🇧', price: 489, orig: 1020, discount: 52, dates: 'Mars 2026', airline: 'Norwegian', direct: true, origin: 'BGO', type: 'tur-retur', foundAt: '2026-03-10T08:30:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+BGO+to+LHR' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', flag: '🇺🇸', price: 2890, orig: 4900, discount: 41, dates: 'Apr–Mai 2026', airline: 'SAS', direct: true, origin: 'OSL', type: 'tur-retur', foundAt: '2026-03-10T06:00:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+OSL+to+JFK' },
-  { from: 'Trondheim', fromCode: 'TRD', to: 'Barcelona', toCode: 'BCN', flag: '🇪🇸', price: 699, orig: 1130, discount: 38, dates: 'April 2026', airline: 'Norwegian', direct: false, origin: 'TRD', type: 'tur-retur', foundAt: '2026-03-10T09:45:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+TRD+to+BCN' },
-  { from: 'Stavanger', fromCode: 'SVG', to: 'Amsterdam', toCode: 'AMS', flag: '🇳🇱', price: 549, orig: 980, discount: 44, dates: 'Mars 2026', airline: 'KLM', direct: false, origin: 'SVG', type: 'tur-retur', foundAt: '2026-03-10T10:00:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+SVG+to+AMS' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Tokyo', toCode: 'HND', flag: '🇯🇵', price: 3490, orig: 5720, discount: 39, dates: 'Mai–Jun 2026', airline: 'ANA', direct: false, origin: 'OSL', type: 'tur-retur', foundAt: '2026-03-09T14:20:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+OSL+to+HND' },
-  { from: 'Tromsø', fromCode: 'TOS', to: 'Reykjavik', toCode: 'KEF', flag: '🇮🇸', price: 890, orig: 1370, discount: 35, dates: 'April 2026', airline: 'Icelandair', direct: true, origin: 'TOS', type: 'tur-retur', foundAt: '2026-03-09T11:00:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+TOS+to+KEF' },
-  { from: 'Torp', fromCode: 'TRF', to: 'Alicante', toCode: 'ALC', flag: '🇪🇸', price: 399, orig: 814, discount: 51, dates: 'Mar–Apr 2026', airline: 'Ryanair', direct: true, origin: 'TRF', type: 'tur-retur', foundAt: '2026-03-10T08:00:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+TRF+to+ALC' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Dubai', toCode: 'DXB', flag: '🇦🇪', price: 1990, orig: 3490, discount: 43, dates: 'April 2026', airline: 'Emirates', direct: true, origin: 'OSL', type: 'tur-retur', foundAt: '2026-03-10T05:30:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+OSL+to+DXB' },
-  { from: 'Bergen', fromCode: 'BGO', to: 'Roma', toCode: 'FCO', flag: '🇮🇹', price: 599, orig: 1110, discount: 46, dates: 'Mars 2026', airline: 'SAS', direct: false, origin: 'BGO', type: 'tur-retur', foundAt: '2026-03-09T16:45:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+BGO+to+FCO' },
-  { from: 'Trondheim', fromCode: 'TRD', to: 'Paris', toCode: 'CDG', flag: '🇫🇷', price: 649, orig: 1082, discount: 40, dates: 'April 2026', airline: 'Air France', direct: false, origin: 'TRD', type: 'tur-retur', foundAt: '2026-03-09T13:10:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+TRD+to+CDG' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Bali', toCode: 'DPS', flag: '🇮🇩', price: 4290, orig: 6703, discount: 36, dates: 'Mai 2026', airline: 'Qatar Airways', direct: false, origin: 'OSL', type: 'tur-retur', foundAt: '2026-03-09T09:00:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+OSL+to+DPS' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', flag: '🇹🇭', price: 2489, orig: 4700, discount: 47, dates: 'Mar–Apr 2026', months: ['mar','apr'], airline: 'Thai Airways', direct: true, origin: 'OSL', type: 'tur-retur', foundAt: '2026-03-10T07:15:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+OSL+to+BKK' },
+  { from: 'Bergen', fromCode: 'BGO', to: 'London', toCode: 'LHR', flag: '🇬🇧', price: 489, orig: 1020, discount: 52, dates: 'Mars 2026', months: ['mar'], airline: 'Norwegian', direct: true, origin: 'BGO', type: 'tur-retur', foundAt: '2026-03-10T08:30:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+BGO+to+LHR' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', flag: '🇺🇸', price: 2890, orig: 4900, discount: 41, dates: 'Apr–Mai 2026', months: ['apr','mai'], airline: 'SAS', direct: true, origin: 'OSL', type: 'tur-retur', foundAt: '2026-03-10T06:00:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+OSL+to+JFK' },
+  { from: 'Trondheim', fromCode: 'TRD', to: 'Barcelona', toCode: 'BCN', flag: '🇪🇸', price: 699, orig: 1130, discount: 38, dates: 'April 2026', months: ['apr'], airline: 'Norwegian', direct: false, origin: 'TRD', type: 'tur-retur', foundAt: '2026-03-10T09:45:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+TRD+to+BCN' },
+  { from: 'Stavanger', fromCode: 'SVG', to: 'Amsterdam', toCode: 'AMS', flag: '🇳🇱', price: 549, orig: 980, discount: 44, dates: 'Mars 2026', months: ['mar'], airline: 'KLM', direct: false, origin: 'SVG', type: 'tur-retur', foundAt: '2026-03-10T10:00:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+SVG+to+AMS' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Tokyo', toCode: 'HND', flag: '🇯🇵', price: 3490, orig: 5720, discount: 39, dates: 'Mai–Jun 2026', months: ['mai','jun'], airline: 'ANA', direct: false, origin: 'OSL', type: 'tur-retur', foundAt: '2026-03-09T14:20:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+OSL+to+HND' },
+  { from: 'Tromsø', fromCode: 'TOS', to: 'Reykjavik', toCode: 'KEF', flag: '🇮🇸', price: 890, orig: 1370, discount: 35, dates: 'April 2026', months: ['apr'], airline: 'Icelandair', direct: true, origin: 'TOS', type: 'tur-retur', foundAt: '2026-03-09T11:00:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+TOS+to+KEF' },
+  { from: 'Torp', fromCode: 'TRF', to: 'Alicante', toCode: 'ALC', flag: '🇪🇸', price: 399, orig: 814, discount: 51, dates: 'Mar–Apr 2026', months: ['mar','apr'], airline: 'Ryanair', direct: true, origin: 'TRF', type: 'tur-retur', foundAt: '2026-03-10T08:00:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+TRF+to+ALC' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Dubai', toCode: 'DXB', flag: '🇦🇪', price: 1990, orig: 3490, discount: 43, dates: 'April 2026', months: ['apr'], airline: 'Emirates', direct: true, origin: 'OSL', type: 'tur-retur', foundAt: '2026-03-10T05:30:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+OSL+to+DXB' },
+  { from: 'Bergen', fromCode: 'BGO', to: 'Roma', toCode: 'FCO', flag: '🇮🇹', price: 599, orig: 1110, discount: 46, dates: 'Mars 2026', months: ['mar'], airline: 'SAS', direct: false, origin: 'BGO', type: 'tur-retur', foundAt: '2026-03-09T16:45:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+BGO+to+FCO' },
+  { from: 'Trondheim', fromCode: 'TRD', to: 'Paris', toCode: 'CDG', flag: '🇫🇷', price: 649, orig: 1082, discount: 40, dates: 'April 2026', months: ['apr'], airline: 'Air France', direct: false, origin: 'TRD', type: 'tur-retur', foundAt: '2026-03-09T13:10:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+TRD+to+CDG' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Bali', toCode: 'DPS', flag: '🇮🇩', price: 4290, orig: 6703, discount: 36, dates: 'Mai 2026', months: ['mai'], airline: 'Qatar Airways', direct: false, origin: 'OSL', type: 'tur-retur', foundAt: '2026-03-09T09:00:00Z', bookingLink: 'https://www.google.com/travel/flights?q=fly+from+OSL+to+DPS' },
 ];
 
 let currentFilter = 'alle';
+let currentMonthFilter = 'alle';
 
 function filterDeals(filter, btn) {
   currentFilter = filter;
@@ -155,8 +166,26 @@ function filterDeals(filter, btn) {
   renderDeals();
 }
 
+function filterMonth(month, btn) {
+  currentMonthFilter = month;
+  document.querySelectorAll('.month-btn').forEach(b => {
+    b.classList.remove('bg-white/10', 'text-white', 'border-white/20');
+    b.classList.add('bg-[#111]', 'text-slate-400', 'border-[#1e1e1e]');
+  });
+  btn.classList.add('bg-white/10', 'text-white', 'border-white/20');
+  btn.classList.remove('bg-[#111]', 'text-slate-400', 'border-[#1e1e1e]');
+  renderDeals();
+}
+
 function renderDeals() {
-  const filtered = currentFilter === 'alle' ? deals : deals.filter(d => d.origin === currentFilter);
+  let filtered = currentFilter === 'alle' ? deals : deals.filter(d => d.origin === currentFilter);
+  if (currentMonthFilter !== 'alle') {
+    filtered = filtered.filter(d => d.months && d.months.includes(currentMonthFilter));
+  }
+  if (filtered.length === 0) {
+    document.getElementById('dealsGrid').innerHTML = `<div class="col-span-full py-16 text-center text-slate-500"><span class="ms block mb-3" style="font-size:40px">search_off</span><p class="font-semibold text-slate-400">Ingen deals funnet</p><p class="text-sm mt-1">Prøv et annet filter</p></div>`;
+    return;
+  }
   const grid = document.getElementById('dealsGrid');
   grid.innerHTML = filtered.map(d => `
     <div onclick="window.open('${d.bookingLink}', '_blank')" class="deal-card bg-[#111] border border-[#1e1e1e] rounded-xl p-3.5 transition-all duration-200 cursor-pointer">
