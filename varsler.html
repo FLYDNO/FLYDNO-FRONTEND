@@ -103,8 +103,7 @@
         </button>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
         <button onclick="window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
-          <span class="ms" style="font-size:16px">logout</span>
-          Logg ut
+          <span class="ms" style="font-size:16px">logout</span><span class="hidden sm:inline ml-1">Logg ut</span>
         </button>
       </div>
     </div>
@@ -362,63 +361,34 @@ function renderAlerts() {
   }
 
   const rows = alerts.map(a => `
-    <tr id="alert-${a.id}" class="${a.active ? 'hover:bg-white/5' : 'opacity-40'} transition-all duration-300">
-      <td class="px-6 py-5">
-        <div class="flex items-center gap-3">
-          <div class="p-2 ${a.active ? 'bg-primary/10 text-primary' : 'bg-white/5 text-slate-500'} rounded-lg flex-shrink-0">
-            <span class="ms text-xl">flight_takeoff</span>
-          </div>
-          <div>
-            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold">${a.toFlag} ${a.to} <span class="text-slate-500 font-normal text-xs">(${a.toCode})</span></p>
-            <p class="text-xs text-slate-500">fra 🇳🇴 ${AIRPORT_NAMES[a.fromCode] || a.fromCode} (${a.fromCode})</p>
-          </div>
-        </div>
-      </td>
-      <td class="px-6 py-5">
-        <div class="flex justify-center">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
-            <span class="ms" style="font-size:13px">calendar_month</span>${a.months.length ? a.months.join(' · ') : 'Alle'}
+    <div id="alert-${a.id}" class="flex items-center gap-3 p-4 border-b border-[#1e1e1e] last:border-0 ${a.active ? '' : 'opacity-40'} transition-all duration-300">
+      <div class="p-2 ${a.active ? 'bg-primary/10 text-primary' : 'bg-white/5 text-slate-500'} rounded-lg flex-shrink-0">
+        <span class="ms" style="font-size:20px">flight_takeoff</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold text-sm">${a.toFlag} ${a.to} <span class="text-slate-500 font-normal text-xs">(${a.toCode})</span></p>
+        <p class="text-xs text-slate-500 mb-1.5">fra 🇳🇴 ${AIRPORT_NAMES[a.fromCode] || a.fromCode} (${a.fromCode})</p>
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
+            <span class="ms" style="font-size:11px">calendar_month</span>${a.months.length ? a.months.join(' \u00b7 ') : 'Alle'}
           </span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${a.active ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-white/5 text-slate-500 border border-white/5'}">≥${a.minDiscount}%</span>
         </div>
-      </td>
-      <td class="px-6 py-5">
-        <div class="flex justify-center">
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${a.active ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-white/5 text-slate-500 border border-white/5'}">
-            ≥${a.minDiscount}%
-          </span>
-        </div>
-      </td>
-      <td class="px-6 py-5">
-        <div class="flex justify-center">
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input ${a.active ? 'checked' : ''} class="sr-only peer" type="checkbox" onchange="toggleAlert('${a.id}', this.checked)"/>
-            <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[\'\'] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-          </label>
-        </div>
-      </td>
-      <td class="px-6 py-5 text-right">
-        <button onclick="askDelete('${a.id}')" class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]">
-          <span class="ms">delete</span>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input ${a.active ? 'checked' : ''} class="sr-only peer" type="checkbox" onchange="toggleAlert('${a.id}', this.checked)"/>
+          <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+        </label>
+        <button onclick="askDelete('${a.id}')" class="text-slate-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-[#2a2a2a]">
+          <span class="ms" style="font-size:18px">delete</span>
         </button>
-      </td>
-    </tr>`).join('');
+      </div>
+    </div>`).join('');
 
   container.innerHTML = `
     <div class="bg-[#111] rounded-2xl border border-[#1e1e1e] overflow-hidden shadow-2xl">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-white/5 border-b border-[#1e1e1e]">
-              <th class="px-6 py-4 text-slate-300 text-sm font-semibold">Rute</th>
-              <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Reisemåned</th>
-              <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Rabattgrense</th>
-              <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Status</th>
-              <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-right">Slett</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[#1e1e1e]">${rows}</tbody>
-        </table>
-      </div>
+      ${rows}
     </div>`;
 }
 
