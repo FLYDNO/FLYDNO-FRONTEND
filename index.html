@@ -950,9 +950,27 @@
       }
 
       .how-grid,
-      .features-grid,
-      .deals-cards {
+      .features-grid {
         grid-template-columns: 1fr;
+      }
+
+      .deals-cards {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 12px;
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+        margin-left: -4px;
+        margin-right: -4px;
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+
+      .deals-cards .deal-card {
+        flex: 0 0 78vw;
+        max-width: 300px;
+        scroll-snap-align: start;
       }
 
       .stats-grid {
@@ -969,9 +987,19 @@
       }
     }
 
+    .nav-mobile-cta {
+      display: none;
+    }
+
     @media (max-width: 640px) {
       .nav-links {
         display: none;
+      }
+
+      .nav-mobile-cta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
       .section-title {
@@ -1093,6 +1121,10 @@
       <div class="nav-links">
         <a href="deals.html">Deals</a>
         <a href="#how">Hvordan det fungerer</a>
+        <a href="login.html" class="nav-login">Logg inn</a>
+        <a href="login.html" class="nav-btn">Prøv gratis</a>
+      </div>
+      <div class="nav-mobile-cta">
         <a href="login.html" class="nav-login">Logg inn</a>
         <a href="login.html" class="nav-btn">Prøv gratis</a>
       </div>
@@ -1222,9 +1254,7 @@
 
   <!-- EARTH SECTION -->
   <section style="position:relative;height:620px;overflow:hidden;margin:0;">
-    <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-      <source src="EARTH 3D VIDEO 15MB.mp4" type="video/mp4">
-    </video>
+    <img src="iStock-1370838389.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;">
     <!-- Fades -->
     <div
       style="position:absolute;inset:0;background:linear-gradient(to bottom, #050505 0%, transparent 18%, transparent 82%, #050505 100%);pointer-events:none;">
@@ -1290,7 +1320,7 @@
             </div>
             <div class="deal-card-discount">-38%</div>
           </div>
-          <a href="deals.html" class="deal-card-book">
+          <a href="login.html" class="deal-card-book">
             Se reisemuligheter
             <span class="ms" style="font-size:14px">arrow_forward</span>
           </a>
@@ -1310,7 +1340,7 @@
             </div>
             <div class="deal-card-discount">-44%</div>
           </div>
-          <a href="deals.html" class="deal-card-book">
+          <a href="login.html" class="deal-card-book">
             Se reisemuligheter
             <span class="ms" style="font-size:14px">arrow_forward</span>
           </a>
@@ -1330,14 +1360,14 @@
             </div>
             <div class="deal-card-discount">-31%</div>
           </div>
-          <a href="deals.html" class="deal-card-book">
+          <a href="login.html" class="deal-card-book">
             Se reisemuligheter
             <span class="ms" style="font-size:14px">arrow_forward</span>
           </a>
         </div>
       </div>
       <div style="text-align:center;margin-top:28px">
-        <a href="deals.html" class="btn-outline" style="display:inline-flex">Se alle deals →</a>
+        <a href="login.html" class="btn-outline" style="display:inline-flex">Se alle deals →</a>
       </div>
     </div>
   </section>
