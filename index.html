@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html class="dark" lang="no">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" />
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#ff6b00",
+            "bg": "#050505",
+            "surface": "#242424",
+            "border-c": "#2e2e2e"
+          },
+          fontFamily: { "sans": ["DM Sans", "sans-serif"] }
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #050505;
+      color: #f0f0f0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .ms {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      line-height: 1;
+      display: inline-block;
+      white-space: nowrap;
+      direction: ltr;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #050505;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #3a3a3a;
+      border-radius: 3px;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(5, 5, 5, 0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .nav-logo-icon {
+      width: 28px;
+      height: 28px;
+      background: #ff6b00;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 13px;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.6);
+      transition: color 0.2s;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    .nav-btn {
+      padding: 8px 18px;
+      background: #ff6b00;
+      color: #fff;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: #e55f00;
+    }
+
+    .nav-login {
+      color: rgba(255, 255, 255, 0.6) !important;
+      font-size: 13px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 120px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(255, 107, 0, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      background: rgba(34, 197, 94, 0.08);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #22c55e;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+      }
+
+      50% {
+        opacity: 0.8;
+        box-shadow: 0 0 0 5px rgba(34, 197, 94, 0);
+      }
+    }
+
+    .hero h1 {
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1.03;
+      letter-spacing: -2.5px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 .orange {
+      color: #ff6b00;
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.65);
+      line-height: 1.7;
+      margin-bottom: 32px;
+      max-width: 440px;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 13px 26px;
+      background: #ff6b00;
+      color: #fff;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #e55f00;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 13px 22px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.8);
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+
+    .hero-trust {
+      display: flex;
+      gap: 18px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .trust-item svg {
+      color: #ff6b00;
+    }
+
+    /* Hero right – deal card preview */
+    .hero-right {
+      position: relative;
+    }
+
+    .deal-preview-card {
+      background: #242424;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .deal-preview-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.45);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .deal-preview-label .live-dot {
+      width: 5px;
+      height: 5px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .deal-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .deal-row:last-child {
+      border: none;
+    }
+
+    .deal-from {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 2px;
+    }
+
+    .deal-dest {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .deal-price-col {
+      text-align: right;
+    }
+
+    .deal-price-val {
+      font-size: 17px;
+      font-weight: 900;
+      color: #ff6b00;
+      letter-spacing: -0.5px;
+    }
+
+    .deal-price-unit {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .deal-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #22c55e;
+      margin-top: 3px;
+    }
+
+    .hero-map-hint {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: rgba(255, 107, 0, 0.07);
+      border: 1px solid rgba(255, 107, 0, 0.15);
+      border-radius: 10px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Stats */
+    .stats {
+      padding: 60px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: -2px;
+    }
+
+    .stat-num .orange {
+      color: #ff6b00;
+    }
+
+    .stat-lbl {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* Section common */
+    .section {
+      padding: 90px 0;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ff6b00;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .section-tag .dot {
+      width: 5px;
+      height: 5px;
+      background: #ff6b00;
+      border-radius: 50%;
+    }
+
+    .section-title {
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.7;
+    }
+
+    /* Live deals strip */
+    .deals-strip {
+      padding: 70px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .deals-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .deal-card {
+      background: #242424;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 14px;
+      padding: 20px;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s, background 0.25s;
+    }
+
+    .deal-card:hover {
+      border-color: rgba(255, 107, 0, 0.35);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+      background: #2c2c2c;
+    }
+
+    .deal-card-from {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 8px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .deal-card-from .iata {
+      background: rgba(255, 255, 255, 0.10);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .deal-card-dest {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+    }
+
+    .deal-card-footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .deal-card-price {
+      font-size: 28px;
+      font-weight: 900;
+      color: #ff6b00;
+      letter-spacing: -1px;
+    }
+
+    .deal-card-price span {
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .deal-card-discount {
+      font-size: 12px;
+      font-weight: 700;
+      color: #22c55e;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: 6px;
+      padding: 4px 10px;
+    }
+
+    .deal-card-book {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      width: 100%;
+      transition: color 0.2s;
+    }
+
+    .deal-card:hover .deal-card-book {
+      color: #ff6b00;
+    }
+
+    /* How it works */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 44px;
+    }
+
+    .how-card {
+      background: #242424;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 14px;
+      padding: 28px;
+      transition: border-color 0.25s, transform 0.25s, background 0.25s;
+    }
+
+    .how-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-4px);
+      background: #2c2c2c;
+    }
+
+    .how-step {
+      font-size: 10px;
+      font-weight: 700;
+      color: #ff6b00;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .how-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 107, 0, 0.1);
+      border: 1px solid rgba(255, 107, 0, 0.15);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff6b00;
+      margin-bottom: 16px;
+    }
+
+    .how-card h3 {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      margin-bottom: 10px;
+    }
+
+    .how-card p {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.7;
+    }
+
+    .how-mini {
+      margin-top: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .how-mini-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 0;
+      font-size: 12px;
+    }
+
+    .how-mini-row:not(:last-child) {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .how-mini-price {
+      font-weight: 800;
+      color: #ff6b00;
+    }
+
+    .how-mini-badge {
+      padding: 2px 6px;
+      background: rgba(34, 197, 94, 0.1);
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #22c55e;
+    }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 44px;
+    }
+
+    .feat-card {
+      background: #242424;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 14px;
+      padding: 24px;
+      transition: border-color 0.25s, transform 0.25s, background 0.25s;
+    }
+
+    .feat-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-4px);
+      background: #2c2c2c;
+    }
+
+    .feat-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 107, 0, 0.1);
+      border: 1px solid rgba(255, 107, 0, 0.12);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff6b00;
+      margin-bottom: 14px;
+    }
+
+    .feat-card h3 {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 7px;
+      letter-spacing: -0.3px;
+    }
+
+    .feat-card p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.55);
+      line-height: 1.7;
+    }
+
+    /* Pricing */
+    .pricing {
+      padding: 90px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .pricing-inner {
+      max-width: 460px;
+      margin: 44px auto 0;
+    }
+
+    .pricing-card {
+      background: #242424;
+      border: 1px solid rgba(255, 107, 0, 0.25);
+      border-radius: 20px;
+      padding: 44px;
+    }
+
+    .trial-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(34, 197, 94, 0.08);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 22px;
+    }
+
+    .trial-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+    }
+
+    .price-big {
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: -2.5px;
+      margin-bottom: 4px;
+    }
+
+    .price-big span {
+      font-size: 16px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 0;
+    }
+
+    .price-desc {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.55);
+      margin-bottom: 28px;
+    }
+
+    .price-features {
+      list-style: none;
+      margin-bottom: 28px;
+    }
+
+    .price-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.75);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .price-features li:last-child {
+      border: none;
+    }
+
+    .price-features li svg {
+      color: #ff6b00;
+      flex-shrink: 0;
+    }
+
+    .price-btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border-radius: 100px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      background: #ff6b00;
+      color: #fff;
+      transition: all 0.2s;
+    }
+
+    .price-btn:hover {
+      background: #e55f00;
+      transform: translateY(-1px);
+    }
+
+    .price-note {
+      margin-top: 12px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.35);
+      text-align: center;
+    }
+
+    /* FAQ */
+    .faq {
+      padding: 90px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .faq-list {
+      max-width: 700px;
+      margin: 40px auto 0;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .faq-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 0;
+      background: none;
+      border: none;
+      color: #f0f0f0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+      gap: 16px;
+      transition: color 0.2s;
+    }
+
+    .faq-btn:hover {
+      color: #ff6b00;
+    }
+
+    .faq-icon {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.4);
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-ans {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .faq-item.open .faq-ans {
+      max-height: 200px;
+      padding-bottom: 20px;
+    }
+
+    .faq-ans p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.8;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 60px 0 36px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand p {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.7;
+      margin-top: 12px;
+      max-width: 240px;
+    }
+
+    .footer-col h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 14px;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 9px;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-right {
+        display: none;
+      }
+
+      .how-grid,
+      .features-grid,
+      .deals-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        gap: 20px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+      }
+
+      .hero h1 {
+        font-size: 40px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links {
+        display: none;
+      }
+
+      .section-title {
+        font-size: 30px;
+      }
+
+      .stat-num {
+        font-size: 32px;
+      }
+
+      .hero {
+        padding: 100px 0 60px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Fade-up */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Destination ticker */
+    .ticker-wrap {
+      overflow: hidden;
+      padding: 15px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: #0a0a0a;
+      position: relative;
+    }
+
+    .ticker-wrap::before,
+    .ticker-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 80px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .ticker-wrap::before {
+      left: 0;
+      background: linear-gradient(to right, #0a0a0a, transparent);
+    }
+
+    .ticker-wrap::after {
+      right: 0;
+      background: linear-gradient(to left, #0a0a0a, transparent);
+    }
+
+    .ticker-track {
+      display: flex;
+      gap: 10px;
+      width: max-content;
+      animation: ticker 42s linear infinite;
+    }
+
+    .ticker-wrap:hover .ticker-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes ticker {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    .t-dest {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.55);
+      border: 1px solid transparent;
+      white-space: nowrap;
+      transition: color 0.18s, border-color 0.18s, background 0.18s;
+      cursor: default;
+    }
+
+    .t-dest:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+  <title>FlyDeals – Billige flyreiser. Funnet for deg.</title>
+</head>
+
+<body style="background:#050505;color:#f0f0f0">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">
+          <span class="ms" style="font-size:16px;color:#fff">flight_takeoff</span>
+        </div>
+        FlyDeals
+      </a>
+      <div class="nav-links">
+        <a href="deals.html">Deals</a>
+        <a href="#how">Hvordan det fungerer</a>
+        <a href="login.html" class="nav-login">Logg inn</a>
+        <a href="login.html" class="nav-btn">Prøv gratis</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-badge">
+            <span class="dot"></span>
+            <span id="dealCount">847+ deals funnet</span>
+          </div>
+          <h1>Billige flyreiser.<br><span class="orange">Funnet for deg.</span></h1>
+          <p class="hero-sub">Vi overvåker kontinuerlig billettsystemene ved de største nordiske flyplassene for å
+            finne de største prisavslagene for deg. Spar tusenvis på din neste drømmereise.</p>
+          <div class="hero-btns">
+            <a href="login.html" class="btn-primary">
+              Prøv gratis i dag
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M3 7h8M8 4l3 3-3 3" />
+              </svg>
+            </a>
+            <a href="#how" class="btn-outline">Se hvordan det fungerer</a>
+          </div>
+          <div class="hero-trust">
+            <span class="trust-item">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M2 6.5l3.5 3.5 5.5-6" />
+              </svg>
+              7 dager gratis
+            </span>
+            <span class="trust-item">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M2 6.5l3.5 3.5 5.5-6" />
+              </svg>
+              Ingen binding
+            </span>
+            <span class="trust-item">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M2 6.5l3.5 3.5 5.5-6" />
+              </svg>
+              Fri til å stoppe
+            </span>
+          </div>
+        </div>
+
+        <!-- Deal preview card (right side) -->
+        <div class="hero-right">
+          <div class="deal-preview-card">
+            <div class="deal-preview-label"><span class="live-dot"></span> Siste deals</div>
+            <div class="deal-row">
+              <div>
+                <div class="deal-from">fra Oslo (OSL)</div>
+                <div class="deal-dest">New York <span class="fi fi-us fis"
+                    style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>
+                </div>
+              </div>
+              <div class="deal-price-col">
+                <div class="deal-price-val">2 890 kr</div>
+                <div class="deal-price-unit">t/r</div>
+                <div class="deal-badge">-41%</div>
+              </div>
+            </div>
+            <div class="deal-row">
+              <div>
+                <div class="deal-from">fra Bergen (BGO)</div>
+                <div class="deal-dest">London <span class="fi fi-gb fis"
+                    style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>
+                </div>
+              </div>
+              <div class="deal-price-col">
+                <div class="deal-price-val">489 kr</div>
+                <div class="deal-price-unit">enkel</div>
+                <div class="deal-badge">-52%</div>
+              </div>
+            </div>
+            <div class="deal-row">
+              <div>
+                <div class="deal-from">fra Oslo (OSL)</div>
+                <div class="deal-dest">Bangkok <span class="fi fi-th fis"
+                    style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>
+                </div>
+              </div>
+              <div class="deal-price-col">
+                <div class="deal-price-val">2 489 kr</div>
+                <div class="deal-price-unit">t/r</div>
+                <div class="deal-badge">-47%</div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-map-hint">
+            <span class="ms" style="font-size:16px;color:#ff6b00">public</span>
+            Overvåker 237+ destinasjoner fra 6 norske flyplasser
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESTINATION TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="ticker"></div>
+  </div>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div>
+          <div class="stat-num">6<span class="orange">+</span></div>
+          <div class="stat-lbl">Norske flyplasser</div>
+        </div>
+        <div>
+          <div class="stat-num">237<span class="orange">+</span></div>
+          <div class="stat-lbl">Destinasjoner</div>
+        </div>
+        <div>
+          <div class="stat-num" style="color:#ff6b00">389 kr</div>
+          <div class="stat-lbl">Laveste pris nå</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EARTH SECTION -->
+  <section style="position:relative;height:620px;overflow:hidden;margin:0;">
+    <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+      <source src="EARTH 3D VIDEO 15MB.mp4" type="video/mp4">
+    </video>
+    <!-- Fades -->
+    <div
+      style="position:absolute;inset:0;background:linear-gradient(to bottom, #050505 0%, transparent 18%, transparent 82%, #050505 100%);pointer-events:none;">
+    </div>
+    <div
+      style="position:absolute;inset:0;background:linear-gradient(to right, rgba(5,5,5,0.6) 0%, transparent 18%, transparent 82%, rgba(5,5,5,0.6) 100%);pointer-events:none;">
+    </div>
+    <div
+      style="position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(5,5,5,0.18) 0%, transparent 60%);pointer-events:none;">
+    </div>
+    <!-- Content -->
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+      <div style="text-align:center;max-width:620px;padding:0 24px;">
+        <div
+          style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,107,0,0.15);border:1px solid rgba(255,107,0,0.35);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:#ff6b00;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px;">
+          <span style="width:6px;height:6px;background:#ff6b00;border-radius:50%;display:inline-block;"></span>
+          Global dekning
+        </div>
+        <h2
+          style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:700;color:#fff;letter-spacing:-1.5px;line-height:1.1;margin:0 0 16px;">
+          Vi finner deals over<br>hele verden</h2>
+        <p style="font-family:'DM Sans',sans-serif;font-size:17px;color:rgba(255,255,255,0.65);margin:0 0 32px;">Fra
+          Skandinavia til 237+ destinasjoner</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+          <div
+            style="display:inline-flex;align-items:center;gap:8px;background:rgba(5,5,5,0.82);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,0.85);backdrop-filter:blur(12px);">
+            <span
+              style="width:7px;height:7px;background:#22c55e;border-radius:50%;box-shadow:0 0 8px #22c55e;animation:pulse 2s infinite;display:inline-block;"></span>
+            Overvåker kontinuerlig
+          </div>
+          <div
+            style="display:inline-flex;align-items:center;gap:8px;background:rgba(5,5,5,0.82);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,0.85);backdrop-filter:blur(12px);">
+            ✅ 6 norske flyplasser
+          </div>
+          <div
+            style="display:inline-flex;align-items:center;gap:8px;background:rgba(5,5,5,0.82);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,0.85);backdrop-filter:blur(12px);">
+            🌍 237+ destinasjoner
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- LIVE DEALS STRIP -->
+  <section class="deals-strip">
+    <div class="container">
+      <div class="section-tag"><span class="dot"></span> Siste funn</div>
+      <h2 class="section-title" style="font-size:32px;letter-spacing:-1px">Aktuelle reisedeals akkurat nå</h2>
+      <div class="deals-cards">
+        <div class="deal-card fade-up">
+          <div class="deal-card-from">
+            <span>fra</span>
+            <span class="iata">OSL</span>
+            <span>Oslo Gardermoen</span>
+          </div>
+          <div class="deal-card-dest">Firenze <span class="fi fi-it fis"
+              style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>
+          </div>
+          <div class="deal-card-footer">
+            <div>
+              <div class="deal-card-price">849 kr <span>t/r</span></div>
+            </div>
+            <div class="deal-card-discount">-38%</div>
+          </div>
+          <a href="deals.html" class="deal-card-book">
+            Se reisemuligheter
+            <span class="ms" style="font-size:14px">arrow_forward</span>
+          </a>
+        </div>
+        <div class="deal-card fade-up" style="transition-delay:.08s">
+          <div class="deal-card-from">
+            <span>fra</span>
+            <span class="iata">BGO</span>
+            <span>Bergen Flesland</span>
+          </div>
+          <div class="deal-card-dest">Barcelona <span class="fi fi-es fis"
+              style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>
+          </div>
+          <div class="deal-card-footer">
+            <div>
+              <div class="deal-card-price">520 kr <span>t/r</span></div>
+            </div>
+            <div class="deal-card-discount">-44%</div>
+          </div>
+          <a href="deals.html" class="deal-card-book">
+            Se reisemuligheter
+            <span class="ms" style="font-size:14px">arrow_forward</span>
+          </a>
+        </div>
+        <div class="deal-card fade-up" style="transition-delay:.16s">
+          <div class="deal-card-from">
+            <span>fra</span>
+            <span class="iata">SVG</span>
+            <span>Stavanger Sola</span>
+          </div>
+          <div class="deal-card-dest">London <span class="fi fi-gb fis"
+              style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>
+          </div>
+          <div class="deal-card-footer">
+            <div>
+              <div class="deal-card-price">3 190 kr <span>t/r</span></div>
+            </div>
+            <div class="deal-card-discount">-31%</div>
+          </div>
+          <a href="deals.html" class="deal-card-book">
+            Se reisemuligheter
+            <span class="ms" style="font-size:14px">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:28px">
+        <a href="deals.html" class="btn-outline" style="display:inline-flex">Se alle deals →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how" style="border-top:1px solid rgba(255,255,255,0.05)">
+    <div class="container">
+      <div style="text-align:center;max-width:600px;margin:0 auto">
+        <div class="section-tag" style="justify-content:center"><span class="dot"></span> Slik fungerer det</div>
+        <h2 class="section-title">Tre steg til billigere reiser</h2>
+        <p class="section-sub">Vi gjør jobben. Du får feriene.</p>
+      </div>
+      <div class="how-grid">
+        <div class="how-card fade-up">
+          <div class="how-step">Steg 01</div>
+          <div class="how-icon"><span class="ms" style="font-size:18px">schedule</span></div>
+          <h3>Vi overvåker prisene</h3>
+          <p>Algoritmene våre sjekker flypriser kontinuerlig og bygger opp et bilde av hva som er normalt – og hva
+            som er tilbud.</p>
+        </div>
+        <div class="how-card fade-up" style="transition-delay:.09s">
+          <div class="how-step">Steg 02</div>
+          <div class="how-icon"><span class="ms" style="font-size:18px">mail</span></div>
+          <h3>Du får et varsel</h3>
+          <p>Når vi finner en pris som er vesentlig lavere enn normalt, sender vi deg et varsel direkte på e-post.</p>
+          <div class="how-mini">
+            <div class="how-mini-row">
+              <span style="font-size:11px;color:rgba(255,255,255,0.5)">OSL → Bangkok</span>
+              <span class="how-mini-price">2 489 kr</span>
+            </div>
+            <div class="how-mini-row">
+              <span style="font-size:11px;color:rgba(255,255,255,0.5)">BGO → London</span>
+              <span class="how-mini-price">489 kr</span>
+            </div>
+            <div class="how-mini-row" style="border:none;padding-top:8px">
+              <span class="how-mini-badge">-47% under snitt</span>
+            </div>
+          </div>
+        </div>
+        <div class="how-card fade-up" style="transition-delay:.18s">
+          <div class="how-step">Steg 03</div>
+          <div class="how-icon"><span class="ms" style="font-size:18px">check_circle</span></div>
+          <h3>Du booker og sparer</h3>
+          <p>Book direkte hos flyselskapet til den lave prisen. Ingen mellomledd, ingen ekstra kostnader.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section" style="border-top:1px solid rgba(255,255,255,0.05)">
+    <div class="container">
+      <div style="text-align:center;max-width:600px;margin:0 auto">
+        <h2 class="section-title">Alt du trenger for<br>billigere flyreiser</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feat-card fade-up">
+          <div class="feat-icon"><span class="ms" style="font-size:17px">price_check</span></div>
+          <h3>Transparent prising</h3>
+          <p>Vi viser alltid prisen mot det historiske snittet, slik at du kan se nøyaktig hvor mye du sparer.</p>
+        </div>
+        <div class="feat-card fade-up" style="transition-delay:.06s">
+          <div class="feat-icon"><span class="ms" style="font-size:17px">autorenew</span></div>
+          <h3>Automatisk overvåking</h3>
+          <p>Prisene sjekkes automatisk slik at du aldri trenger å gjøre det manuelt.</p>
+        </div>
+        <div class="feat-card fade-up" style="transition-delay:.12s">
+          <div class="feat-icon"><span class="ms" style="font-size:17px">open_in_new</span></div>
+          <h3>Direkte booking</h3>
+          <p>Vi sender deg direkte til flyselskapet. Ingen mellomledd eller ekstra kostnader.</p>
+        </div>
+        <div class="feat-card fade-up" style="transition-delay:.18s">
+          <div class="feat-icon"><span class="ms" style="font-size:17px">public</span></div>
+          <h3>Nordisk dekning</h3>
+          <p>Vi overvåker de største flyplassene i Norden for å finne de beste prisene.</p>
+        </div>
+        <div class="feat-card fade-up" style="transition-delay:.24s">
+          <div class="feat-icon"><span class="ms" style="font-size:17px">dashboard</span></div>
+          <h3>Enkel oversikt</h3>
+          <p>På ditt dashboard er det enkelt å finne den neste flyvningen til en nesten umulig pris.</p>
+        </div>
+        <div class="feat-card fade-up" style="transition-delay:.30s">
+          <div class="feat-icon"><span class="ms" style="font-size:17px">savings</span></div>
+          <h3>Spar tid og penger</h3>
+          <p>Vi gjør prisovervåkingen, du nyter reisen til en brøkdel av ordinærprisen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div style="text-align:center">
+        <h2 class="section-title">Invester i billigere reiser</h2>
+        <p class="section-sub">Spar inn hele årsmedlemskapet på din første bestilling.</p>
+      </div>
+      <div class="pricing-inner">
+        <div class="pricing-card">
+          <div class="trial-badge"><span class="dot"></span> 7 dager gratis prøveperiode</div>
+          <div class="price-big">149 kr <span>/ mnd</span></div>
+          <p class="price-desc">Full tilgang til alt – ingen skjulte kostnader</p>
+          <ul class="price-features">
+            <li>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M2 7l4 4 6-6" />
+              </svg>
+              Alle deals – ingen begrensninger
+            </li>
+            <li>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M2 7l4 4 6-6" />
+              </svg>
+              Sanntids e-postvarsler
+            </li>
+            <li>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M2 7l4 4 6-6" />
+              </svg>
+              6+ norske flyplasser overvåket
+            </li>
+            <li>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M2 7l4 4 6-6" />
+              </svg>
+              Ingen bindingstid
+            </li>
+          </ul>
+          <a href="login.html" class="price-btn">Start gratis prøveperiode</a>
+          <p class="price-note">Avbrytes enkelt via innstillinger – ingen spørsmål stilt</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="om">
+    <div class="container">
+      <div style="text-align:center">
+        <div class="section-tag" style="justify-content:center"><span class="dot"></span> Spørsmål & svar</div>
+        <h2 class="section-title">Ofte stilte spørsmål</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-btn" onclick="this.closest('.faq-item').classList.toggle('open')">
+            Hvilke flyplasser overvåker dere?
+            <span class="ms faq-icon">add</span>
+          </button>
+          <div class="faq-ans">
+            <p>Vi overvåker per dags dato Oslo (OSL), Bergen (BGO), Stavanger (SVG), Trondheim (TRD), Tromsø (TOS) og
+              Sandefjord/Torp (TRF).</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" onclick="this.closest('.faq-item').classList.toggle('open')">
+            Hvor mye kan jeg forvente å spare?
+            <span class="ms faq-icon">add</span>
+          </button>
+          <div class="faq-ans">
+            <p>Det varierer per rute og sesong. Vi varsler kun når prisen er vesentlig lavere enn det vi normalt ser
+              for den ruten. Mange brukere sparer tusenvis av kroner per reise.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" onclick="this.closest('.faq-item').classList.toggle('open')">
+            Må jeg bestille gjennom dere?
+            <span class="ms faq-icon">add</span>
+          </button>
+          <div class="faq-ans">
+            <p>Nei – du booker direkte hos flyselskapet via Google Flights. Vi er kun et varslingsverktøy, ikke en
+              bestillingstjeneste.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" onclick="this.closest('.faq-item').classList.toggle('open')">
+            Kan jeg si opp når som helst?
+            <span class="ms faq-icon">add</span>
+          </button>
+          <div class="faq-ans">
+            <p>Ja, du kan si opp abonnementet til enhver tid via dine innstillinger. Ingen spørsmål stilt, ingen
+              skjulte gebyrer.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo" style="display:inline-flex;margin-bottom:8px">
+            <div class="nav-logo-icon"><span class="ms" style="font-size:14px;color:#fff">flight_takeoff</span></div>
+            <span style="font-size:15px;font-weight:800">FlyDeals</span>
+          </div>
+          <p>Automatisk prisovervåking av flyreiser fra de største nordiske flyplassene for å finne drømmereisen for
+            billigere pris.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Produkt</h4>
+          <a href="deals.html">Live deals</a>
+          <a href="oppdag.html">Oppdag ruter</a>
+          <a href="varsler.html">Dine varsler</a>
+          <a href="#">FAQ</a>
+        </div>
+        <div class="footer-col">
+          <h4>Selskap</h4>
+          <a href="#">Personvern</a>
+          <a href="#">Vilkår</a>
+          <a href="brukerstotte.html">Hjelp</a>
+        </div>
+        <div class="footer-col">
+          <h4>Følg oss</h4>
+          <a href="#">Twitter / X</a>
+          <a href="#">Instagram</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 FlyDeals. Alle rettigheter reservert.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const DESTS = [
+      { f: '<span class="fi fi-es fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Barcelona' }, { f: '<span class="fi fi-gb fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'London' }, { f: '<span class="fi fi-th fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Bangkok' },
+      { f: '<span class="fi fi-us fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'New York' }, { f: '<span class="fi fi-jp fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Tokyo' }, { f: '<span class="fi fi-it fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Roma' },
+      { f: '<span class="fi fi-ae fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Dubai' }, { f: '<span class="fi fi-fr fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Paris' }, { f: '<span class="fi fi-de fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Berlin' },
+      { f: '<span class="fi fi-gr fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Aten' }, { f: '<span class="fi fi-pt fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Lisboa' }, { f: '<span class="fi fi-id fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Bali' },
+      { f: '<span class="fi fi-sg fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Singapore' }, { f: '<span class="fi fi-ma fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Marrakech' }, { f: '<span class="fi fi-tr fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Istanbul' },
+      { f: '<span class="fi fi-ca fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Toronto' }, { f: '<span class="fi fi-au fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Sydney' }, { f: '<span class="fi fi-is fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Reykjavik' },
+      { f: '<span class="fi fi-za fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Cape Town' }, { f: '<span class="fi fi-nl fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Amsterdam' }, { f: '🇨🇿', n: 'Praha' },
+      { f: '🇭🇷', n: 'Dubrovnik' }, { f: '<span class="fi fi-mx fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Mexico City' }, { f: '<span class="fi fi-in fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Mumbai' },
+      { f: '🇪🇬', n: 'Kairo' }, { f: '<span class="fi fi-kr fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Seoul' }, { f: '🇲🇻', n: 'Maldivene' },
+      { f: '🇪🇪', n: 'Tallinn' }, { f: '🇨🇴', n: 'Bogotá' }, { f: '<span class="fi fi-br fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>', n: 'Rio de Janeiro' }
+    ];
+
+    function buildTicker() {
+      const track = document.getElementById('ticker');
+      [...DESTS, ...DESTS].forEach(d => {
+        const el = document.createElement('div');
+        el.className = 't-dest';
+        el.innerHTML = `<span style="font-size:15px">${d.f}</span>${d.n}`;
+        track.appendChild(el);
+      });
+    }
+
+    function initFadeUp() {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+    }
+
+    function animCount(el, target) {
+      let n = 0; const step = target / 50;
+      const t = setInterval(() => {
+        n = Math.min(n + step, target);
+        el.textContent = Math.floor(n).toLocaleString('no') + '+ deals funnet';
+        if (n >= target) clearInterval(t);
+      }, 25);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      buildTicker();
+      initFadeUp();
+      const el = document.getElementById('dealCount');
+      if (el) animCount(el, 847);
+    });
+  </script>
+</body>
+
+</html>
