@@ -86,7 +86,7 @@ export default function LoginPage() {
           {/* LOGIN VIEW */}
           {view === 'login' && (
             <div className="w-full max-w-md">
-              <div className="w-full p-8 rounded-2xl border" style={{ background: '#171717', borderColor: '#262626' }}>
+              <div className="w-full p-8 rounded-2xl border" style={{ background: '#242424', borderColor: '#383838' }}>
                 <div className="mb-7">
                   <h2 className="text-2xl font-bold mb-1.5 text-white">Velkommen tilbake</h2>
                   <p className="text-sm" style={{ color: '#94a3b8' }}>Finn de beste reisetilbudene ved å logge inn</p>
@@ -99,7 +99,7 @@ export default function LoginPage() {
                       <span className="ms absolute left-3.5 top-1/2 -translate-y-1/2" style={{ fontSize: '20px', color: '#64748b' }}>mail</span>
                       <input type="email" placeholder="din@epost.no" value={loginEmail} onChange={e => setLoginEmail(e.target.value)}
                         className="w-full rounded-xl py-3.5 pl-11 pr-4 text-sm transition-all outline-none"
-                        style={{ background: '#262626', border: '1px solid #404040', color: '#e2e8f0' }} />
+                        style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }} />
                     </div>
                   </div>
 
@@ -112,7 +112,7 @@ export default function LoginPage() {
                       <span className="ms absolute left-3.5 top-1/2 -translate-y-1/2" style={{ fontSize: '20px', color: '#64748b' }}>lock</span>
                       <input type={showLoginPwd ? 'text' : 'password'} placeholder="••••••••" value={loginPassword} onChange={e => setLoginPassword(e.target.value)}
                         className="w-full rounded-xl py-3.5 pl-11 pr-12 text-sm transition-all outline-none"
-                        style={{ background: '#262626', border: '1px solid #404040', color: '#e2e8f0' }} />
+                        style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }} />
                       <button type="button" onClick={() => setShowLoginPwd(!showLoginPwd)} className="absolute right-3.5 top-1/2 -translate-y-1/2" style={{ color: '#64748b' }}>
                         <span className="ms" style={{ fontSize: '20px' }}>{showLoginPwd ? 'visibility_off' : 'visibility'}</span>
                       </button>
@@ -129,13 +129,13 @@ export default function LoginPage() {
                 <div className="relative my-7">
                   <div className="absolute inset-0 flex items-center"><div className="w-full border-t" style={{ borderColor: '#262626' }}></div></div>
                   <div className="relative flex justify-center" style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                    <span className="px-3" style={{ background: '#171717', color: '#64748b' }}>Eller logg inn med</span>
+                    <span className="px-3" style={{ background: '#242424', color: '#64748b' }}>Eller logg inn med</span>
                   </div>
                 </div>
 
                 <button onClick={handleGoogleLogin} disabled={loading}
                   className="flex items-center justify-center gap-3 w-full py-3 rounded-xl transition-all font-medium text-sm"
-                  style={{ background: '#262626', border: '1px solid #404040', color: '#e2e8f0' }}>
+                  style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -159,7 +159,7 @@ export default function LoginPage() {
           {/* REGISTER VIEW */}
           {view === 'register' && (
             <div className="w-full max-w-md">
-              <div className="w-full p-8 rounded-2xl border" style={{ background: '#171717', borderColor: '#262626' }}>
+              <div className="w-full p-8 rounded-2xl border" style={{ background: '#242424', borderColor: '#383838' }}>
                 <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-6" style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', color: '#4ade80' }}>
                   <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#4ade80' }}></span>
                   7 dager gratis — ingen binding
@@ -177,7 +177,7 @@ export default function LoginPage() {
                       <span className="ms absolute left-3.5 top-1/2 -translate-y-1/2" style={{ fontSize: '20px', color: '#64748b' }}>person</span>
                       <input type="text" placeholder="Ditt navn" value={regName} onChange={e => setRegName(e.target.value)}
                         className="w-full rounded-xl py-3.5 pl-11 pr-4 text-sm transition-all outline-none"
-                        style={{ background: '#262626', border: '1px solid #404040', color: '#e2e8f0' }} />
+                        style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }} />
                     </div>
                   </div>
 
@@ -187,7 +187,7 @@ export default function LoginPage() {
                       <span className="ms absolute left-3.5 top-1/2 -translate-y-1/2" style={{ fontSize: '20px', color: '#64748b' }}>mail</span>
                       <input type="email" placeholder="din@epost.no" value={regEmail} onChange={e => setRegEmail(e.target.value)}
                         className="w-full rounded-xl py-3.5 pl-11 pr-4 text-sm transition-all outline-none"
-                        style={{ background: '#262626', border: '1px solid #404040', color: '#e2e8f0' }} />
+                        style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }} />
                     </div>
                   </div>
 
@@ -197,7 +197,7 @@ export default function LoginPage() {
                       <span className="ms absolute left-3.5 top-1/2 -translate-y-1/2" style={{ fontSize: '20px', color: '#64748b' }}>lock</span>
                       <input type={showRegPwd ? 'text' : 'password'} placeholder="Minst 8 tegn" value={regPassword} onChange={e => setRegPassword(e.target.value)}
                         className="w-full rounded-xl py-3.5 pl-11 pr-12 text-sm transition-all outline-none"
-                        style={{ background: '#262626', border: '1px solid #404040', color: '#e2e8f0' }} />
+                        style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }} />
                       <button type="button" onClick={() => setShowRegPwd(!showRegPwd)} className="absolute right-3.5 top-1/2 -translate-y-1/2" style={{ color: '#64748b' }}>
                         <span className="ms" style={{ fontSize: '20px' }}>{showRegPwd ? 'visibility_off' : 'visibility'}</span>
                       </button>
@@ -221,13 +221,13 @@ export default function LoginPage() {
                 <div className="relative my-7">
                   <div className="absolute inset-0 flex items-center"><div className="w-full border-t" style={{ borderColor: '#262626' }}></div></div>
                   <div className="relative flex justify-center" style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                    <span className="px-3" style={{ background: '#171717', color: '#64748b' }}>Eller registrer med</span>
+                    <span className="px-3" style={{ background: '#242424', color: '#64748b' }}>Eller registrer med</span>
                   </div>
                 </div>
 
                 <button onClick={handleGoogleLogin} disabled={loading}
                   className="flex items-center justify-center gap-3 w-full py-3 rounded-xl transition-all font-medium text-sm"
-                  style={{ background: '#262626', border: '1px solid #404040', color: '#e2e8f0' }}>
+                  style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }}>
                   <svg width="18" height="18" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
