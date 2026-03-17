@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "SUPABASE_ACCESS_TOKEN_HER"
+      ]
+    },
+    "stripe": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@stripe/mcp@latest",
+        "--api-key",
+        "STRIPE_SECRET_KEY_HER"
+      ]
+    }
+  }
+}
