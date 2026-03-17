@@ -1,131 +1,399 @@
 'use client'
-import { useState } from 'react'
-import Sidebar from '@/components/Sidebar'
-
-const destCards = [
-  { city: 'Barcelona 🇪🇸', from: 'Fra Trondheim • Direktefly', price: '699 kr', discount: '-38%', top: true, duration: '3t 10m', dates: 'Apr 2026', img: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80' },
-  { city: 'London 🇬🇧', from: 'Fra Bergen • Direktefly', price: '489 kr', discount: '-35%', top: false, duration: '2t 5m', dates: 'Mars 2026', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80' },
-  { city: 'Bangkok 🇹🇭', from: 'Fra Oslo • Thai Airways', price: '2 489 kr', discount: '-47%', top: false, duration: '11t 20m', dates: 'Mar–Apr 2026', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80' },
-  { city: 'Dubai 🇦🇪', from: 'Fra Oslo • Emirates', price: '1 990 kr', discount: '-33%', top: false, duration: '6t 55m', dates: 'April 2026', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80' },
-  { city: 'New York 🇺🇸', from: 'Fra Oslo • SAS', price: '2 890 kr', discount: '-41%', top: false, duration: '9t 15m', dates: 'Apr–Mai 2026', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80' },
-  { city: 'Tokyo 🇯🇵', from: 'Fra Oslo • ANA', price: '3 490 kr', discount: '-44%', top: false, duration: '14t 30m', dates: 'Mai–Jun 2026', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80' },
-]
-
-const quickRoutes = [
-  { flag: '🇪🇸', route: 'Oslo → Alicante', airline: 'Ryanair · Mars 2026', price: '549 kr' },
-  { flag: '🇮🇸', route: 'Tromsø → Reykjavik', airline: 'Icelandair · April 2026', price: '890 kr' },
-  { flag: '🇳🇱', route: 'Stavanger → Amsterdam', airline: 'KLM · Mars 2026', price: '549 kr' },
-  { flag: '🇮🇹', route: 'Bergen → Roma', airline: 'SAS · Mars 2026', price: '599 kr' },
-  { flag: '🇫🇷', route: 'Trondheim → Paris', airline: 'Air France · April 2026', price: '649 kr' },
-]
-
-const regions = ['Alle', '🌍 Europa', '🌏 Asia', '🌎 Amerika', '🌍 Afrika', '🏔 Norden']
-
-export default function OppdagPage() {
-  const [activeRegion, setActiveRegion] = useState('Alle')
-
+import React from 'react'
+export default function Page() {
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-      <style>{`
-        body { font-family: 'DM Sans', sans-serif; }
-        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; }
-        .dest-card:hover { border-color: rgba(255,107,0,0.3) !important; }
-        .dest-card:hover .dest-img { transform: scale(1.05); }
-      `}</style>
-      <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#050505', color: '#f1f5f9', fontFamily: "'DM Sans', sans-serif" }}>
-        <Sidebar active="oppdag" />
-        <main style={{ flex: 1, overflowY: 'auto', background: '#050505' }}>
-          {/* Topbar */}
-          <div style={{ height: '56px', borderBottom: '1px solid #1e1e1e', position: 'sticky', top: 0, zIndex: 10, background: 'rgba(5,5,5,0.9)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
-            <h2 style={{ fontSize: '14px', fontWeight: 700 }}>Oppdag Ruter</h2>
-            <button style={{ position: 'relative', padding: '8px', color: 'rgba(255,255,255,0.4)', background: 'none', border: 'none', cursor: 'pointer' }}>
-              <span className="ms" style={{ fontSize: '20px' }}>notifications</span>
-              <span style={{ position: 'absolute', top: '8px', right: '8px', width: '6px', height: '6px', background: '#ff6b00', borderRadius: '50%' }} />
-            </button>
-          </div>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet"/>
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+      <style dangerouslySetInnerHTML={{__html: `
+  body { font-family: 'DM Sans', sans-serif; background: #050505; }
+  .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00; color: #ff6b00; }
+  .nav-link { border-left: 3px solid transparent; }
+  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
+  .dest-card:hover .dest-img { transform: scale(1.05); }
+  .dest-card:hover { border-color: rgba(255,107,0,0.3); }
+`}} />
+      <div dangerouslySetInnerHTML={{__html: `<div class="flex h-screen overflow-hidden">
 
-          <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px' }}>
-            {/* Header + search */}
-            <div style={{ marginBottom: '32px' }}>
-              <h1 style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '-0.5px', marginBottom: '4px' }}>Oppdag Ruter</h1>
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '24px' }}>Finn de beste destinasjonene fra norske flyplasser.</p>
-              <div style={{ position: 'relative' }}>
-                <span className="ms" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '20px', color: 'rgba(255,255,255,0.3)' }}>search</span>
-                <input style={{ width: '100%', background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', padding: '16px 16px 16px 48px', color: 'rgba(255,255,255,0.8)', fontSize: '13px', outline: 'none', fontFamily: "'DM Sans', sans-serif", boxSizing: 'border-box' }} placeholder="Søk etter by, land eller flyplass..." type="text" />
-              </div>
-            </div>
-
-            {/* Region filters */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '40px' }}>
-              {regions.map((r) => (
-                <button key={r} onClick={() => setActiveRegion(r)} style={{ padding: '8px 16px', borderRadius: '100px', fontSize: '13px', fontWeight: activeRegion === r ? 700 : 500, background: activeRegion === r ? '#ff6b00' : '#111', border: activeRegion === r ? 'none' : '1px solid #1e1e1e', color: activeRegion === r ? '#fff' : 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>{r}</button>
-              ))}
-            </div>
-
-            {/* Featured destinations */}
-            <section style={{ marginBottom: '48px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Populære destinasjoner</h3>
-                <a href="/deals" style={{ color: '#ff6b00', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>Se alle deals →</a>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px' }}>
-                {destCards.map((c, i) => (
-                  <div key={i} className="dest-card" style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', overflow: 'hidden', transition: 'border-color 0.2s', cursor: 'pointer' }}>
-                    <div style={{ height: '176px', overflow: 'hidden', position: 'relative' }}>
-                      <img className="dest-img" src={c.img} alt={c.city} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }} />
-                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #111, transparent)' }} />
-                      <div style={{ position: 'absolute', top: '12px', left: '12px', display: 'flex', gap: '6px' }}>
-                        {c.top && <span style={{ background: '#ff6b00', color: '#fff', fontSize: '10px', fontWeight: 900, padding: '4px 10px', borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '1px' }}>Toppvalg</span>}
-                        <span style={{ background: 'rgba(34,197,94,0.1)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.2)', fontSize: '10px', fontWeight: 700, padding: '4px 10px', borderRadius: '100px' }}>{c.discount}</span>
-                      </div>
-                      <div style={{ position: 'absolute', bottom: '12px', right: '12px', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', borderRadius: '12px', padding: '6px 12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Fra</p>
-                        <p style={{ fontSize: '15px', fontWeight: 900, color: '#ff6b00', lineHeight: 1 }}>{c.price}</p>
-                      </div>
-                    </div>
-                    <div style={{ padding: '16px' }}>
-                      <h4 style={{ fontWeight: 700, fontSize: '15px', marginBottom: '4px' }}>{c.city}</h4>
-                      <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span className="ms" style={{ fontSize: '13px' }}>flight</span>{c.from}
-                      </p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '12px', fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span className="ms" style={{ fontSize: '13px' }}>schedule</span>{c.duration}</span>
-                        <span style={{ width: '4px', height: '4px', background: '#1e1e1e', borderRadius: '50%' }} />
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span className="ms" style={{ fontSize: '13px' }}>calendar_month</span>{c.dates}</span>
-                      </div>
-                      <button style={{ marginTop: '12px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px', borderRadius: '12px', border: '1px solid rgba(255,107,0,0.3)', color: '#ff6b00', fontSize: '11px', fontWeight: 700, background: 'transparent', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background 0.2s' }}>
-                        <span className="ms" style={{ fontSize: '14px' }}>notifications</span>Opprett varsel
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Quick routes */}
-            <section>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px' }}>Billige ruter akkurat nå</h3>
-              <div style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', overflow: 'hidden' }}>
-                {quickRoutes.map((r, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: i < quickRoutes.length - 1 ? '1px solid #1e1e1e' : 'none', cursor: 'pointer', transition: 'background 0.2s' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '16px' }}>{r.flag}</span>
-                      <div>
-                        <p style={{ fontSize: '13px', fontWeight: 600 }}>{r.route}</p>
-                        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>{r.airline}</p>
-                      </div>
-                    </div>
-                    <p style={{ fontSize: '15px', fontWeight: 900, color: '#ff6b00' }}>{r.price}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
-        </main>
+  <!-- Sidebar -->
+  <aside class="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
+    <div class="p-5 flex items-center gap-3">
+      <div class="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#ff6b00]/20 flex-shrink-0">
+        <span class="ms" style="font-size:18px">flight_takeoff</span>
       </div>
+      <div>
+        <h1 class="text-base font-bold leading-tight text-white">FlyDeals</h1>
+        <p class="text-[11px] text-slate-500 font-medium">Varsler deg om flydeals</p>
+      </div>
+    </div>
+    <nav class="flex-1 px-3 space-y-0.5 mt-1">
+      <a href="deals.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+        <span class="ms" style="font-size:18px">local_offer</span>
+        <span class="text-sm font-medium">Live Deals</span>
+      </a>
+      <a href="varsler.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+        <span class="ms" style="font-size:18px">notifications</span>
+        <span class="text-sm font-medium">Dine Varsler</span>
+      </a>
+      <a href="oppdag.html" class="nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl">
+        <span class="ms ms-fill" style="font-size:18px">explore</span>
+        <span class="text-sm font-semibold">Oppdag Ruter</span>
+      </a>
+      <a href="historikk.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+        <span class="ms" style="font-size:18px">history</span>
+        <span class="text-sm font-medium">Historikk</span>
+      </a>
+      <div class="pt-3 mt-2 border-t border-[#1e1e1e] space-y-0.5">
+        <a href="innstillinger.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+          <span class="ms" style="font-size:18px">settings</span>
+          <span class="text-sm font-medium">Innstillinger</span>
+        </a>
+        <a href="brukerstotte.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+          <span class="ms" style="font-size:18px">help</span>
+          <span class="text-sm font-medium">Brukerstøtte</span>
+        </a>
+      </div>
+    </nav>
+        <div class="p-3 mt-auto border-t border-[#1e1e1e]">
+      <div class="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
+        <div class="overflow-hidden flex-1 min-w-0">
+          <p class="text-sm font-semibold truncate">Marius Jensen</p>
+          <p class="text-[11px] text-slate-500 truncate">marius@flydeals.no</p>
+        </div>
+        <a href="innstillinger.html" class="text-slate-500 hover:text-[#ff6b00] transition-colors">
+          <span class="ms" style="font-size:16px">settings</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 overflow-y-auto bg-[#050505]">
+    <div class="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-6">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+        <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+          <span class="ms" style="font-size:20px">notifications</span>
+          <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
+        </button>
+        <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
+        <button onclick="window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+          <span class="ms" style="font-size:16px">logout</span>
+          Logg ut
+        </button>
+      </div>
+    </div>
+
+<div class="max-w-5xl mx-auto px-6 py-8 space-y-10">
+
+      <!-- Header + search -->
+      <div>
+        <h1 class="text-3xl font-black tracking-tight mb-1">Oppdag Ruter</h1>
+        <p class="text-slate-500 mb-6">Finn de beste destinasjonene fra norske flyplasser.</p>
+        <div class="relative group">
+          <span class="ms absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#ff6b00] transition-colors" style="font-size:20px">search</span>
+          <input class="w-full bg-[#111] border border-[#1e1e1e] rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none transition-all text-slate-200 placeholder:text-slate-600 text-sm" placeholder="Søk etter by, land eller flyplass..." type="text"/>
+        </div>
+      </div>
+
+      <!-- Region filters -->
+      <div id="regionFilters" class="flex flex-wrap gap-2">
+        <button onclick="filterRegion('alle', this)" class="region-btn px-4 py-2 rounded-full text-sm font-semibold bg-[#ff6b00] text-white" data-region="alle">Alle</button>
+        <button onclick="filterRegion('europa', this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all" data-region="europa">🌍 Europa</button>
+        <button onclick="filterRegion('asia', this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all" data-region="asia">🌏 Asia</button>
+        <button onclick="filterRegion('america', this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all" data-region="america">🌎 Amerika</button>
+        <button onclick="filterRegion('africa', this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all" data-region="africa">🌍 Afrika</button>
+        <button onclick="filterRegion('norden', this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all" data-region="norden">❄️ Norden</button>
+      </div>
+
+      <!-- Featured destinations -->
+      <section>
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="text-xl font-bold">Populære destinasjoner</h3>
+          <a href="deals.html" class="text-[#ff6b00] text-sm font-semibold hover:underline">Se alle deals →</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+          <!-- Card: Barcelona -->
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="europa" onclick="opprettVarsel('Barcelona','BCN','🇪🇸')">
+            <div class="h-44 overflow-hidden relative">
+              <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80" alt="Barcelona"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
+              <div class="absolute top-3 left-3 flex gap-2">
+                <span class="bg-[#ff6b00] text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full">Toppvalg</span>
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full">-38%</span>
+              </div>
+              <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-white/10">
+                <p class="text-[10px] text-slate-400">Fra</p>
+                <p class="text-[#ff6b00] font-black text-base leading-none">699 kr</p>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-start justify-between">
+                <div>
+                  <h4 class="font-bold text-base">Barcelona <span class="fi fi-es fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span></h4>
+                  <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                    <span class="ms" style="font-size:13px">flight</span> Fra Trondheim ⬢ Direktefly
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">schedule</span>3t 10m</span>
+                <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Apr 2026</span>
+              </div>
+              <button onclick="event.stopPropagation();opprettVarsel('Barcelona','BCN','🇪🇸')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+                <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
+              </button>
+            </div>
+          </div>
+
+          <!-- Card: London -->
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="europa" onclick="opprettVarsel('London','LHR','🇬🇧')">
+            <div class="h-44 overflow-hidden relative">
+              <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80" alt="London"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
+              <div class="absolute top-3 left-3">
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full">-35%</span>
+              </div>
+              <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-white/10">
+                <p class="text-[10px] text-slate-400">Fra</p>
+                <p class="text-[#ff6b00] font-black text-base leading-none">489 kr</p>
+              </div>
+            </div>
+            <div class="p-4">
+              <div>
+                <h4 class="font-bold text-base">London <span class="fi fi-gb fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span></h4>
+                <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                  <span class="ms" style="font-size:13px">flight</span> Fra Bergen ⬢ Direktefly
+                </p>
+              </div>
+              <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">schedule</span>2t 5m</span>
+                <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Mars 2026</span>
+              </div>
+              <button onclick="event.stopPropagation();opprettVarsel('London','LHR','🇬🇧')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+                <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
+              </button>
+            </div>
+          </div>
+
+          <!-- Card: Bangkok -->
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="asia" onclick="opprettVarsel('Bangkok','BKK','🇹🇭')">
+            <div class="h-44 overflow-hidden relative">
+              <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80" alt="Bangkok"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
+              <div class="absolute top-3 left-3">
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full">-47%</span>
+              </div>
+              <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-white/10">
+                <p class="text-[10px] text-slate-400">Fra</p>
+                <p class="text-[#ff6b00] font-black text-base leading-none">2 489 kr</p>
+              </div>
+            </div>
+            <div class="p-4">
+              <div>
+                <h4 class="font-bold text-base">Bangkok <span class="fi fi-th fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span></h4>
+                <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                  <span class="ms" style="font-size:13px">flight</span> Fra Oslo ⬢ Thai Airways
+                </p>
+              </div>
+              <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">schedule</span>11t 20m</span>
+                <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Mar–Apr 2026</span>
+              </div>
+              <button onclick="event.stopPropagation();opprettVarsel('Bangkok','BKK','🇹🇭')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+                <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
+              </button>
+            </div>
+          </div>
+
+          <!-- Card: Dubai -->
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="asia" onclick="opprettVarsel('Dubai','DXB','🇦🇪')">
+            <div class="h-44 overflow-hidden relative">
+              <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80" alt="Dubai"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
+              <div class="absolute top-3 left-3">
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full">-33%</span>
+              </div>
+              <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-white/10">
+                <p class="text-[10px] text-slate-400">Fra</p>
+                <p class="text-[#ff6b00] font-black text-base leading-none">1 990 kr</p>
+              </div>
+            </div>
+            <div class="p-4">
+              <div>
+                <h4 class="font-bold text-base">Dubai <span class="fi fi-ae fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span></h4>
+                <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                  <span class="ms" style="font-size:13px">flight</span> Fra Oslo ⬢ Emirates
+                </p>
+              </div>
+              <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">schedule</span>6t 55m</span>
+                <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>April 2026</span>
+              </div>
+              <button onclick="event.stopPropagation();opprettVarsel('Dubai','DXB','🇦🇪')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+                <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
+              </button>
+            </div>
+          </div>
+
+          <!-- Card: New York -->
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="america" onclick="opprettVarsel('New York','JFK','🇺🇸')">
+            <div class="h-44 overflow-hidden relative">
+              <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80" alt="New York"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
+              <div class="absolute top-3 left-3">
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full">-41%</span>
+              </div>
+              <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-white/10">
+                <p class="text-[10px] text-slate-400">Fra</p>
+                <p class="text-[#ff6b00] font-black text-base leading-none">2 890 kr</p>
+              </div>
+            </div>
+            <div class="p-4">
+              <div>
+                <h4 class="font-bold text-base">New York 🇺🇸</h4>
+                <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                  <span class="ms" style="font-size:13px">flight</span> Fra Oslo ⬢ SAS
+                </p>
+              </div>
+              <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">schedule</span>9t 15m</span>
+                <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Apr–Mai 2026</span>
+              </div>
+              <button onclick="event.stopPropagation();opprettVarsel('New York','JFK','🇺🇸')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+                <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
+              </button>
+            </div>
+          </div>
+
+          <!-- Card: Tokyo -->
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="asia" onclick="opprettVarsel('Tokyo','NRT','🇯🇵')">
+            <div class="h-44 overflow-hidden relative">
+              <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80" alt="Tokyo"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
+              <div class="absolute top-3 left-3">
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full">-44%</span>
+              </div>
+              <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-white/10">
+                <p class="text-[10px] text-slate-400">Fra</p>
+                <p class="text-[#ff6b00] font-black text-base leading-none">3 490 kr</p>
+              </div>
+            </div>
+            <div class="p-4">
+              <div>
+                <h4 class="font-bold text-base">Tokyo <span class="fi fi-jp fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span></h4>
+                <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                  <span class="ms" style="font-size:13px">flight</span> Fra Oslo ⬢ ANA
+                </p>
+              </div>
+              <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">schedule</span>14t 30m</span>
+                <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Mai–Jun 2026</span>
+              </div>
+              <button onclick="event.stopPropagation();opprettVarsel('Tokyo','NRT','🇯🇵')" class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+                <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Quick routes -->
+      <section>
+        <h3 class="text-xl font-bold mb-5">Billige ruter akkurat nå</h3>
+        <div class="bg-[#111] border border-[#1e1e1e] rounded-2xl divide-y divide-[#1e1e1e] overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/3 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🇪🇸</span>
+              <div>
+                <p class="text-sm font-semibold">Oslo  → Alicante</p>
+                <p class="text-xs text-slate-500">Ryanair · Mars 2026</p>
+              </div>
+            </div>
+            <p class="text-[#ff6b00] font-black text-base">549 kr</p>
+          </div>
+          <div class="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/3 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🇮🇸</span>
+              <div>
+                <p class="text-sm font-semibold">Tromsø  → Reykjavik</p>
+                <p class="text-xs text-slate-500">Icelandair · April 2026</p>
+              </div>
+            </div>
+            <p class="text-[#ff6b00] font-black text-base">890 kr</p>
+          </div>
+          <div class="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/3 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🇳🇱</span>
+              <div>
+                <p class="text-sm font-semibold">Stavanger  → Amsterdam</p>
+                <p class="text-xs text-slate-500">KLM · Mars 2026</p>
+              </div>
+            </div>
+            <p class="text-[#ff6b00] font-black text-base">549 kr</p>
+          </div>
+          <div class="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/3 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🇮🇹</span>
+              <div>
+                <p class="text-sm font-semibold">Bergen  → Roma</p>
+                <p class="text-xs text-slate-500">SAS · Mars 2026</p>
+              </div>
+            </div>
+            <p class="text-[#ff6b00] font-black text-base">599 kr</p>
+          </div>
+          <div class="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/3 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🇫🇷</span>
+              <div>
+                <p class="text-sm font-semibold">Trondheim  → Paris</p>
+                <p class="text-xs text-slate-500">Air France · April 2026</p>
+              </div>
+            </div>
+            <p class="text-[#ff6b00] font-black text-base">649 kr</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+function filterRegion(region, btn) {
+  // Update button styles
+  document.querySelectorAll('.region-btn').forEach(b => {
+    b.className = b.className.replace('bg-[#ff6b00] text-white', 'bg-[#111] border border-[#1e1e1e] text-slate-400');
+  });
+  btn.className = btn.className.replace('bg-[#111] border border-[#1e1e1e] text-slate-400', 'bg-[#ff6b00] text-white');
+
+  // Show/hide cards
+  document.querySelectorAll('.dest-card').forEach(card => {
+    if (region === 'alle' || card.dataset.region === region) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+function opprettVarsel(name, code, flag) {
+  window.location.href = \`varsler.html?to=\${encodeURIComponent(name)}&code=\${encodeURIComponent(code)}&flag=\${encodeURIComponent(flag)}\`;
+}
+</script>`}} />
     </>
   )
 }
