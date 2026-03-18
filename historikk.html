@@ -20,6 +20,8 @@
     }
   }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@sentry/browser@8/build/bundles/bundle.tracing.replay.min.js" crossorigin="anonymous"></script>
+<script src="sentry-config.js"></script>
 <title>FlyDeals — Historikk</title>
 <style>
   body { font-family: 'DM Sans', sans-serif; background: #050505; }
@@ -174,7 +176,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase-config.js"></script>
-<script>requireAuth();</script>
+<script>requireAuth().then(function(user) { if (user) setSentryUser(user); });</script>
 <div class="max-w-5xl mx-auto px-4 md:px-8 py-10">
 <!-- Header -->
     <header class="mb-8">

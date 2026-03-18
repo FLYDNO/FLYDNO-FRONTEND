@@ -20,6 +20,8 @@
     }
   }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@sentry/browser@8/build/bundles/bundle.tracing.replay.min.js" crossorigin="anonymous"></script>
+<script src="sentry-config.js"></script>
 <title>FlyDeals — Innstillinger</title>
 <style>
   body { font-family: 'DM Sans', sans-serif; background: #050505; }
@@ -423,6 +425,7 @@ async function saveProfile(btn) {
 async function loadProfile() {
   const user = await requireAuth();
   if (!user) return;
+  setSentryUser(user);
   // Ensure profile exists (creates one for Google OAuth users)
   const profile = await ensureUserProfile(user);
   const name = (profile && profile.name) || user.user_metadata?.full_name || user.user_metadata?.name || '';
