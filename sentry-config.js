@@ -3,7 +3,7 @@
 // Docs: https://docs.sentry.io/platforms/javascript/
 
 // Replace with your actual Sentry DSN from sentry.io
-const SENTRY_DSN = 'YOUR_SENTRY_DSN_HERE';
+const SENTRY_DSN = 'https://39578fccf59451375846b169673ecdb5@o4511066279641088.ingest.de.sentry.io/4511066295697488';
 
 function initSentry() {
   if (!window.Sentry || SENTRY_DSN === 'YOUR_SENTRY_DSN_HERE') {
