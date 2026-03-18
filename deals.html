@@ -174,24 +174,22 @@
       </div>
 
       <!-- Filters -->
-      <div class="space-y-2.5 mb-6">
-        <!-- Airport filter -->
-        <div id="airportFilters" class="flex flex-wrap gap-1.5">
-        </div>
-        <!-- Month filter -->
-        <div class="flex flex-wrap gap-1.5">
-          <button onclick="filterMonth('alle',this)" class="month-btn active px-3 py-1.5 rounded-full text-xs font-semibold bg-[#ff6b00] text-white transition-all">Alle måneder</button>
-          <button onclick="filterMonth('Mar',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Mar</button>
-          <button onclick="filterMonth('Apr',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Apr</button>
-          <button onclick="filterMonth('Mai',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Mai</button>
-          <button onclick="filterMonth('Jun',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Jun</button>
-          <button onclick="filterMonth('Jul',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Jul</button>
-          <button onclick="filterMonth('Aug',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Aug</button>
-          <button onclick="filterMonth('Sep',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Sep</button>
-          <button onclick="filterMonth('Okt',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Okt</button>
-          <button onclick="filterMonth('Nov',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Nov</button>
-          <button onclick="filterMonth('Des',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Des</button>
-        </div>
+      <div class="flex flex-wrap items-center gap-2 mb-6">
+        <div id="airportFilters" class="contents"></div>
+        <div class="w-px h-6 bg-[#1e1e1e] hidden md:block"></div>
+        <select id="monthSelect" onchange="filterMonth(this.value)" class="bg-[#111] border border-[#1e1e1e] rounded-full px-3 py-1.5 text-xs font-medium text-slate-400 focus:border-[#ff6b00]/40 focus:ring-0 outline-none cursor-pointer">
+          <option value="alle">Alle måneder</option>
+          <option value="Mar">Mars</option>
+          <option value="Apr">April</option>
+          <option value="Mai">Mai</option>
+          <option value="Jun">Juni</option>
+          <option value="Jul">Juli</option>
+          <option value="Aug">August</option>
+          <option value="Sep">September</option>
+          <option value="Okt">Oktober</option>
+          <option value="Nov">November</option>
+          <option value="Des">Desember</option>
+        </select>
       </div>
 
       <div id="dealsGrid" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3"></div>
@@ -243,26 +241,12 @@ const countryAirports = {
 
 let currentAirport = 'alle';
 let currentMonth = 'alle';
-let currentCountry = 'NO';
-
-function filterCountry(country, btn) {
-  currentCountry = country;
-  currentAirport = 'alle';
-  document.querySelectorAll('.country-btn').forEach(b => {
-    b.classList.remove('active', 'bg-[#ff6b00]', 'text-white');
-    b.classList.add('bg-[#111]', 'text-slate-400', 'border', 'border-[#1e1e1e]');
-  });
-  btn.classList.add('active', 'bg-[#ff6b00]', 'text-white');
-  btn.classList.remove('bg-[#111]', 'text-slate-400', 'border', 'border-[#1e1e1e]');
-  renderAirportButtons();
-  renderDeals();
-}
 
 function renderAirportButtons() {
   const container = document.getElementById('airportFilters');
-  const airports = countryAirports[currentCountry] || [];
-  container.innerHTML = `<button onclick="filterAirport('alle',this)" class="airport-btn active px-3 py-1.5 rounded-full text-xs font-semibold bg-[#ff6b00] text-white transition-all">Alle flyplasser</button>` +
-    airports.map(a => `<button onclick="filterAirport('${a.code}',this)" class="airport-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">${flagSpan(a.cc, true)} ${a.name}</button>`).join('');
+  const airports = countryAirports['NO'];
+  container.innerHTML = `<button onclick="filterAirport('alle',this)" class="airport-btn active px-3 py-1.5 rounded-full text-xs font-semibold bg-[#ff6b00] text-white transition-all">Alle</button>` +
+    airports.map(a => `<button onclick="filterAirport('${a.code}',this)" class="airport-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">${a.name}</button>`).join('');
 }
 
 function filterAirport(code, btn) {
@@ -276,14 +260,8 @@ function filterAirport(code, btn) {
   renderDeals();
 }
 
-function filterMonth(month, btn) {
+function filterMonth(month) {
   currentMonth = month;
-  document.querySelectorAll('.month-btn').forEach(b => {
-    b.classList.remove('active', 'bg-[#ff6b00]', 'text-white');
-    b.classList.add('bg-[#111]', 'text-slate-400', 'border', 'border-[#1e1e1e]');
-  });
-  btn.classList.add('active', 'bg-[#ff6b00]', 'text-white');
-  btn.classList.remove('bg-[#111]', 'text-slate-400', 'border', 'border-[#1e1e1e]');
   renderDeals();
 }
 
