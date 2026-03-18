@@ -1620,6 +1620,24 @@
       if (el) animCount(el, 847);
     });
   </script>
+
+<!-- Auth-redirect safety net: fanger opp OAuth-callback som havner her -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-config.js"></script>
+<script>
+(async function() {
+  // Case 1: OAuth-callback feilsendt hit (hash inneholder access_token)
+  if (window.location.hash && window.location.hash.includes('access_token')) {
+    window.location.href = 'auth-callback.html' + window.location.hash;
+    return;
+  }
+  // Case 2: Bruker allerede innlogget — send til deals
+  const user = await getUser();
+  if (user) {
+    window.location.href = 'deals.html';
+  }
+})();
+</script>
 </body>
 
 </html>
