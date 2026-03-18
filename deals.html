@@ -218,30 +218,15 @@ async function initPage() {
   // Ensure profile exists (creates for Google OAuth users)
   const profile = await ensureUserProfile(user);
 
-  // Check if user needs Stripe checkout (Google OAuth users without subscription)
-  // DB field is subscription_active (boolean), set by stripe-webhook
+  // Check subscription status
   const hasSubscription = profile && profile.subscription_active === true;
-  const isOAuthUser = user.app_metadata?.provider === 'google' || user.identities?.some(i => i.provider === 'google');
 
-  if (isOAuthUser && !hasSubscription) {
-    try {
-      const checkoutRes = await fetch(SUPABASE_URL + '/functions/v1/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email })
-      });
-      const checkoutData = await checkoutRes.json();
-      if (checkoutData && checkoutData.url) {
-        window.location.href = checkoutData.url;
-        return;
-      }
-    } catch (e) {
-      console.warn('Stripe checkout feilet:', e);
-      // Continue to deals page if Stripe fails
-    }
+  if (!hasSubscription) {
+    // Show paywall banner instead of force-redirecting to Stripe
+    showPaywallBanner(user.email);
   }
 
-  // Auth confirmed — load deals
+  // Always load deals (paywall banner overlays on top)
   await loadDeals();
 }
 initPage();
@@ -260,6 +245,63 @@ const fallbackDeals = [
   { from: 'Tromsø', fromCode: 'TOS', to: 'Reykjavik', toCode: 'KEF', cc: 'is', price: 1846, orig: 3138, discount: 41, dates: 'Apr 2026', airline: 'Finnair', direct: false, origin: 'TOS' },
   { from: 'Torp', fromCode: 'TRF', to: 'Alicante', toCode: 'ALC', cc: 'es', price: 746, orig: 1268, discount: 41, dates: 'Apr 2026', airline: 'Ryanair', direct: true, origin: 'TRF' },
 ];
+
+async function showPaywallBanner(email) {
+  // Create paywall overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'paywallOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,5,5,0.85);backdrop-filter:blur(8px);';
+  overlay.innerHTML = `
+    <div style="background:#0e0e0e;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:40px;max-width:440px;text-align:center;">
+      <div style="width:56px;height:56px;background:#ff6b00;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+        <span class="ms" style="font-size:28px;color:#fff">rocket_launch</span>
+      </div>
+      <h2 style="font-size:24px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-0.5px;">Start din gratis prøveperiode</h2>
+      <p style="color:rgba(255,255,255,0.5);font-size:15px;margin-bottom:24px;line-height:1.5;">
+        Få tilgang til alle flydeals i 7 dager helt gratis.<br>
+        Deretter kun <strong style="color:#fff">149 kr/mnd</strong> — ingen binding.
+      </p>
+      <button id="paywallStartBtn" style="background:#ff6b00;color:#fff;border:none;border-radius:100px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;width:100%;font-family:DM Sans;transition:background 0.2s;">
+        Start 7 dagers gratis prøve
+      </button>
+      <button id="paywallLogoutBtn" style="background:transparent;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:10px 24px;font-size:13px;font-weight:500;cursor:pointer;width:100%;margin-top:10px;font-family:DM Sans;">
+        Logg ut
+      </button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // Start trial button — fetch Stripe checkout
+  document.getElementById('paywallStartBtn').addEventListener('click', async function() {
+    this.textContent = 'Laster...';
+    this.style.opacity = '0.7';
+    this.disabled = true;
+    try {
+      const res = await fetch(SUPABASE_URL + '/functions/v1/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      });
+      const data = await res.json();
+      if (data && data.url) {
+        window.location.href = data.url;
+      } else {
+        this.textContent = 'Noe gikk galt — prøv igjen';
+        this.style.opacity = '1';
+        this.disabled = false;
+      }
+    } catch (e) {
+      this.textContent = 'Noe gikk galt — prøv igjen';
+      this.style.opacity = '1';
+      this.disabled = false;
+    }
+  });
+
+  // Logout button
+  document.getElementById('paywallLogoutBtn').addEventListener('click', function() {
+    logout();
+  });
+}
 
 async function loadDeals() {
   const grid = document.getElementById('dealsGrid');

@@ -60,25 +60,11 @@ async function handleCallback() {
   const hasSubscription = profile && profile.subscription_active === true;
 
   if (!hasSubscription) {
-    // New Google user — redirect to Stripe checkout
-    statusMsg.textContent = 'Starter betalingsoppsett...';
-    try {
-      const checkoutRes = await fetch(SUPABASE_URL + '/functions/v1/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email })
-      });
-      const checkoutData = await checkoutRes.json();
-      if (checkoutData.url) {
-        window.location.href = checkoutData.url;
-        return;
-      }
-    } catch (e) {
-      console.error('Stripe checkout feilet:', e);
-    }
+    // Mark that this user needs subscription — deals.html will show paywall banner
+    sessionStorage.setItem('flydeals_needs_sub', '1');
   }
 
-  // Already has subscription or Stripe failed — go to deals
+  // Always go to deals — subscription check happens there via banner
   window.location.href = 'deals.html';
 }
 
