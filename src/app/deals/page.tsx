@@ -4,29 +4,31 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/useAuth';
 import { useRouter } from 'next/navigation';
 
+const Flag = ({c}: {c: string}) => <span className={`fi fi-${c} fis`} style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',marginBottom:'1px',borderRadius:'2px'}}></span>;
+
 const deals = [
-  { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', flag: '🇹🇭', price: 2489, orig: 4700, discount: 47, dates: 'Mar–Apr 2026', airline: 'Thai Airways', direct: true, origin: 'OSL' },
-  { from: 'Bergen', fromCode: 'BGO', to: 'London', toCode: 'LHR', flag: '🇬🇧', price: 489, orig: 1020, discount: 52, dates: 'Mars 2026', airline: 'Norwegian', direct: true, origin: 'BGO' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', flag: '🇺🇸', price: 2890, orig: 4900, discount: 41, dates: 'Apr–Mai 2026', airline: 'SAS', direct: true, origin: 'OSL' },
-  { from: 'Trondheim', fromCode: 'TRD', to: 'Barcelona', toCode: 'BCN', flag: '🇪🇸', price: 699, orig: 1130, discount: 38, dates: 'April 2026', airline: 'Norwegian', direct: false, origin: 'TRD' },
-  { from: 'Stavanger', fromCode: 'SVG', to: 'Amsterdam', toCode: 'AMS', flag: '🇳🇱', price: 549, orig: 980, discount: 44, dates: 'Mars 2026', airline: 'Norwegian', direct: false, origin: 'SVG' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Tokyo', toCode: 'HND', flag: '🇯🇵', price: 3490, orig: 5720, discount: 39, dates: 'Mai–Jun 2026', airline: 'ANA', direct: false, origin: 'OSL' },
-  { from: 'Tromsø', fromCode: 'TOS', to: 'Reykjavik', toCode: 'KEF', flag: '🇮🇸', price: 890, orig: 1370, discount: 35, dates: 'April 2026', airline: 'Icelandair', direct: true, origin: 'TOS' },
-  { from: 'Torp', fromCode: 'TRF', to: 'Alicante', toCode: 'ALC', flag: '🇪🇸', price: 399, orig: 814, discount: 51, dates: 'Mar–Apr 2026', airline: 'Ryanair', direct: true, origin: 'TRF' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Dubai', toCode: 'DXB', flag: '🇦🇪', price: 1990, orig: 3490, discount: 43, dates: 'April 2026', airline: 'Emirates', direct: true, origin: 'OSL' },
-  { from: 'Bergen', fromCode: 'BGO', to: 'Roma', toCode: 'FCO', flag: '🇮🇹', price: 599, orig: 1110, discount: 46, dates: 'Mars 2026', airline: 'SAS', direct: false, origin: 'BGO' },
-  { from: 'Trondheim', fromCode: 'TRD', to: 'Paris', toCode: 'CDG', flag: '🇫🇷', price: 649, orig: 1082, discount: 40, dates: 'April 2026', airline: 'Air France', direct: false, origin: 'TRD' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Bali', toCode: 'DPS', flag: '🇮🇩', price: 4290, orig: 6703, discount: 36, dates: 'Mai 2026', airline: 'Qatar Airways', direct: false, origin: 'OSL' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', flag: 'th', price: 2489, orig: 4700, discount: 47, dates: 'Mar–Apr 2026', airline: 'Thai Airways', direct: true, origin: 'OSL' },
+  { from: 'Bergen', fromCode: 'BGO', to: 'London', toCode: 'LHR', flag: 'gb', price: 489, orig: 1020, discount: 52, dates: 'Mars 2026', airline: 'Norwegian', direct: true, origin: 'BGO' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', flag: 'us', price: 2890, orig: 4900, discount: 41, dates: 'Apr–Mai 2026', airline: 'SAS', direct: true, origin: 'OSL' },
+  { from: 'Trondheim', fromCode: 'TRD', to: 'Barcelona', toCode: 'BCN', flag: 'es', price: 699, orig: 1130, discount: 38, dates: 'April 2026', airline: 'Norwegian', direct: false, origin: 'TRD' },
+  { from: 'Stavanger', fromCode: 'SVG', to: 'Amsterdam', toCode: 'AMS', flag: 'nl', price: 549, orig: 980, discount: 44, dates: 'Mars 2026', airline: 'Norwegian', direct: false, origin: 'SVG' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Tokyo', toCode: 'HND', flag: 'jp', price: 3490, orig: 5720, discount: 39, dates: 'Mai–Jun 2026', airline: 'ANA', direct: false, origin: 'OSL' },
+  { from: 'Tromsø', fromCode: 'TOS', to: 'Reykjavik', toCode: 'KEF', flag: 'is', price: 890, orig: 1370, discount: 35, dates: 'April 2026', airline: 'Icelandair', direct: true, origin: 'TOS' },
+  { from: 'Torp', fromCode: 'TRF', to: 'Alicante', toCode: 'ALC', flag: 'es', price: 399, orig: 814, discount: 51, dates: 'Mar–Apr 2026', airline: 'Ryanair', direct: true, origin: 'TRF' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Dubai', toCode: 'DXB', flag: 'ae', price: 1990, orig: 3490, discount: 43, dates: 'April 2026', airline: 'Emirates', direct: true, origin: 'OSL' },
+  { from: 'Bergen', fromCode: 'BGO', to: 'Roma', toCode: 'FCO', flag: 'it', price: 599, orig: 1110, discount: 46, dates: 'Mars 2026', airline: 'SAS', direct: false, origin: 'BGO' },
+  { from: 'Trondheim', fromCode: 'TRD', to: 'Paris', toCode: 'CDG', flag: 'fr', price: 649, orig: 1082, discount: 40, dates: 'April 2026', airline: 'Air France', direct: false, origin: 'TRD' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Bali', toCode: 'DPS', flag: 'id', price: 4290, orig: 6703, discount: 36, dates: 'Mai 2026', airline: 'Qatar Airways', direct: false, origin: 'OSL' },
 ];
 
 const airports = [
   { code: 'alle', label: 'Alle flyplasser' },
-  { code: 'OSL', label: '🇳🇴 Oslo (OSL)' },
-  { code: 'BGO', label: '🇳🇴 Bergen (BGO)' },
-  { code: 'TRD', label: '🇳🇴 Trondheim (TRD)' },
-  { code: 'SVG', label: '🇳🇴 Stavanger (SVG)' },
-  { code: 'TOS', label: '🇳🇴 Tromsø (TOS)' },
-  { code: 'TRF', label: '🇳🇴 Torp (TRF)' },
+  { code: 'OSL', label: 'Oslo (OSL)', fc: 'no' },
+  { code: 'BGO', label: 'Bergen (BGO)', fc: 'no' },
+  { code: 'TRD', label: 'Trondheim (TRD)', fc: 'no' },
+  { code: 'SVG', label: 'Stavanger (SVG)', fc: 'no' },
+  { code: 'TOS', label: 'Tromsø (TOS)', fc: 'no' },
+  { code: 'TRF', label: 'Torp (TRF)', fc: 'no' },
 ];
 
 const Sidebar = ({ active, userName, userEmail }: { active: string; userName: string; userEmail: string }) => (
@@ -140,7 +142,7 @@ export default function DealsPage() {
                 onClick={() => setFilter(a.code)}
                 className={`px-4 py-2 rounded-full text-sm transition-all ${filter === a.code ? 'font-semibold bg-[#ff6b00] text-white' : 'font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40'}`}
               >
-                {a.label}
+                {'fc' in a && a.fc && <Flag c={a.fc as string} />} {a.label}
               </button>
             ))}
           </div>
@@ -150,7 +152,7 @@ export default function DealsPage() {
               <div key={i} className="deal-card bg-[#111] border border-[#1e1e1e] rounded-xl p-3.5 transition-all duration-200 cursor-pointer">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <span className="text-sm font-black">{d.to} {d.flag}</span>
+                    <span className="text-sm font-black">{d.to} <Flag c={d.flag} /></span>
                     <p className="text-[11px] text-slate-500 mt-0.5">{d.from} → {d.toCode}</p>
                   </div>
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">-{d.discount}%</span>

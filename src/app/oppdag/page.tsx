@@ -4,21 +4,23 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/useAuth';
 
+const Flag = ({c}: {c: string}) => <span className={`fi fi-${c} fis`} style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',marginBottom:'1px',borderRadius:'2px'}}></span>;
+
 const destinations = [
-  { name: 'Barcelona 🇪🇸', region: 'europa', search: 'barcelona spania', img: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80', badge: 'Toppvalg', discount: '-38%', price: '699 kr', from: 'Fra Trondheim · Direktefly', duration: '3t 10m', month: 'Apr 2026' },
-  { name: 'London 🇬🇧', region: 'europa', search: 'london storbritannia', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80', badge: null, discount: '-35%', price: '489 kr', from: 'Fra Bergen · Direktefly', duration: '2t 5m', month: 'Mars 2026' },
-  { name: 'Bangkok 🇹🇭', region: 'asia', search: 'bangkok thailand', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80', badge: null, discount: '-47%', price: '2 489 kr', from: 'Fra Oslo · Thai Airways', duration: '11t 20m', month: 'Mar–Apr 2026' },
-  { name: 'Dubai 🇦🇪', region: 'asia', search: 'dubai emiratene', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80', badge: null, discount: '-33%', price: '1 990 kr', from: 'Fra Oslo · Emirates', duration: '6t 55m', month: 'April 2026' },
-  { name: 'New York 🇺🇸', region: 'amerika', search: 'new york usa', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80', badge: null, discount: '-41%', price: '2 890 kr', from: 'Fra Oslo · SAS', duration: '9t 15m', month: 'Apr–Mai 2026' },
-  { name: 'Tokyo 🇯🇵', region: 'asia', search: 'tokyo japan', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80', badge: null, discount: '-44%', price: '3 490 kr', from: 'Fra Oslo · ANA', duration: '14t 30m', month: 'Mai–Jun 2026' },
+  { name: 'Barcelona', fc: 'es', region: 'europa', search: 'barcelona spania', img: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80', badge: 'Toppvalg', discount: '-38%', price: '699 kr', from: 'Fra Trondheim · Direktefly', duration: '3t 10m', month: 'Apr 2026' },
+  { name: 'London', fc: 'gb', region: 'europa', search: 'london storbritannia', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80', badge: null, discount: '-35%', price: '489 kr', from: 'Fra Bergen · Direktefly', duration: '2t 5m', month: 'Mars 2026' },
+  { name: 'Bangkok', fc: 'th', region: 'asia', search: 'bangkok thailand', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80', badge: null, discount: '-47%', price: '2 489 kr', from: 'Fra Oslo · Thai Airways', duration: '11t 20m', month: 'Mar–Apr 2026' },
+  { name: 'Dubai', fc: 'ae', region: 'asia', search: 'dubai emiratene', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80', badge: null, discount: '-33%', price: '1 990 kr', from: 'Fra Oslo · Emirates', duration: '6t 55m', month: 'April 2026' },
+  { name: 'New York', fc: 'us', region: 'amerika', search: 'new york usa', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80', badge: null, discount: '-41%', price: '2 890 kr', from: 'Fra Oslo · SAS', duration: '9t 15m', month: 'Apr–Mai 2026' },
+  { name: 'Tokyo', fc: 'jp', region: 'asia', search: 'tokyo japan', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80', badge: null, discount: '-44%', price: '3 490 kr', from: 'Fra Oslo · ANA', duration: '14t 30m', month: 'Mai–Jun 2026' },
 ];
 
 const quickRoutes = [
-  { flag: '🇪🇸', route: 'Oslo → Alicante', airline: 'Ryanair · Mars 2026', price: '549 kr' },
-  { flag: '🇮🇸', route: 'Tromsø → Reykjavik', airline: 'Icelandair · April 2026', price: '890 kr' },
-  { flag: '🇳🇱', route: 'Stavanger → Amsterdam', airline: 'KLM · Mars 2026', price: '549 kr' },
-  { flag: '🇮🇹', route: 'Bergen → Roma', airline: 'SAS · Mars 2026', price: '599 kr' },
-  { flag: '🇫🇷', route: 'Trondheim → Paris', airline: 'Air France · April 2026', price: '649 kr' },
+  { flag: 'es', route: 'Oslo → Alicante', airline: 'Ryanair · Mars 2026', price: '549 kr' },
+  { flag: 'is', route: 'Tromsø → Reykjavik', airline: 'Icelandair · April 2026', price: '890 kr' },
+  { flag: 'nl', route: 'Stavanger → Amsterdam', airline: 'KLM · Mars 2026', price: '549 kr' },
+  { flag: 'it', route: 'Bergen → Roma', airline: 'SAS · Mars 2026', price: '599 kr' },
+  { flag: 'fr', route: 'Trondheim → Paris', airline: 'Air France · April 2026', price: '649 kr' },
 ];
 
 const regions = [
@@ -183,7 +185,7 @@ export default function OppdagPage() {
                   <div className="p-4">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h4 className="font-bold text-base">{d.name}</h4>
+                        <h4 className="font-bold text-base">{d.name} <Flag c={d.fc} /></h4>
                         <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                           <span className="ms" style={{fontSize:'13px'}}>flight</span> {d.from}
                         </p>
@@ -216,7 +218,7 @@ export default function OppdagPage() {
               {quickRoutes.map((r, i) => (
                 <div key={i} className="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/5 transition-colors cursor-pointer">
                   <div className="flex items-center gap-3">
-                    <span className="text-base">{r.flag}</span>
+                    <Flag c={r.flag} />
                     <div>
                       <p className="text-sm font-semibold">{r.route}</p>
                       <p className="text-xs text-slate-500">{r.airline}</p>

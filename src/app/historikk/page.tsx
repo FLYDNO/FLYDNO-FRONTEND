@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/useAuth';
 
+const Flag = ({c}: {c: string}) => <span className={`fi fi-${c} fis`} style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',marginBottom:'1px',borderRadius:'2px'}}></span>;
+
 const historyItems = [
-  { to: 'New York 🇺🇸', code: 'JFK', from: 'fra Oslo (OSL)', date: '15. Jan 2026', price: '2 490 kr', discount: '-41%', search: 'new york jfk oslo' },
-  { to: 'London 🇬🇧', code: 'LHR', from: 'fra Bergen (BGO)', date: '10. Jan 2026', price: '890 kr', discount: '-35%', search: 'london lhr bergen' },
-  { to: 'Tokyo 🇯🇵', code: 'HND', from: 'fra Oslo (OSL)', date: '07. Jan 2026', price: '5 920 kr', discount: '-47%', search: 'tokyo hnd oslo' },
-  { to: 'Alicante 🇪🇸', code: 'ALC', from: 'fra Trondheim (TRD)', date: '03. Jan 2026', price: '1 150 kr', discount: '-31%', search: 'alicante alc trondheim' },
-  { to: 'Bangkok 🇹🇭', code: 'BKK', from: 'fra Oslo (OSL)', date: '28. Des 2025', price: '6 340 kr', discount: '-44%', search: 'bangkok bkk oslo' },
+  { to: 'New York', fc: 'us', code: 'JFK', from: 'fra Oslo (OSL)', date: '15. Jan 2026', price: '2 490 kr', discount: '-41%', search: 'new york jfk oslo' },
+  { to: 'London', fc: 'gb', code: 'LHR', from: 'fra Bergen (BGO)', date: '10. Jan 2026', price: '890 kr', discount: '-35%', search: 'london lhr bergen' },
+  { to: 'Tokyo', fc: 'jp', code: 'HND', from: 'fra Oslo (OSL)', date: '07. Jan 2026', price: '5 920 kr', discount: '-47%', search: 'tokyo hnd oslo' },
+  { to: 'Alicante', fc: 'es', code: 'ALC', from: 'fra Trondheim (TRD)', date: '03. Jan 2026', price: '1 150 kr', discount: '-31%', search: 'alicante alc trondheim' },
+  { to: 'Bangkok', fc: 'th', code: 'BKK', from: 'fra Oslo (OSL)', date: '28. Des 2025', price: '6 340 kr', discount: '-44%', search: 'bangkok bkk oslo' },
 ];
 
 export default function HistorikkPage() {
@@ -180,7 +182,7 @@ export default function HistorikkPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xl font-black tracking-tight">{item.to}</span>
+                        <span className="text-xl font-black tracking-tight">{item.to} <Flag c={item.fc} /></span>
                         <span className="text-xs font-medium text-slate-500 bg-[#2a2a2a] px-2 py-0.5 rounded-full">{item.code}</span>
                       </div>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">

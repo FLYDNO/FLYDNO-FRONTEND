@@ -147,7 +147,7 @@ export default function VarslerPage() {
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-[#ff6b00]/10 rounded-lg text-[#ff6b00]"><span className="ms" style={{fontSize:'20px'}}>flight_takeoff</span></div>
                         <div>
-                          <p className="text-white font-bold">New York 🇺🇸 <span className="text-slate-500 font-normal text-xs">(JFK)</span></p>
+                          <p className="text-white font-bold">New York <span className="fi fi-us fis" style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',borderRadius:'2px'}}></span> <span className="text-slate-500 font-normal text-xs">(JFK)</span></p>
                           <p className="text-xs text-slate-500">fra Oslo (OSL)</p>
                         </div>
                       </div>
@@ -184,7 +184,7 @@ export default function VarslerPage() {
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-[#ff6b00]/10 rounded-lg text-[#ff6b00]"><span className="ms" style={{fontSize:'20px'}}>flight_takeoff</span></div>
                         <div>
-                          <p className="text-white font-bold">London 🇬🇧 <span className="text-slate-500 font-normal text-xs">(LHR)</span></p>
+                          <p className="text-white font-bold">London <span className="fi fi-gb fis" style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',borderRadius:'2px'}}></span> <span className="text-slate-500 font-normal text-xs">(LHR)</span></p>
                           <p className="text-xs text-slate-500">fra Bergen (BGO)</p>
                         </div>
                       </div>
@@ -221,7 +221,7 @@ export default function VarslerPage() {
                       <div className="flex items-center gap-3">
                         <div className={`p-2 ${row3 ? 'bg-[#ff6b00]/10 text-[#ff6b00]' : 'bg-white/5 text-slate-500'} rounded-lg`}><span className="ms" style={{fontSize:'20px'}}>flight_takeoff</span></div>
                         <div>
-                          <p className={`font-bold ${row3 ? 'text-white' : 'text-slate-400'}`}>Dubai 🇦🇪 <span className="text-slate-600 font-normal text-xs">(DXB)</span></p>
+                          <p className={`font-bold ${row3 ? 'text-white' : 'text-slate-400'}`}>Dubai <span className="fi fi-ae fis" style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',borderRadius:'2px'}}></span> <span className="text-slate-600 font-normal text-xs">(DXB)</span></p>
                           <p className="text-xs text-slate-600">fra Stavanger (SVG)</p>
                         </div>
                       </div>
@@ -272,7 +272,7 @@ export default function VarslerPage() {
                 <div className="p-4">
                   <div className="flex justify-between items-start mb-1">
                     <div>
-                      <h4 className="font-bold text-white">New York 🇺🇸</h4>
+                      <h4 className="font-bold text-white">New York <span className="fi fi-us fis" style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',borderRadius:'2px'}}></span></h4>
                       <p className="text-xs text-slate-500">fra Oslo (OSL → JFK)</p>
                     </div>
                     <p className="text-[#ff6b00] font-black">4 290 kr</p>
@@ -295,7 +295,7 @@ export default function VarslerPage() {
                 <div className="p-4 opacity-75">
                   <div className="flex justify-between items-start mb-1">
                     <div>
-                      <h4 className="font-bold text-white">London 🇬🇧</h4>
+                      <h4 className="font-bold text-white">London <span className="fi fi-gb fis" style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',borderRadius:'2px'}}></span></h4>
                       <p className="text-xs text-slate-500">fra Bergen (BGO → LHR)</p>
                     </div>
                     <p className="text-slate-400 font-black">980 kr</p>
