@@ -5,13 +5,14 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" />
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script>
   tailwind.config = {
     darkMode: "class",
     theme: {
       extend: {
-        colors: { "primary": "#ff6b00", "bg": "#050505", "surface": "#111111", "surface-dark": "#111111", "background-dark": "#0e0e0e", "border": "#1e1e1e", "dark": "#1e1e1e", "border-dark": "#1e1e1e" },
+        colors: { "primary": "#ff6b00", "bg": "#050505", "surface": "#111111", "border": "#1e1e1e" },
         fontFamily: { "sans": ["DM Sans", "sans-serif"] }
       }
     }
@@ -31,7 +32,7 @@
 
   <!-- Sidebar -->
   <aside class="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
-    <div class="p-5 flex items-center gap-3">
+    <a href="index.html" class="p-5 flex items-center gap-3 hover:opacity-80 transition-opacity">
       <div class="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#ff6b00]/20 flex-shrink-0">
         <span class="ms" style="font-size:18px">flight_takeoff</span>
       </div>
@@ -39,7 +40,7 @@
         <h1 class="text-base font-bold leading-tight text-white">FlyDeals</h1>
         <p class="text-[11px] text-slate-500 font-medium">Varsler deg om flydeals</p>
       </div>
-    </div>
+    </a>
     <nav class="flex-1 px-3 space-y-0.5 mt-1">
       <a href="deals.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
         <span class="ms" style="font-size:18px">local_offer</span>
@@ -68,7 +69,7 @@
         </a>
       </div>
     </nav>
-        <div class="p-3 mt-auto border-t border-[#1e1e1e]">
+    <div class="p-3 mt-auto border-t border-[#1e1e1e]">
       <div class="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
         <div class="overflow-hidden flex-1 min-w-0">
           <p class="text-sm font-semibold truncate">Marius Jensen</p>
@@ -119,27 +120,26 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-2">
                 <label class="text-sm font-medium text-slate-300">Fullt navn</label>
-                <input class="bg-[#111] text-slate-100 w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-100" type="text" value="Morten Hansen"/>
+                <input class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-100" type="text" value="Morten Hansen"/>
               </div>
               <div class="space-y-2">
                 <label class="text-sm font-medium text-slate-300">E-postadresse</label>
-                <input class="bg-[#111] text-slate-100 w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-100" type="email" value="morten@flydeals.no"/>
+                <input class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-100" type="email" value="morten@flydeals.no"/>
               </div>
               <div class="space-y-2">
                 <label class="text-sm font-medium text-slate-300">Telefonnummer</label>
-                <input class="bg-[#111] text-slate-100 w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-100" type="tel" value="+47 900 00 000"/>
+                <input class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-100" type="tel" value="+47 900 00 000"/>
               </div>
               <div class="space-y-2">
                 <label class="text-sm font-medium text-slate-300">Land</label>
-                <select class="bg-[#111] text-slate-100 w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-100">
-                  <option value="NO">🇳🇴 Norge</option>
+                <select class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-100">
+                  <option value="NO"><span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Norge</option>
                   <option value="SE">🇸🇪 Sverige</option>
                   <option value="DK">🇩🇰 Danmark</option>
                 </select>
               </div>
             </div>
             <div class="pt-4 flex justify-end">
-              <button id="saveBtn" onclick="saveSettings(this)" class="bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-6 rounded-lg transition-colors shadow-lg shadow-primary/20">
               <button onclick="saveProfile(this)" class="bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-6 rounded-lg transition-colors shadow-lg shadow-primary/20">
                 Lagre endringer
               </button>
@@ -147,7 +147,7 @@
           </div>
         </section>
 
-        <!-- Notifications — SMS varsel REMOVED -->
+        <!-- Notifications -->
         <section class="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden">
           <div class="p-6 border-b border-[#1e1e1e]">
             <h3 class="text-lg font-bold">Varslingsinnstillinger</h3>
@@ -160,7 +160,7 @@
                 <p class="text-xs text-slate-400">Få ukentlige oppsummeringer av de beste flyprisene.</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input checked class="bg-[#111] text-slate-100 sr-only peer" type="checkbox"/>
+                <input checked class="sr-only peer" type="checkbox"/>
                 <div class="w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
               </label>
             </div>
@@ -170,7 +170,7 @@
                 <p class="text-xs text-slate-400">Motta informasjon om nye funksjoner og kampanjer.</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input checked class="bg-[#111] text-slate-100 sr-only peer" type="checkbox"/>
+                <input checked class="sr-only peer" type="checkbox"/>
                 <div class="w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
               </label>
             </div>
@@ -194,7 +194,6 @@
                 <p class="text-xs text-slate-500">Neste fornyelse: 24. mai 2026 · Ingen binding</p>
               </div>
               <div class="flex gap-3">
-                <button onclick="openCancelModal()" class="px-4 py-2 rounded-lg bg-red-500/10 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all">Si opp abonnement</button>
                 <button onclick="openModal('cancelModal')" class="px-4 py-2 rounded-lg bg-red-500/10 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all">Si opp abonnement</button>
               </div>
             </div>
@@ -208,7 +207,6 @@
               <h3 class="text-lg font-bold text-red-500">Slett konto</h3>
               <p class="text-sm text-slate-400">Dette vil slette alle dine data permanent. Dette kan ikke angres.</p>
             </div>
-            <button onclick="openDeleteModal()" class="px-6 py-2.5 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20 whitespace-nowrap">
             <button onclick="openModal('deleteModal')" class="px-6 py-2.5 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20 whitespace-nowrap">
               Slett min konto
             </button>
@@ -225,48 +223,9 @@
     </div>
   </main>
 </div>
-<!-- Cancel Subscription Modal -->
-<div id="cancelModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this)document.getElementById('cancelModal').classList.add('hidden')">
-  <div class="bg-[#111] border border-[#1e1e1e] rounded-2xl w-full max-w-sm shadow-2xl p-6 text-center">
-    <span class="ms text-yellow-500 mb-3 block" style="font-size:40px">warning</span>
-    <h3 class="text-lg font-bold mb-1">Si opp abonnement?</h3>
-    <p class="text-slate-400 text-sm mb-2">Du beholder tilgang frem til <strong class="text-slate-200">24. mai 2026</strong>.</p>
-    <p class="text-slate-500 text-xs mb-6">Du kan starte abonnementet igjen når som helst.</p>
-    <div class="flex gap-3">
-      <button onclick="document.getElementById('cancelModal').classList.add('hidden')" class="flex-1 py-2.5 rounded-xl border border-[#1e1e1e] text-slate-400 hover:text-white font-semibold text-sm transition-colors">Avbryt</button>
-      <button onclick="confirmCancel()" class="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition-colors">Si opp</button>
-    </div>
-  </div>
-</div>
 
-<!-- Delete Account Modal -->
-<div id="deleteModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this)document.getElementById('deleteModal').classList.add('hidden')">
-  <div class="bg-[#111] border border-red-500/30 rounded-2xl w-full max-w-sm shadow-2xl p-6 text-center">
-    <span class="ms text-red-500 mb-3 block" style="font-size:40px">delete_forever</span>
-    <h3 class="text-lg font-bold mb-1 text-red-400">Slett konto permanent?</h3>
-    <p class="text-slate-400 text-sm mb-6">All data slettes umiddelbart og kan ikke gjenopprettes.</p>
-    <div class="flex gap-3">
-      <button onclick="document.getElementById('deleteModal').classList.add('hidden')" class="flex-1 py-2.5 rounded-xl border border-[#1e1e1e] text-slate-400 hover:text-white font-semibold text-sm transition-colors">Avbryt</button>
-      <button onclick="confirmDelete()" class="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition-colors">Slett alt</button>
-    </div>
-  </div>
-</div>
-
-<script>
-function saveSettings(btn) {
-  const original = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = '✓ Lagret!';
-  btn.style.background = '#22c55e';
-  btn.style.boxShadow = '0 4px 14px rgba(34,197,94,0.3)';
-  setTimeout(() => {
-    btn.textContent = original;
-    btn.style.background = '';
-    btn.style.boxShadow = '';
-    btn.disabled = false;
-  }, 2000);
 <!-- Toast -->
-<div id="toast" style="position:fixed;bottom:24px;right:24px;z-index:200;display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.4);background:#111;border:1px solid rgba(34,197,94,0.3);color:#22c55e;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;" id="toast">
+<div id="toast" style="position:fixed;bottom:24px;right:24px;z-index:200;display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.4);background:#111;border:1px solid rgba(34,197,94,0.3);color:#22c55e;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;">
   <span class="ms" style="font-size:18px" id="toastIcon">check_circle</span>
   <span id="toastMsg"></span>
 </div>
@@ -295,7 +254,7 @@ function saveSettings(btn) {
     <h3 style="font-size:18px;font-weight:800;margin-bottom:8px;color:#ef4444;">Slett konto permanent</h3>
     <p style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.6;margin-bottom:16px;">Dette vil slette alle dine data, varsler og historikk for alltid. Denne handlingen kan ikke angres.</p>
     <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:8px;">Skriv inn <strong style="color:#fff;">SLETT</strong> for å bekrefte:</p>
-    <input id="deleteConfirmInput" placeholder="SLETT" style="width:100%;background:#050505;border:1px solid #1e1e1e;border-radius:8px;padding:10px 14px;color:white;font-size:14px;margin-bottom:20px;outline:none;box-sizing:border-box;" oninput="document.getElementById('confirmDeleteBtn').disabled=this.value!=='SLETT'"/>
+    <input id="deleteConfirmInput" placeholder="SLETT" style="width:100%;background:#050505;border:1px solid #1e1e1e;border-radius:8px;padding:10px 14px;color:white;font-size:14px;margin-bottom:20px;outline:none;box-sizing:border-box;" oninput="document.getElementById('confirmDeleteBtn').disabled=this.value!=='SLETT';document.getElementById('confirmDeleteBtn').style.opacity=this.value==='SLETT'?'1':'0.4'"/>
     <div style="display:flex;gap:12px;justify-content:flex-end;">
       <button onclick="closeModal('deleteModal')" style="padding:10px 20px;border-radius:8px;background:#1e1e1e;color:rgba(255,255,255,0.7);font-weight:600;font-size:14px;border:none;cursor:pointer;">Avbryt</button>
       <button id="confirmDeleteBtn" onclick="confirmDelete()" disabled style="padding:10px 20px;border-radius:8px;background:#ef4444;color:white;font-weight:700;font-size:14px;border:none;cursor:pointer;opacity:0.4;transition:opacity 0.2s;">Slett konto</button>
@@ -341,16 +300,6 @@ function closeModal(id) {
   document.getElementById(id).style.display = 'none';
 }
 
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-  this.style.opacity = this.disabled ? '0.4' : '1';
-});
-
-document.getElementById('deleteConfirmInput').addEventListener('input', function() {
-  const btn = document.getElementById('confirmDeleteBtn');
-  btn.disabled = this.value !== 'SLETT';
-  btn.style.opacity = this.value === 'SLETT' ? '1' : '0.4';
-});
-
 function confirmCancel() {
   closeModal('cancelModal');
   showToast('Abonnementet er sagt opp. Du beholder tilgangen til 24. mai 2026.', 'success');
@@ -360,33 +309,6 @@ function confirmDelete() {
   closeModal('deleteModal');
   showToast('Konto slettet. Du blir nå logget ut...', 'success');
   setTimeout(() => window.location.href = 'login.html', 2000);
-}
-
-function openCancelModal() {
-  document.getElementById('cancelModal').classList.remove('hidden');
-}
-
-function openDeleteModal() {
-  document.getElementById('deleteModal').classList.remove('hidden');
-}
-
-function confirmCancel() {
-  document.getElementById('cancelModal').classList.add('hidden');
-  // Show confirmation toast
-  const toast = document.createElement('div');
-  toast.className = 'fixed bottom-6 right-6 z-50 bg-[#1a1a1a] border border-[#2a2a2a] text-slate-200 px-5 py-3 rounded-xl shadow-2xl text-sm font-medium';
-  toast.textContent = 'Abonnement sagt opp. Du beholder tilgang frem til 24. mai 2026.';
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 4000);
-}
-
-function confirmDelete() {
-  document.getElementById('deleteModal').classList.add('hidden');
-  const toast = document.createElement('div');
-  toast.className = 'fixed bottom-6 right-6 z-50 bg-red-500/20 border border-red-500/30 text-red-300 px-5 py-3 rounded-xl shadow-2xl text-sm font-medium';
-  toast.textContent = 'Konto slettet. (Demo – ingen data er faktisk slettet)';
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 4000);
 }
 </script>
 </body>

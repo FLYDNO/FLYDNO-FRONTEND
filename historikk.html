@@ -6,6 +6,7 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" />
 <script>
   tailwind.config = {
     darkMode: "class",
@@ -31,7 +32,7 @@
 
   <!-- Sidebar -->
   <aside class="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
-    <div class="p-5 flex items-center gap-3">
+    <a href="index.html" class="p-5 flex items-center gap-3 hover:opacity-80 transition-opacity">
       <div class="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#ff6b00]/20 flex-shrink-0">
         <span class="ms" style="font-size:18px">flight_takeoff</span>
       </div>
@@ -39,7 +40,7 @@
         <h1 class="text-base font-bold leading-tight text-white">FlyDeals</h1>
         <p class="text-[11px] text-slate-500 font-medium">Varsler deg om flydeals</p>
       </div>
-    </div>
+    </a>
     <nav class="flex-1 px-3 space-y-0.5 mt-1">
       <a href="deals.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
         <span class="ms" style="font-size:18px">local_offer</span>
@@ -140,11 +141,11 @@
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-xl font-black tracking-tight">New York 🇺🇸</span>
+                <span class="text-xl font-black tracking-tight">New York <span class="fi fi-us fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span></span>
                 <span class="text-xs font-medium text-slate-500 bg-[#2a2a2a] px-2 py-0.5 rounded-full">JFK</span>
               </div>
               <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-                <span class="text-xs text-slate-500">fra 🇳🇴 Oslo (OSL)</span>
+                <span class="text-xs text-slate-500">fra <span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Oslo (OSL)</span>
                 <span class="text-slate-700">·</span>
                 <span class="flex items-center gap-1 text-xs text-slate-500"><span class="material-symbols-outlined" style="font-size:13px">calendar_month</span>15. Jan 2026</span>
                 <span class="text-slate-700">·</span>
@@ -166,11 +167,11 @@
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-xl font-black tracking-tight">London 🇬🇧</span>
+                <span class="text-xl font-black tracking-tight">London <span class="fi fi-gb fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span></span>
                 <span class="text-xs font-medium text-slate-500 bg-[#2a2a2a] px-2 py-0.5 rounded-full">LHR</span>
               </div>
               <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-                <span class="text-xs text-slate-500">fra 🇳🇴 Bergen (BGO)</span>
+                <span class="text-xs text-slate-500">fra <span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Bergen (BGO)</span>
                 <span class="text-slate-700">·</span>
                 <span class="flex items-center gap-1 text-xs text-slate-500"><span class="material-symbols-outlined" style="font-size:13px">calendar_month</span>10. Jan 2026</span>
                 <span class="text-slate-700">·</span>
@@ -192,11 +193,11 @@
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-xl font-black tracking-tight">Tokyo 🇯🇵</span>
+                <span class="text-xl font-black tracking-tight">Tokyo <span class="fi fi-jp fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span></span>
                 <span class="text-xs font-medium text-slate-500 bg-[#2a2a2a] px-2 py-0.5 rounded-full">HND</span>
               </div>
               <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-                <span class="text-xs text-slate-500">fra 🇳🇴 Oslo (OSL)</span>
+                <span class="text-xs text-slate-500">fra <span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Oslo (OSL)</span>
                 <span class="text-slate-700">·</span>
                 <span class="flex items-center gap-1 text-xs text-slate-500"><span class="material-symbols-outlined" style="font-size:13px">calendar_month</span>07. Jan 2026</span>
                 <span class="text-slate-700">·</span>
@@ -218,7 +219,7 @@
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-xl font-black tracking-tight">Alicante 🇪🇸</span>
+                <span class="text-xl font-black tracking-tight">Alicante <span class="fi fi-es fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span></span>
                 <span class="text-xs font-medium text-slate-500 bg-[#2a2a2a] px-2 py-0.5 rounded-full">ALC</span>
               </div>
               <div class="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -244,11 +245,11 @@
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-xl font-black tracking-tight">Bangkok 🇹🇭</span>
+                <span class="text-xl font-black tracking-tight">Bangkok <span class="fi fi-th fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span></span>
                 <span class="text-xs font-medium text-slate-500 bg-[#2a2a2a] px-2 py-0.5 rounded-full">BKK</span>
               </div>
               <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-                <span class="text-xs text-slate-500">fra 🇳🇴 Oslo (OSL)</span>
+                <span class="text-xs text-slate-500">fra <span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Oslo (OSL)</span>
                 <span class="text-slate-700">·</span>
                 <span class="flex items-center gap-1 text-xs text-slate-500"><span class="material-symbols-outlined" style="font-size:13px">calendar_month</span>28. Des 2025</span>
                 <span class="text-slate-700">·</span>
