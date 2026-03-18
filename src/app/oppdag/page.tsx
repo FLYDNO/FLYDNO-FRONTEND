@@ -1,15 +1,16 @@
-'use client'
-import { useState } from 'react'
-import Sidebar from '@/components/Sidebar'
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
 
 const destCards = [
-  { city: 'Barcelona 🇪🇸', from: 'Fra Trondheim • Direktefly', price: '699 kr', discount: '-38%', top: true, duration: '3t 10m', dates: 'Apr 2026', img: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80' },
-  { city: 'London 🇬🇧', from: 'Fra Bergen • Direktefly', price: '489 kr', discount: '-35%', top: false, duration: '2t 5m', dates: 'Mars 2026', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80' },
-  { city: 'Bangkok 🇹🇭', from: 'Fra Oslo • Thai Airways', price: '2 489 kr', discount: '-47%', top: false, duration: '11t 20m', dates: 'Mar–Apr 2026', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80' },
-  { city: 'Dubai 🇦🇪', from: 'Fra Oslo • Emirates', price: '1 990 kr', discount: '-33%', top: false, duration: '6t 55m', dates: 'April 2026', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80' },
-  { city: 'New York 🇺🇸', from: 'Fra Oslo • SAS', price: '2 890 kr', discount: '-41%', top: false, duration: '9t 15m', dates: 'Apr–Mai 2026', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80' },
-  { city: 'Tokyo 🇯🇵', from: 'Fra Oslo • ANA', price: '3 490 kr', discount: '-44%', top: false, duration: '14t 30m', dates: 'Mai–Jun 2026', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80' },
-]
+  { city: 'Barcelona 🇪🇸', from: 'Fra Trondheim • Direktefly', price: '699 kr', discount: '-38%', top: true, duration: '3t 10m', dates: 'Apr 2026', img: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80', region: '🌍 Europa' },
+  { city: 'London 🇬🇧', from: 'Fra Bergen • Direktefly', price: '489 kr', discount: '-35%', top: false, duration: '2t 5m', dates: 'Mars 2026', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80', region: '🌍 Europa' },
+  { city: 'Bangkok 🇹🇭', from: 'Fra Oslo • Thai Airways', price: '2 489 kr', discount: '-47%', top: false, duration: '11t 20m', dates: 'Mar–Apr 2026', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80', region: '🌏 Asia' },
+  { city: 'Dubai 🇦🇪', from: 'Fra Oslo • Emirates', price: '1 990 kr', discount: '-33%', top: false, duration: '6t 55m', dates: 'April 2026', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80', region: '🌏 Asia' },
+  { city: 'New York 🇺🇸', from: 'Fra Oslo • SAS', price: '2 890 kr', discount: '-41%', top: false, duration: '9t 15m', dates: 'Apr–Mai 2026', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80', region: '🌎 Amerika' },
+  { city: 'Tokyo 🇯🇵', from: 'Fra Oslo • ANA', price: '3 490 kr', discount: '-44%', top: false, duration: '14t 30m', dates: 'Mai–Jun 2026', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80', region: '🌏 Asia' },
+];
 
 const quickRoutes = [
   { flag: '🇪🇸', route: 'Oslo → Alicante', airline: 'Ryanair · Mars 2026', price: '549 kr' },
@@ -17,26 +18,97 @@ const quickRoutes = [
   { flag: '🇳🇱', route: 'Stavanger → Amsterdam', airline: 'KLM · Mars 2026', price: '549 kr' },
   { flag: '🇮🇹', route: 'Bergen → Roma', airline: 'SAS · Mars 2026', price: '599 kr' },
   { flag: '🇫🇷', route: 'Trondheim → Paris', airline: 'Air France · April 2026', price: '649 kr' },
-]
+];
 
-const regions = ['Alle', '🌍 Europa', '🌏 Asia', '🌎 Amerika', '🌍 Afrika', '🏔 Norden']
+const regions = ['Alle', '🌍 Europa', '🌏 Asia', '🌎 Amerika', '🌍 Afrika', '🏔 Norden'];
+
+const navItems = [
+  { href: '/deals', icon: 'local_offer', label: 'Live Deals', key: 'deals' },
+  { href: '/varsler', icon: 'notifications', label: 'Dine Varsler', key: 'varsler' },
+  { href: '/oppdag', icon: 'explore', label: 'Oppdag Ruter', key: 'oppdag' },
+  { href: '/historikk', icon: 'history', label: 'Historikk', key: 'historikk' },
+];
+
+const bottomItems = [
+  { href: '/innstillinger', icon: 'settings', label: 'Innstillinger', key: 'innstillinger' },
+  { href: '/brukerstotte', icon: 'help', label: 'Brukerstøtte', key: 'brukerstotte' },
+];
 
 export default function OppdagPage() {
-  const [activeRegion, setActiveRegion] = useState('Alle')
+  const [activeRegion, setActiveRegion] = useState('Alle');
+  const [search, setSearch] = useState('');
+  const active = 'oppdag';
+
+  const filtered = destCards.filter(c => {
+    const matchRegion = activeRegion === 'Alle' || c.region === activeRegion;
+    const matchSearch = search === '' || c.city.toLowerCase().includes(search.toLowerCase());
+    return matchRegion && matchSearch;
+  });
 
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet" />
       <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       <style>{`
         body { font-family: 'DM Sans', sans-serif; }
-        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .nav-link { border-left: 3px solid transparent; transition: all 0.2s; }
+        .nav-link:hover { background: rgba(255,107,0,0.05); color: #ff6b00; }
+        .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00 !important; color: #ff6b00; }
         ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; }
         .dest-card:hover { border-color: rgba(255,107,0,0.3) !important; }
         .dest-card:hover .dest-img { transform: scale(1.05); }
       `}</style>
+
       <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#050505', color: '#f1f5f9', fontFamily: "'DM Sans', sans-serif" }}>
-        <Sidebar active="oppdag" />
+
+        {/* Sidebar */}
+        <aside style={{ width: '256px', flexShrink: 0, borderRight: '1px solid #1e1e1e', background: '#050505', display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0 }}>
+          <div style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', background: '#ff6b00', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0, boxShadow: '0 4px 12px rgba(255,107,0,0.2)' }}>
+              <span className="ms" style={{ fontSize: '18px' }}>flight_takeoff</span>
+            </div>
+            <div>
+              <h1 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>FlyDeals</h1>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Varsler deg om flydeals</p>
+            </div>
+          </div>
+          <nav style={{ flex: 1, padding: '4px 12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            {navItems.map((item) => (
+              <Link key={item.key} href={item.href} className={`nav-link${active === item.key ? ' nav-active' : ''}`}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '0 12px 12px 0', textDecoration: 'none', color: active === item.key ? '#ff6b00' : 'rgba(255,255,255,0.4)' }}>
+                <span className={`ms${active === item.key ? ' ms-fill' : ''}`} style={{ fontSize: '18px' }}>{item.icon}</span>
+                <span style={{ fontSize: '13px', fontWeight: active === item.key ? 700 : 500 }}>{item.label}</span>
+              </Link>
+            ))}
+            <div style={{ borderTop: '1px solid #1e1e1e', marginTop: '12px', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              {bottomItems.map((item) => (
+                <Link key={item.key} href={item.href} className={`nav-link${active === item.key ? ' nav-active' : ''}`}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '0 12px 12px 0', textDecoration: 'none', color: active === item.key ? '#ff6b00' : 'rgba(255,255,255,0.4)' }}>
+                  <span className={`ms${active === item.key ? ' ms-fill' : ''}`} style={{ fontSize: '18px' }}>{item.icon}</span>
+                  <span style={{ fontSize: '13px', fontWeight: active === item.key ? 700 : 500 }}>{item.label}</span>
+                </Link>
+              ))}
+            </div>
+          </nav>
+          <div style={{ padding: '12px', borderTop: '1px solid #1e1e1e' }}>
+            <div style={{ background: '#111', borderRadius: '12px', padding: '12px', border: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span className="ms" style={{ fontSize: '18px', color: 'rgba(255,255,255,0.4)' }}>person</span>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: '13px', fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Marius Jensen</p>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>marius@flydeals.no</p>
+              </div>
+              <Link href="/innstillinger" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none', flexShrink: 0 }}>
+                <span className="ms" style={{ fontSize: '16px' }}>settings</span>
+              </Link>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main */}
         <main style={{ flex: 1, overflowY: 'auto', background: '#050505' }}>
           {/* Topbar */}
           <div style={{ height: '56px', borderBottom: '1px solid #1e1e1e', position: 'sticky', top: 0, zIndex: 10, background: 'rgba(5,5,5,0.9)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
@@ -48,20 +120,30 @@ export default function OppdagPage() {
           </div>
 
           <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px' }}>
+
             {/* Header + search */}
             <div style={{ marginBottom: '32px' }}>
               <h1 style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '-0.5px', marginBottom: '4px' }}>Oppdag Ruter</h1>
               <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '24px' }}>Finn de beste destinasjonene fra norske flyplasser.</p>
               <div style={{ position: 'relative' }}>
                 <span className="ms" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '20px', color: 'rgba(255,255,255,0.3)' }}>search</span>
-                <input style={{ width: '100%', background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', padding: '16px 16px 16px 48px', color: 'rgba(255,255,255,0.8)', fontSize: '13px', outline: 'none', fontFamily: "'DM Sans', sans-serif", boxSizing: 'border-box' }} placeholder="Søk etter by, land eller flyplass..." type="text" />
+                <input
+                  style={{ width: '100%', background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', padding: '16px 16px 16px 48px', color: 'rgba(255,255,255,0.8)', fontSize: '13px', outline: 'none', fontFamily: "'DM Sans', sans-serif", boxSizing: 'border-box' }}
+                  placeholder="Søk etter by, land eller flyplass..."
+                  type="text"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
               </div>
             </div>
 
-            {/* Region filters */}
+            {/* Region filter buttons */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '40px' }}>
               {regions.map((r) => (
-                <button key={r} onClick={() => setActiveRegion(r)} style={{ padding: '8px 16px', borderRadius: '100px', fontSize: '13px', fontWeight: activeRegion === r ? 700 : 500, background: activeRegion === r ? '#ff6b00' : '#111', border: activeRegion === r ? 'none' : '1px solid #1e1e1e', color: activeRegion === r ? '#fff' : 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>{r}</button>
+                <button key={r} onClick={() => setActiveRegion(r)}
+                  style={{ padding: '8px 16px', borderRadius: '100px', fontSize: '13px', fontWeight: activeRegion === r ? 700 : 500, background: activeRegion === r ? '#ff6b00' : '#111', border: activeRegion === r ? 'none' : '1px solid #1e1e1e', color: activeRegion === r ? '#fff' : 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                  {r}
+                </button>
               ))}
             </div>
 
@@ -69,10 +151,10 @@ export default function OppdagPage() {
             <section style={{ marginBottom: '48px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Populære destinasjoner</h3>
-                <a href="/deals" style={{ color: '#ff6b00', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>Se alle deals →</a>
+                <Link href="/deals" style={{ color: '#ff6b00', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>Se alle deals →</Link>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px' }}>
-                {destCards.map((c, i) => (
+                {filtered.map((c, i) => (
                   <div key={i} className="dest-card" style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', overflow: 'hidden', transition: 'border-color 0.2s', cursor: 'pointer' }}>
                     <div style={{ height: '176px', overflow: 'hidden', position: 'relative' }}>
                       <img className="dest-img" src={c.img} alt={c.city} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }} />
@@ -105,7 +187,7 @@ export default function OppdagPage() {
               </div>
             </section>
 
-            {/* Quick routes */}
+            {/* Billige ruter akkurat nå */}
             <section>
               <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px' }}>Billige ruter akkurat nå</h3>
               <div style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', overflow: 'hidden' }}>
@@ -123,9 +205,10 @@ export default function OppdagPage() {
                 ))}
               </div>
             </section>
+
           </div>
         </main>
       </div>
     </>
-  )
+  );
 }

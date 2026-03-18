@@ -1,25 +1,102 @@
-'use client'
-import { useState } from 'react'
-import Sidebar from '@/components/Sidebar'
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+
+const navItems = [
+  { href: '/deals', icon: 'local_offer', label: 'Live Deals', key: 'deals' },
+  { href: '/varsler', icon: 'notifications', label: 'Dine Varsler', key: 'varsler' },
+  { href: '/oppdag', icon: 'explore', label: 'Oppdag Ruter', key: 'oppdag' },
+  { href: '/historikk', icon: 'history', label: 'Historikk', key: 'historikk' },
+];
+
+const bottomItems = [
+  { href: '/innstillinger', icon: 'settings', label: 'Innstillinger', key: 'innstillinger' },
+  { href: '/brukerstotte', icon: 'help', label: 'Brukerstøtte', key: 'brukerstotte' },
+];
 
 export default function InnstillingerPage() {
-  const [emailVarsler, setEmailVarsler] = useState(true)
-  const [marketing, setMarketing] = useState(true)
+  const [emailVarsler, setEmailVarsler] = useState(true);
+  const [marketing, setMarketing] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const active = 'innstillinger';
+
+  function handleSave() {
+    setSaving(true);
+    setSaved(false);
+    setTimeout(() => {
+      setSaving(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }, 1000);
+  }
 
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet" />
       <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       <style>{`
-        body { font-family: 'Public Sans', sans-serif; }
-        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        body { font-family: 'DM Sans', sans-serif; }
+        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .nav-link { border-left: 3px solid transparent; transition: all 0.2s; }
+        .nav-link:hover { background: rgba(255,107,0,0.05); color: #ff6b00; }
+        .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00 !important; color: #ff6b00; }
         ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
-        input, select { background: #050505; border: 1px solid #262626; border-radius: 8px; padding: 10px 16px; color: #f1f5f9; font-family: 'Public Sans', sans-serif; font-size: 14px; width: 100%; outline: none; box-sizing: border-box; }
+        input, select { background: #050505; border: 1px solid #262626; border-radius: 8px; padding: 10px 16px; color: #f1f5f9; font-family: 'DM Sans', sans-serif; font-size: 14px; width: 100%; outline: none; box-sizing: border-box; }
         input:focus, select:focus { border-color: #ff6b00; box-shadow: 0 0 0 3px rgba(255,107,0,0.1); }
       `}</style>
-      <div className="flex h-screen overflow-hidden" style={{ background: '#050505', color: '#f1f5f9', fontFamily: "'Public Sans', sans-serif" }}>
-        <Sidebar active="innstillinger" />
-        <main className="flex-1 overflow-y-auto" style={{ background: '#050505' }}>
+
+      <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#050505', color: '#f1f5f9', fontFamily: "'DM Sans', sans-serif" }}>
+
+        {/* Sidebar */}
+        <aside style={{ width: '256px', flexShrink: 0, borderRight: '1px solid #1e1e1e', background: '#050505', display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0 }}>
+          <div style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', background: '#ff6b00', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0, boxShadow: '0 4px 12px rgba(255,107,0,0.2)' }}>
+              <span className="ms" style={{ fontSize: '18px' }}>flight_takeoff</span>
+            </div>
+            <div>
+              <h1 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>FlyDeals</h1>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Varsler deg om flydeals</p>
+            </div>
+          </div>
+          <nav style={{ flex: 1, padding: '4px 12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            {navItems.map((item) => (
+              <Link key={item.key} href={item.href} className={`nav-link${active === item.key ? ' nav-active' : ''}`}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '0 12px 12px 0', textDecoration: 'none', color: active === item.key ? '#ff6b00' : 'rgba(255,255,255,0.4)' }}>
+                <span className={`ms${active === item.key ? ' ms-fill' : ''}`} style={{ fontSize: '18px' }}>{item.icon}</span>
+                <span style={{ fontSize: '13px', fontWeight: active === item.key ? 700 : 500 }}>{item.label}</span>
+              </Link>
+            ))}
+            <div style={{ borderTop: '1px solid #1e1e1e', marginTop: '12px', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              {bottomItems.map((item) => (
+                <Link key={item.key} href={item.href} className={`nav-link${active === item.key ? ' nav-active' : ''}`}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '0 12px 12px 0', textDecoration: 'none', color: active === item.key ? '#ff6b00' : 'rgba(255,255,255,0.4)' }}>
+                  <span className={`ms${active === item.key ? ' ms-fill' : ''}`} style={{ fontSize: '18px' }}>{item.icon}</span>
+                  <span style={{ fontSize: '13px', fontWeight: active === item.key ? 700 : 500 }}>{item.label}</span>
+                </Link>
+              ))}
+            </div>
+          </nav>
+          <div style={{ padding: '12px', borderTop: '1px solid #1e1e1e' }}>
+            <div style={{ background: '#111', borderRadius: '12px', padding: '12px', border: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span className="ms" style={{ fontSize: '18px', color: 'rgba(255,255,255,0.4)' }}>person</span>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: '13px', fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Marius Jensen</p>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>marius@flydeals.no</p>
+              </div>
+              <Link href="/innstillinger" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none', flexShrink: 0 }}>
+                <span className="ms" style={{ fontSize: '16px' }}>settings</span>
+              </Link>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main */}
+        <main style={{ flex: 1, overflowY: 'auto', background: '#050505' }}>
 
           {/* Topbar */}
           <div style={{ height: '64px', borderBottom: '1px solid #262626', position: 'sticky', top: 0, zIndex: 10, background: 'rgba(5,5,5,0.9)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px' }}>
@@ -30,7 +107,7 @@ export default function InnstillingerPage() {
                 <span style={{ position: 'absolute', top: '8px', right: '8px', width: '8px', height: '8px', background: '#ff6b00', borderRadius: '50%', border: '2px solid #050505' }} />
               </button>
               <div style={{ width: '1px', height: '32px', background: '#262626' }} />
-              <button style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 16px', border: '1px solid #262626', borderRadius: '8px', background: 'none', color: '#f1f5f9', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: "'Public Sans', sans-serif" }}>
+              <button style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 16px', border: '1px solid #262626', borderRadius: '8px', background: 'none', color: '#f1f5f9', fontSize: '13px', fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
                 <span className="ms" style={{ fontSize: '18px' }}>logout</span>Logg ut
               </button>
             </div>
@@ -52,16 +129,18 @@ export default function InnstillingerPage() {
                 </div>
                 <div style={{ padding: '24px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                    {[
-                      { label: 'Fullt navn', type: 'text', val: 'Morten Hansen' },
-                      { label: 'E-postadresse', type: 'email', val: 'morten@flydeals.no' },
-                      { label: 'Telefonnummer', type: 'tel', val: '+47 900 00 000' },
-                    ].map((f, i) => (
-                      <div key={i}>
-                        <label style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '6px' }}>{f.label}</label>
-                        <input type={f.type} defaultValue={f.val} />
-                      </div>
-                    ))}
+                    <div>
+                      <label style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '6px' }}>Fullt navn</label>
+                      <input type="text" defaultValue="Morten Hansen" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '6px' }}>E-postadresse</label>
+                      <input type="email" defaultValue="morten@flydeals.no" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '6px' }}>Telefonnummer</label>
+                      <input type="tel" defaultValue="+47 900 00 000" />
+                    </div>
                     <div>
                       <label style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.7)', display: 'block', marginBottom: '6px' }}>Land</label>
                       <select>
@@ -72,7 +151,11 @@ export default function InnstillingerPage() {
                     </div>
                   </div>
                   <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
-                    <button style={{ background: '#ff6b00', color: '#fff', padding: '10px 24px', borderRadius: '8px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'Public Sans', sans-serif" }}>Lagre endringer</button>
+                    <button
+                      onClick={handleSave}
+                      style={{ background: saved ? '#22c55e' : '#ff6b00', color: '#fff', padding: '10px 24px', borderRadius: '8px', fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background 0.2s' }}>
+                      {saving ? 'Lagrer...' : saved ? 'Lagret!' : 'Lagre endringer'}
+                    </button>
                   </div>
                 </div>
               </section>
@@ -117,7 +200,7 @@ export default function InnstillingerPage() {
                       <p style={{ fontSize: '26px', fontWeight: 900, color: '#ff6b00', letterSpacing: '-1px' }}>149 kr <span style={{ fontSize: '13px', fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>/ måned</span></p>
                       <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '4px' }}>Neste fornyelse: 24. mai 2026 · Ingen binding</p>
                     </div>
-                    <button style={{ padding: '8px 16px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: "'Public Sans', sans-serif" }}>Si opp abonnement</button>
+                    <button style={{ padding: '8px 16px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>Si opp abonnement</button>
                   </div>
                 </div>
               </section>
@@ -128,7 +211,7 @@ export default function InnstillingerPage() {
                   <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#ef4444' }}>Slett konto</h3>
                   <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>Dette vil slette alle dine data permanent. Dette kan ikke angres.</p>
                 </div>
-                <button style={{ padding: '10px 24px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Public Sans', sans-serif" }}>Slett min konto</button>
+                <button style={{ padding: '10px 24px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'DM Sans', sans-serif" }}>Slett min konto</button>
               </section>
 
             </div>
@@ -141,5 +224,5 @@ export default function InnstillingerPage() {
         </main>
       </div>
     </>
-  )
+  );
 }
