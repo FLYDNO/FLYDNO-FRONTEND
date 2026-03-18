@@ -249,18 +249,16 @@ initPage();
 let deals = [];
 
 const fallbackDeals = [
-  { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', cc: 'th', price: 2489, orig: 4700, discount: 47, dates: 'Mar–Apr 2026', airline: 'Thai Airways', direct: true, origin: 'OSL' },
-  { from: 'Bergen', fromCode: 'BGO', to: 'London', toCode: 'LHR', cc: 'gb', price: 489, orig: 1020, discount: 52, dates: 'Mars 2026', airline: 'Norwegian', direct: true, origin: 'BGO' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', cc: 'us', price: 2890, orig: 4900, discount: 41, dates: 'Apr–Mai 2026', airline: 'SAS', direct: true, origin: 'OSL' },
-  { from: 'Trondheim', fromCode: 'TRD', to: 'Barcelona', toCode: 'BCN', cc: 'es', price: 699, orig: 1130, discount: 38, dates: 'April 2026', airline: 'Norwegian', direct: false, origin: 'TRD' },
-  { from: 'Stavanger', fromCode: 'SVG', to: 'Amsterdam', toCode: 'AMS', cc: 'nl', price: 549, orig: 980, discount: 44, dates: 'Mars 2026', airline: 'KLM', direct: false, origin: 'SVG' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Tokyo', toCode: 'HND', cc: 'jp', price: 3490, orig: 5720, discount: 39, dates: 'Mai–Jun 2026', airline: 'ANA', direct: false, origin: 'OSL' },
-  { from: 'Tromsø', fromCode: 'TOS', to: 'Reykjavik', toCode: 'KEF', cc: 'is', price: 890, orig: 1370, discount: 35, dates: 'April 2026', airline: 'Icelandair', direct: true, origin: 'TOS' },
-  { from: 'Torp', fromCode: 'TRF', to: 'Alicante', toCode: 'ALC', cc: 'es', price: 399, orig: 814, discount: 51, dates: 'Mar–Apr 2026', airline: 'Ryanair', direct: true, origin: 'TRF' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Dubai', toCode: 'DXB', cc: 'ae', price: 1990, orig: 3490, discount: 43, dates: 'April 2026', airline: 'Emirates', direct: true, origin: 'OSL' },
-  { from: 'Bergen', fromCode: 'BGO', to: 'Roma', toCode: 'FCO', cc: 'it', price: 599, orig: 1110, discount: 46, dates: 'Mars 2026', airline: 'SAS', direct: false, origin: 'BGO' },
-  { from: 'Trondheim', fromCode: 'TRD', to: 'Paris', toCode: 'CDG', cc: 'fr', price: 649, orig: 1082, discount: 40, dates: 'April 2026', airline: 'Air France', direct: false, origin: 'TRD' },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Bali', toCode: 'DPS', cc: 'id', price: 4290, orig: 6703, discount: 36, dates: 'Mai 2026', airline: 'Qatar Airways', direct: false, origin: 'OSL' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', cc: 'th', price: 5510, orig: 9367, discount: 41, dates: 'Apr 2026', airline: 'Scandinavian Airlines', direct: false, origin: 'OSL' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', cc: 'us', price: 5481, orig: 9318, discount: 41, dates: 'Apr 2026', airline: 'British Airways', direct: false, origin: 'OSL' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Dubai', toCode: 'DXB', cc: 'ae', price: 1839, orig: 3126, discount: 41, dates: 'Apr 2026', airline: 'Pegasus', direct: false, origin: 'OSL' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Tokyo', toCode: 'HND', cc: 'jp', price: 8351, orig: 14197, discount: 41, dates: 'Apr 2026', airline: 'THAI', direct: false, origin: 'OSL' },
+  { from: 'Bergen', fromCode: 'BGO', to: 'London', toCode: 'LHR', cc: 'gb', price: 1123, orig: 1909, discount: 41, dates: 'Apr 2026', airline: 'Scandinavian Airlines', direct: false, origin: 'BGO' },
+  { from: 'Bergen', fromCode: 'BGO', to: 'Roma', toCode: 'FCO', cc: 'it', price: 1243, orig: 2113, discount: 41, dates: 'Apr 2026', airline: 'Scandinavian Airlines', direct: false, origin: 'BGO' },
+  { from: 'Trondheim', fromCode: 'TRD', to: 'Barcelona', toCode: 'BCN', cc: 'es', price: 2180, orig: 3706, discount: 41, dates: 'Apr 2026', airline: 'Norwegian', direct: false, origin: 'TRD' },
+  { from: 'Stavanger', fromCode: 'SVG', to: 'Amsterdam', toCode: 'AMS', cc: 'nl', price: 1625, orig: 2763, discount: 41, dates: 'Apr 2026', airline: 'KLM', direct: false, origin: 'SVG' },
+  { from: 'Tromsø', fromCode: 'TOS', to: 'Reykjavik', toCode: 'KEF', cc: 'is', price: 1846, orig: 3138, discount: 41, dates: 'Apr 2026', airline: 'Finnair', direct: false, origin: 'TOS' },
+  { from: 'Torp', fromCode: 'TRF', to: 'Alicante', toCode: 'ALC', cc: 'es', price: 746, orig: 1268, discount: 41, dates: 'Apr 2026', airline: 'Ryanair', direct: true, origin: 'TRF' },
 ];
 
 async function loadDeals() {
