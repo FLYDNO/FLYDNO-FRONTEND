@@ -7,17 +7,18 @@ const STRIPE_PUBLISHABLE_KEY = 'pk_test_51T9S6wBH30TF6uROcvethaI0i1nDaH9mUvotyZA
 const STRIPE_PRICE_ID = 'price_1TCCV4BH30TF6uRO4Dshmthq'; // 149 NOK/mnd
 const STRIPE_TRIAL_DAYS = 7;
 
-// Initialize Supabase client — wait for SDK to be ready
-let supabase;
-if (window.supabase && window.supabase.createClient) {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} else {
-  // Fallback: try again after a tick
-  document.addEventListener('DOMContentLoaded', () => {
-    if (window.supabase && window.supabase.createClient) {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-  });
+// Initialize Supabase client
+// Extract createClient from SDK namespace before declaring our client variable
+var _sbCreateClient = (window.supabase && typeof window.supabase.createClient === 'function')
+  ? window.supabase.createClient
+  : null;
+
+var supabase = _sbCreateClient
+  ? _sbCreateClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+if (!supabase) {
+  console.error('FlyDeals: Supabase SDK ikke lastet. window.supabase =', window.supabase);
 }
 
 // Auth helpers
@@ -49,4 +50,12 @@ async function requireAuth() {
 async function logout() {
   if (supabase) await supabase.auth.signOut();
   window.location.href = 'login.html';
+}
+
+function ensureSupabase() {
+  if (!supabase) {
+    alert('Kunne ikke koble til serveren. Vennligst last siden på nytt.');
+    return false;
+  }
+  return true;
 }
