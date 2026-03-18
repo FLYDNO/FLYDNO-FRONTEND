@@ -1,15 +1,14 @@
 'use client';
-
 import { useState } from 'react';
 import Link from 'next/link';
 
-const destCards = [
-  { city: 'Barcelona 🇪🇸', from: 'Fra Trondheim • Direktefly', price: '699 kr', discount: '-38%', top: true, duration: '3t 10m', dates: 'Apr 2026', img: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80', region: '🌍 Europa' },
-  { city: 'London 🇬🇧', from: 'Fra Bergen • Direktefly', price: '489 kr', discount: '-35%', top: false, duration: '2t 5m', dates: 'Mars 2026', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80', region: '🌍 Europa' },
-  { city: 'Bangkok 🇹🇭', from: 'Fra Oslo • Thai Airways', price: '2 489 kr', discount: '-47%', top: false, duration: '11t 20m', dates: 'Mar–Apr 2026', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80', region: '🌏 Asia' },
-  { city: 'Dubai 🇦🇪', from: 'Fra Oslo • Emirates', price: '1 990 kr', discount: '-33%', top: false, duration: '6t 55m', dates: 'April 2026', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80', region: '🌏 Asia' },
-  { city: 'New York 🇺🇸', from: 'Fra Oslo • SAS', price: '2 890 kr', discount: '-41%', top: false, duration: '9t 15m', dates: 'Apr–Mai 2026', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80', region: '🌎 Amerika' },
-  { city: 'Tokyo 🇯🇵', from: 'Fra Oslo • ANA', price: '3 490 kr', discount: '-44%', top: false, duration: '14t 30m', dates: 'Mai–Jun 2026', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80', region: '🌏 Asia' },
+const destinations = [
+  { name: 'Barcelona 🇪🇸', region: 'europa', search: 'barcelona spania', img: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80', badge: 'Toppvalg', discount: '-38%', price: '699 kr', from: 'Fra Trondheim • Direktefly', duration: '3t 10m', month: 'Apr 2026' },
+  { name: 'London 🇬🇧', region: 'europa', search: 'london storbritannia', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80', badge: null, discount: '-35%', price: '489 kr', from: 'Fra Bergen • Direktefly', duration: '2t 5m', month: 'Mars 2026' },
+  { name: 'Bangkok 🇹🇭', region: 'asia', search: 'bangkok thailand', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80', badge: null, discount: '-47%', price: '2 489 kr', from: 'Fra Oslo • Thai Airways', duration: '11t 20m', month: 'Mar–Apr 2026' },
+  { name: 'Dubai 🇦🇪', region: 'asia', search: 'dubai emiratene', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80', badge: null, discount: '-33%', price: '1 990 kr', from: 'Fra Oslo • Emirates', duration: '6t 55m', month: 'April 2026' },
+  { name: 'New York 🇺🇸', region: 'amerika', search: 'new york usa', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80', badge: null, discount: '-41%', price: '2 890 kr', from: 'Fra Oslo • SAS', duration: '9t 15m', month: 'Apr–Mai 2026' },
+  { name: 'Tokyo 🇯🇵', region: 'asia', search: 'tokyo japan', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80', badge: null, discount: '-44%', price: '3 490 kr', from: 'Fra Oslo • ANA', duration: '14t 30m', month: 'Mai–Jun 2026' },
 ];
 
 const quickRoutes = [
@@ -20,195 +19,209 @@ const quickRoutes = [
   { flag: '🇫🇷', route: 'Trondheim → Paris', airline: 'Air France · April 2026', price: '649 kr' },
 ];
 
-const regions = ['Alle', '🌍 Europa', '🌏 Asia', '🌎 Amerika', '🌍 Afrika', '🏔 Norden'];
-
-const navItems = [
-  { href: '/deals', icon: 'local_offer', label: 'Live Deals', key: 'deals' },
-  { href: '/varsler', icon: 'notifications', label: 'Dine Varsler', key: 'varsler' },
-  { href: '/oppdag', icon: 'explore', label: 'Oppdag Ruter', key: 'oppdag' },
-  { href: '/historikk', icon: 'history', label: 'Historikk', key: 'historikk' },
-];
-
-const bottomItems = [
-  { href: '/innstillinger', icon: 'settings', label: 'Innstillinger', key: 'innstillinger' },
-  { href: '/brukerstotte', icon: 'help', label: 'Brukerstøtte', key: 'brukerstotte' },
+const regions = [
+  { key: 'alle', label: 'Alle' },
+  { key: 'europa', label: '🌍 Europa' },
+  { key: 'asia', label: '🌏 Asia' },
+  { key: 'amerika', label: '🌎 Amerika' },
+  { key: 'afrika', label: '🌍 Afrika' },
+  { key: 'norden', label: '🏔 Norden' },
 ];
 
 export default function OppdagPage() {
-  const [activeRegion, setActiveRegion] = useState('Alle');
+  const [region, setRegion] = useState('alle');
   const [search, setSearch] = useState('');
-  const active = 'oppdag';
 
-  const filtered = destCards.filter(c => {
-    const matchRegion = activeRegion === 'Alle' || c.region === activeRegion;
-    const matchSearch = search === '' || c.city.toLowerCase().includes(search.toLowerCase());
+  const visible = destinations.filter(d => {
+    const matchRegion = region === 'alle' || d.region === region;
+    const q = search.toLowerCase().trim();
+    const matchSearch = q === '' || d.search.includes(q) || d.region.includes(q);
     return matchRegion && matchSearch;
   });
 
   return (
-    <>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet" />
-      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <div className="flex h-screen overflow-hidden">
       <style>{`
-        body { font-family: 'DM Sans', sans-serif; }
-        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .nav-link { border-left: 3px solid transparent; transition: all 0.2s; }
-        .nav-link:hover { background: rgba(255,107,0,0.05); color: #ff6b00; }
-        .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00 !important; color: #ff6b00; }
-        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; }
-        .dest-card:hover { border-color: rgba(255,107,0,0.3) !important; }
+        .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00; color: #ff6b00; }
+        .nav-link { border-left: 3px solid transparent; }
         .dest-card:hover .dest-img { transform: scale(1.05); }
+        .dest-card:hover { border-color: rgba(255,107,0,0.3); }
       `}</style>
 
-      <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#050505', color: '#f1f5f9', fontFamily: "'DM Sans', sans-serif" }}>
-
-        {/* Sidebar */}
-        <aside style={{ width: '256px', flexShrink: 0, borderRight: '1px solid #1e1e1e', background: '#050505', display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0 }}>
-          <div style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '36px', height: '36px', background: '#ff6b00', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0, boxShadow: '0 4px 12px rgba(255,107,0,0.2)' }}>
-              <span className="ms" style={{ fontSize: '18px' }}>flight_takeoff</span>
-            </div>
-            <div>
-              <h1 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>FlyDeals</h1>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Varsler deg om flydeals</p>
-            </div>
+      {/* Sidebar */}
+      <aside className="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
+        <div className="p-5 flex items-center gap-3">
+          <div className="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0">
+            <span className="ms" style={{fontSize:'18px'}}>flight_takeoff</span>
           </div>
-          <nav style={{ flex: 1, padding: '4px 12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            {navItems.map((item) => (
-              <Link key={item.key} href={item.href} className={`nav-link${active === item.key ? ' nav-active' : ''}`}
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '0 12px 12px 0', textDecoration: 'none', color: active === item.key ? '#ff6b00' : 'rgba(255,255,255,0.4)' }}>
-                <span className={`ms${active === item.key ? ' ms-fill' : ''}`} style={{ fontSize: '18px' }}>{item.icon}</span>
-                <span style={{ fontSize: '13px', fontWeight: active === item.key ? 700 : 500 }}>{item.label}</span>
-              </Link>
-            ))}
-            <div style={{ borderTop: '1px solid #1e1e1e', marginTop: '12px', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {bottomItems.map((item) => (
-                <Link key={item.key} href={item.href} className={`nav-link${active === item.key ? ' nav-active' : ''}`}
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '0 12px 12px 0', textDecoration: 'none', color: active === item.key ? '#ff6b00' : 'rgba(255,255,255,0.4)' }}>
-                  <span className={`ms${active === item.key ? ' ms-fill' : ''}`} style={{ fontSize: '18px' }}>{item.icon}</span>
-                  <span style={{ fontSize: '13px', fontWeight: active === item.key ? 700 : 500 }}>{item.label}</span>
-                </Link>
-              ))}
-            </div>
-          </nav>
-          <div style={{ padding: '12px', borderTop: '1px solid #1e1e1e' }}>
-            <div style={{ background: '#111', borderRadius: '12px', padding: '12px', border: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span className="ms" style={{ fontSize: '18px', color: 'rgba(255,255,255,0.4)' }}>person</span>
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: '13px', fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Marius Jensen</p>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>marius@flydeals.no</p>
-              </div>
-              <Link href="/innstillinger" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none', flexShrink: 0 }}>
-                <span className="ms" style={{ fontSize: '16px' }}>settings</span>
-              </Link>
-            </div>
+          <div>
+            <h1 className="text-base font-bold leading-tight text-white">FlyDeals</h1>
+            <p className="text-[11px] text-slate-500 font-medium">Varsler deg om flydeals</p>
           </div>
-        </aside>
+        </div>
+        <nav className="flex-1 px-3 space-y-0.5 mt-1">
+          <Link href="/deals" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+            <span className="ms" style={{fontSize:'18px'}}>local_offer</span>
+            <span className="text-sm font-medium">Live Deals</span>
+          </Link>
+          <Link href="/varsler" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+            <span className="ms" style={{fontSize:'18px'}}>notifications</span>
+            <span className="text-sm font-medium">Dine Varsler</span>
+          </Link>
+          <Link href="/oppdag" className="nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl">
+            <span className="ms ms-fill" style={{fontSize:'18px'}}>explore</span>
+            <span className="text-sm font-semibold">Oppdag Ruter</span>
+          </Link>
+          <Link href="/historikk" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+            <span className="ms" style={{fontSize:'18px'}}>history</span>
+            <span className="text-sm font-medium">Historikk</span>
+          </Link>
+          <div className="pt-3 mt-2 border-t border-[#1e1e1e] space-y-0.5">
+            <Link href="/innstillinger" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+              <span className="ms" style={{fontSize:'18px'}}>settings</span>
+              <span className="text-sm font-medium">Innstillinger</span>
+            </Link>
+            <Link href="/brukerstotte" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+              <span className="ms" style={{fontSize:'18px'}}>help</span>
+              <span className="text-sm font-medium">Brukerstøtte</span>
+            </Link>
+          </div>
+        </nav>
+        <div className="p-3 mt-auto border-t border-[#1e1e1e]">
+          <div className="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
+            <div className="overflow-hidden flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate">Marius Jensen</p>
+              <p className="text-[11px] text-slate-500 truncate">marius@flydeals.no</p>
+            </div>
+            <Link href="/innstillinger" className="text-slate-500 hover:text-[#ff6b00] transition-colors">
+              <span className="ms" style={{fontSize:'16px'}}>settings</span>
+            </Link>
+          </div>
+        </div>
+      </aside>
 
-        {/* Main */}
-        <main style={{ flex: 1, overflowY: 'auto', background: '#050505' }}>
-          {/* Topbar */}
-          <div style={{ height: '56px', borderBottom: '1px solid #1e1e1e', position: 'sticky', top: 0, zIndex: 10, background: 'rgba(5,5,5,0.9)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
-            <h2 style={{ fontSize: '14px', fontWeight: 700 }}>Oppdag Ruter</h2>
-            <button style={{ position: 'relative', padding: '8px', color: 'rgba(255,255,255,0.4)', background: 'none', border: 'none', cursor: 'pointer' }}>
-              <span className="ms" style={{ fontSize: '20px' }}>notifications</span>
-              <span style={{ position: 'absolute', top: '8px', right: '8px', width: '6px', height: '6px', background: '#ff6b00', borderRadius: '50%' }} />
+      <main className="flex-1 overflow-y-auto bg-[#050505]">
+        <div className="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-6">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            <span className="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button className="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+              <span className="ms" style={{fontSize:'20px'}}>notifications</span>
+              <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
+            </button>
+            <div className="w-px h-6 bg-[#2e2e2e] mx-1"></div>
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+              <span className="ms" style={{fontSize:'16px'}}>logout</span>
+              Logg ut
             </button>
           </div>
+        </div>
 
-          <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px' }}>
-
-            {/* Header + search */}
-            <div style={{ marginBottom: '32px' }}>
-              <h1 style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '-0.5px', marginBottom: '4px' }}>Oppdag Ruter</h1>
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '24px' }}>Finn de beste destinasjonene fra norske flyplasser.</p>
-              <div style={{ position: 'relative' }}>
-                <span className="ms" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '20px', color: 'rgba(255,255,255,0.3)' }}>search</span>
-                <input
-                  style={{ width: '100%', background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', padding: '16px 16px 16px 48px', color: 'rgba(255,255,255,0.8)', fontSize: '13px', outline: 'none', fontFamily: "'DM Sans', sans-serif", boxSizing: 'border-box' }}
-                  placeholder="Søk etter by, land eller flyplass..."
-                  type="text"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                />
-              </div>
+        <div className="max-w-5xl mx-auto px-6 py-8 space-y-10">
+          {/* Header + search */}
+          <div>
+            <h1 className="text-3xl font-black tracking-tight mb-1">Oppdag Ruter</h1>
+            <p className="text-slate-500 mb-6">Finn de beste destinasjonene fra norske flyplasser.</p>
+            <div className="relative group">
+              <span className="ms absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#ff6b00] transition-colors" style={{fontSize:'20px'}}>search</span>
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full bg-[#111] border border-[#1e1e1e] rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none transition-all text-slate-200 placeholder:text-slate-600 text-sm"
+                placeholder="Søk etter by, land eller flyplass..."
+                type="text"
+              />
             </div>
+          </div>
 
-            {/* Region filter buttons */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '40px' }}>
-              {regions.map((r) => (
-                <button key={r} onClick={() => setActiveRegion(r)}
-                  style={{ padding: '8px 16px', borderRadius: '100px', fontSize: '13px', fontWeight: activeRegion === r ? 700 : 500, background: activeRegion === r ? '#ff6b00' : '#111', border: activeRegion === r ? 'none' : '1px solid #1e1e1e', color: activeRegion === r ? '#fff' : 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                  {r}
-                </button>
+          {/* Region filters */}
+          <div className="flex flex-wrap gap-2">
+            {regions.map(r => (
+              <button
+                key={r.key}
+                onClick={() => setRegion(r.key)}
+                className={`px-4 py-2 rounded-full text-sm transition-all ${region === r.key ? 'font-semibold bg-[#ff6b00] text-white' : 'font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40'}`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Destinations */}
+          <section>
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-xl font-bold">Populære destinasjoner</h3>
+              <Link href="/deals" className="text-[#ff6b00] text-sm font-semibold hover:underline">Se alle deals →</Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {visible.map((d, i) => (
+                <div key={i} className="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+                  <div className="h-44 overflow-hidden relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img className="dest-img w-full h-full object-cover transition-transform duration-500" src={d.img} alt={d.name}/>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      {d.badge && <span className="bg-[#ff6b00] text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full">{d.badge}</span>}
+                      <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full">{d.discount}</span>
+                    </div>
+                    <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-white/10">
+                      <p className="text-[10px] text-slate-400">Fra</p>
+                      <p className="text-[#ff6b00] font-black text-base leading-none">{d.price}</p>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="font-bold text-base">{d.name}</h4>
+                        <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                          <span className="ms" style={{fontSize:'13px'}}>flight</span> {d.from}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
+                      <span className="flex items-center gap-1"><span className="ms" style={{fontSize:'13px'}}>schedule</span>{d.duration}</span>
+                      <span className="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
+                      <span className="flex items-center gap-1"><span className="ms" style={{fontSize:'13px'}}>calendar_month</span>{d.month}</span>
+                    </div>
+                    <button className="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
+                      <span className="ms" style={{fontSize:'14px'}}>notifications</span>Opprett varsel
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {visible.length === 0 && (
+                <div className="col-span-3 py-16 text-center">
+                  <span className="ms" style={{fontSize:'40px', color:'#2e2e2e'}}>flight_off</span>
+                  <p className="text-slate-500 mt-3 text-sm">Ingen destinasjoner funnet</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Quick routes */}
+          <section>
+            <h3 className="text-xl font-bold mb-5">Billige ruter akkurat nå</h3>
+            <div className="bg-[#111] border border-[#1e1e1e] rounded-2xl divide-y divide-[#1e1e1e] overflow-hidden">
+              {quickRoutes.map((r, i) => (
+                <div key={i} className="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/5 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <span className="text-base">{r.flag}</span>
+                    <div>
+                      <p className="text-sm font-semibold">{r.route}</p>
+                      <p className="text-xs text-slate-500">{r.airline}</p>
+                    </div>
+                  </div>
+                  <p className="text-[#ff6b00] font-black text-base">{r.price}</p>
+                </div>
               ))}
             </div>
-
-            {/* Featured destinations */}
-            <section style={{ marginBottom: '48px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Populære destinasjoner</h3>
-                <Link href="/deals" style={{ color: '#ff6b00', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>Se alle deals →</Link>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px' }}>
-                {filtered.map((c, i) => (
-                  <div key={i} className="dest-card" style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', overflow: 'hidden', transition: 'border-color 0.2s', cursor: 'pointer' }}>
-                    <div style={{ height: '176px', overflow: 'hidden', position: 'relative' }}>
-                      <img className="dest-img" src={c.img} alt={c.city} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }} />
-                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #111, transparent)' }} />
-                      <div style={{ position: 'absolute', top: '12px', left: '12px', display: 'flex', gap: '6px' }}>
-                        {c.top && <span style={{ background: '#ff6b00', color: '#fff', fontSize: '10px', fontWeight: 900, padding: '4px 10px', borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '1px' }}>Toppvalg</span>}
-                        <span style={{ background: 'rgba(34,197,94,0.1)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.2)', fontSize: '10px', fontWeight: 700, padding: '4px 10px', borderRadius: '100px' }}>{c.discount}</span>
-                      </div>
-                      <div style={{ position: 'absolute', bottom: '12px', right: '12px', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', borderRadius: '12px', padding: '6px 12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Fra</p>
-                        <p style={{ fontSize: '15px', fontWeight: 900, color: '#ff6b00', lineHeight: 1 }}>{c.price}</p>
-                      </div>
-                    </div>
-                    <div style={{ padding: '16px' }}>
-                      <h4 style={{ fontWeight: 700, fontSize: '15px', marginBottom: '4px' }}>{c.city}</h4>
-                      <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span className="ms" style={{ fontSize: '13px' }}>flight</span>{c.from}
-                      </p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '12px', fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span className="ms" style={{ fontSize: '13px' }}>schedule</span>{c.duration}</span>
-                        <span style={{ width: '4px', height: '4px', background: '#1e1e1e', borderRadius: '50%' }} />
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span className="ms" style={{ fontSize: '13px' }}>calendar_month</span>{c.dates}</span>
-                      </div>
-                      <button style={{ marginTop: '12px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px', borderRadius: '12px', border: '1px solid rgba(255,107,0,0.3)', color: '#ff6b00', fontSize: '11px', fontWeight: 700, background: 'transparent', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background 0.2s' }}>
-                        <span className="ms" style={{ fontSize: '14px' }}>notifications</span>Opprett varsel
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Billige ruter akkurat nå */}
-            <section>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px' }}>Billige ruter akkurat nå</h3>
-              <div style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', overflow: 'hidden' }}>
-                {quickRoutes.map((r, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: i < quickRoutes.length - 1 ? '1px solid #1e1e1e' : 'none', cursor: 'pointer', transition: 'background 0.2s' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '16px' }}>{r.flag}</span>
-                      <div>
-                        <p style={{ fontSize: '13px', fontWeight: 600 }}>{r.route}</p>
-                        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>{r.airline}</p>
-                      </div>
-                    </div>
-                    <p style={{ fontSize: '15px', fontWeight: 900, color: '#ff6b00' }}>{r.price}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-          </div>
-        </main>
-      </div>
-    </>
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }

@@ -1,170 +1,167 @@
 'use client';
-
 import { useState } from 'react';
 import Link from 'next/link';
 
-const allDeals = [
-  { from: 'Oslo', iata: 'OSL', to: 'Bangkok 🇹🇭', toCode: 'BKK', price: 2489, orig: 4700, discount: 47, dates: 'Mar–Apr 2026', airline: 'Thai Airways', direct: true },
-  { from: 'Bergen', iata: 'BGO', to: 'London 🇬🇧', toCode: 'LHR', price: 489, orig: 1020, discount: 52, dates: 'Mars 2026', airline: 'Norwegian', direct: true },
-  { from: 'Oslo', iata: 'OSL', to: 'New York 🇺🇸', toCode: 'JFK', price: 2890, orig: 4900, discount: 41, dates: 'Apr–Mai 2026', airline: 'SAS', direct: true },
-  { from: 'Trondheim', iata: 'TRD', to: 'Barcelona 🇪🇸', toCode: 'BCN', price: 699, orig: 1130, discount: 38, dates: 'April 2026', airline: 'Norwegian', direct: false },
-  { from: 'Stavanger', iata: 'SVG', to: 'Amsterdam 🇳🇱', toCode: 'AMS', price: 549, orig: 980, discount: 44, dates: 'Mars 2026', airline: 'KLM', direct: false },
-  { from: 'Oslo', iata: 'OSL', to: 'Tokyo 🇯🇵', toCode: 'HND', price: 3490, orig: 5720, discount: 39, dates: 'Mai–Jun 2026', airline: 'ANA', direct: false },
-  { from: 'Tromsø', iata: 'TOS', to: 'Reykjavik 🇮🇸', toCode: 'KEF', price: 890, orig: 1370, discount: 35, dates: 'April 2026', airline: 'Icelandair', direct: true },
-  { from: 'Torp', iata: 'TRF', to: 'Alicante 🇪🇸', toCode: 'ALC', price: 399, orig: 814, discount: 51, dates: 'Mar–Apr 2026', airline: 'Ryanair', direct: true },
-  { from: 'Oslo', iata: 'OSL', to: 'Dubai 🇦🇪', toCode: 'DXB', price: 1990, orig: 3490, discount: 43, dates: 'April 2026', airline: 'Emirates', direct: true },
-  { from: 'Bergen', iata: 'BGO', to: 'Roma 🇮🇹', toCode: 'FCO', price: 599, orig: 1110, discount: 46, dates: 'Mars 2026', airline: 'SAS', direct: false },
-  { from: 'Trondheim', iata: 'TRD', to: 'Paris 🇫🇷', toCode: 'CDG', price: 649, orig: 1082, discount: 40, dates: 'April 2026', airline: 'Air France', direct: false },
-  { from: 'Oslo', iata: 'OSL', to: 'Bali 🇮🇩', toCode: 'DPS', price: 4290, orig: 6703, discount: 36, dates: 'Mai 2026', airline: 'Qatar Airways', direct: false },
+const deals = [
+  { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', flag: '🇹🇭', price: 2489, orig: 4700, discount: 47, dates: 'Mar–Apr 2026', airline: 'Thai Airways', direct: true, origin: 'OSL' },
+  { from: 'Bergen', fromCode: 'BGO', to: 'London', toCode: 'LHR', flag: '🇬🇧', price: 489, orig: 1020, discount: 52, dates: 'Mars 2026', airline: 'Norwegian', direct: true, origin: 'BGO' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', flag: '🇺🇸', price: 2890, orig: 4900, discount: 41, dates: 'Apr–Mai 2026', airline: 'SAS', direct: true, origin: 'OSL' },
+  { from: 'Trondheim', fromCode: 'TRD', to: 'Barcelona', toCode: 'BCN', flag: '🇪🇸', price: 699, orig: 1130, discount: 38, dates: 'April 2026', airline: 'Norwegian', direct: false, origin: 'TRD' },
+  { from: 'Stavanger', fromCode: 'SVG', to: 'Amsterdam', toCode: 'AMS', flag: '🇳🇱', price: 549, orig: 980, discount: 44, dates: 'Mars 2026', airline: 'KLM', direct: false, origin: 'SVG' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Tokyo', toCode: 'HND', flag: '🇯🇵', price: 3490, orig: 5720, discount: 39, dates: 'Mai–Jun 2026', airline: 'ANA', direct: false, origin: 'OSL' },
+  { from: 'Tromsø', fromCode: 'TOS', to: 'Reykjavik', toCode: 'KEF', flag: '🇮🇸', price: 890, orig: 1370, discount: 35, dates: 'April 2026', airline: 'Icelandair', direct: true, origin: 'TOS' },
+  { from: 'Torp', fromCode: 'TRF', to: 'Alicante', toCode: 'ALC', flag: '🇪🇸', price: 399, orig: 814, discount: 51, dates: 'Mar–Apr 2026', airline: 'Ryanair', direct: true, origin: 'TRF' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Dubai', toCode: 'DXB', flag: '🇦🇪', price: 1990, orig: 3490, discount: 43, dates: 'April 2026', airline: 'Emirates', direct: true, origin: 'OSL' },
+  { from: 'Bergen', fromCode: 'BGO', to: 'Roma', toCode: 'FCO', flag: '🇮🇹', price: 599, orig: 1110, discount: 46, dates: 'Mars 2026', airline: 'SAS', direct: false, origin: 'BGO' },
+  { from: 'Trondheim', fromCode: 'TRD', to: 'Paris', toCode: 'CDG', flag: '🇫🇷', price: 649, orig: 1082, discount: 40, dates: 'April 2026', airline: 'Air France', direct: false, origin: 'TRD' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Bali', toCode: 'DPS', flag: '🇮🇩', price: 4290, orig: 6703, discount: 36, dates: 'Mai 2026', airline: 'Qatar Airways', direct: false, origin: 'OSL' },
 ];
 
-const airports = ['Alle flyplasser', 'Oslo (OSL)', 'Bergen (BGO)', 'Trondheim (TRD)', 'Stavanger (SVG)', 'Tromsø (TOS)', 'Torp (TRF)'];
-
-const navItems = [
-  { href: '/deals', icon: 'local_offer', label: 'Live Deals', key: 'deals' },
-  { href: '/varsler', icon: 'notifications', label: 'Dine Varsler', key: 'varsler' },
-  { href: '/oppdag', icon: 'explore', label: 'Oppdag Ruter', key: 'oppdag' },
-  { href: '/historikk', icon: 'history', label: 'Historikk', key: 'historikk' },
+const airports = [
+  { code: 'alle', label: 'Alle flyplasser' },
+  { code: 'OSL', label: '🇳🇴 Oslo (OSL)' },
+  { code: 'BGO', label: '🇳🇴 Bergen (BGO)' },
+  { code: 'TRD', label: '🇳🇴 Trondheim (TRD)' },
+  { code: 'SVG', label: '🇳🇴 Stavanger (SVG)' },
+  { code: 'TOS', label: '🇳🇴 Tromsø (TOS)' },
+  { code: 'TRF', label: '🇳🇴 Torp (TRF)' },
 ];
 
-const bottomItems = [
-  { href: '/innstillinger', icon: 'settings', label: 'Innstillinger', key: 'innstillinger' },
-  { href: '/brukerstotte', icon: 'help', label: 'Brukerstøtte', key: 'brukerstotte' },
-];
+const Sidebar = ({ active }: { active: string }) => (
+  <aside className="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
+    <div className="p-5 flex items-center gap-3">
+      <div className="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0">
+        <span className="ms" style={{fontSize:'18px'}}>flight_takeoff</span>
+      </div>
+      <div>
+        <h1 className="text-base font-bold leading-tight text-white">FlyDeals</h1>
+        <p className="text-[11px] text-slate-500 font-medium">Varsler deg om flydeals</p>
+      </div>
+    </div>
+    <nav className="flex-1 px-3 space-y-0.5 mt-1">
+      <Link href="/deals" className={active==='deals'?"nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl":"nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors"}>
+        <span className={`ms${active==='deals'?' ms-fill':''}`} style={{fontSize:'18px'}}>local_offer</span>
+        <span className={`text-sm ${active==='deals'?'font-semibold':'font-medium'}`}>Live Deals</span>
+      </Link>
+      <Link href="/varsler" className={active==='varsler'?"nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl":"nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors"}>
+        <span className={`ms${active==='varsler'?' ms-fill':''}`} style={{fontSize:'18px'}}>notifications</span>
+        <span className={`text-sm ${active==='varsler'?'font-semibold':'font-medium'}`}>Dine Varsler</span>
+      </Link>
+      <Link href="/oppdag" className={active==='oppdag'?"nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl":"nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors"}>
+        <span className={`ms${active==='oppdag'?' ms-fill':''}`} style={{fontSize:'18px'}}>explore</span>
+        <span className={`text-sm ${active==='oppdag'?'font-semibold':'font-medium'}`}>Oppdag Ruter</span>
+      </Link>
+      <Link href="/historikk" className={active==='historikk'?"nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl":"nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors"}>
+        <span className={`ms${active==='historikk'?' ms-fill':''}`} style={{fontSize:'18px'}}>history</span>
+        <span className={`text-sm ${active==='historikk'?'font-semibold':'font-medium'}`}>Historikk</span>
+      </Link>
+      <div className="pt-3 mt-2 border-t border-[#1e1e1e] space-y-0.5">
+        <Link href="/innstillinger" className={active==='innstillinger'?"nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl":"nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors"}>
+          <span className={`ms${active==='innstillinger'?' ms-fill':''}`} style={{fontSize:'18px'}}>settings</span>
+          <span className={`text-sm ${active==='innstillinger'?'font-semibold':'font-medium'}`}>Innstillinger</span>
+        </Link>
+        <Link href="/brukerstotte" className={active==='brukerstotte'?"nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl":"nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors"}>
+          <span className={`ms${active==='brukerstotte'?' ms-fill':''}`} style={{fontSize:'18px'}}>help</span>
+          <span className={`text-sm ${active==='brukerstotte'?'font-semibold':'font-medium'}`}>Brukerstøtte</span>
+        </Link>
+      </div>
+    </nav>
+    <div className="p-3 mt-auto border-t border-[#1e1e1e]">
+      <div className="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
+        <div className="overflow-hidden flex-1 min-w-0">
+          <p className="text-sm font-semibold truncate">Marius Jensen</p>
+          <p className="text-[11px] text-slate-500 truncate">marius@flydeals.no</p>
+        </div>
+        <Link href="/innstillinger" className="text-slate-500 hover:text-[#ff6b00] transition-colors">
+          <span className="ms" style={{fontSize:'16px'}}>settings</span>
+        </Link>
+      </div>
+    </div>
+  </aside>
+);
+
+const Topbar = () => (
+  <div className="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-6">
+    <div className="flex items-center gap-2">
+      <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+      <span className="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
+    </div>
+    <div className="flex items-center gap-1">
+      <button className="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <span className="ms" style={{fontSize:'20px'}}>notifications</span>
+        <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
+      </button>
+      <div className="w-px h-6 bg-[#2e2e2e] mx-1"></div>
+      <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <span className="ms" style={{fontSize:'16px'}}>logout</span>
+        Logg ut
+      </button>
+    </div>
+  </div>
+);
 
 export default function DealsPage() {
-  const [filter, setFilter] = useState('Alle flyplasser');
-
-  const filtered = filter === 'Alle flyplasser'
-    ? allDeals
-    : allDeals.filter(d => filter.includes(d.iata));
-
-  const active = 'deals';
+  const [filter, setFilter] = useState('alle');
+  const filtered = filter === 'alle' ? deals : deals.filter(d => d.origin === filter);
 
   return (
-    <>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet" />
-      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <div className="flex h-screen overflow-hidden">
       <style>{`
-        body { font-family: 'DM Sans', sans-serif; }
-        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .nav-link { border-left: 3px solid transparent; transition: all 0.2s; }
-        .nav-link:hover { background: rgba(255,107,0,0.05); color: #ff6b00; }
-        .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00 !important; color: #ff6b00; }
-        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; }
-        .deal-card:hover { border-color: rgba(255,107,0,0.3) !important; transform: translateY(-1px); }
+        .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00; color: #ff6b00; }
+        .nav-link { border-left: 3px solid transparent; }
+        .deal-card:hover { border-color: rgba(255,107,0,0.3); transform: translateY(-1px); }
       `}</style>
 
-      <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#050505', color: '#f1f5f9', fontFamily: "'DM Sans', sans-serif" }}>
+      <Sidebar active="deals" />
 
-        {/* Sidebar */}
-        <aside style={{ width: '256px', flexShrink: 0, borderRight: '1px solid #1e1e1e', background: '#050505', display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0 }}>
-          {/* Logo */}
-          <div style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '36px', height: '36px', background: '#ff6b00', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0, boxShadow: '0 4px 12px rgba(255,107,0,0.2)' }}>
-              <span className="ms" style={{ fontSize: '18px' }}>flight_takeoff</span>
-            </div>
-            <div>
-              <h1 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>FlyDeals</h1>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Varsler deg om flydeals</p>
-            </div>
+      <main className="flex-1 overflow-y-auto bg-[#050505]">
+        <Topbar />
+
+        <div className="max-w-5xl mx-auto px-6 py-8">
+          <div className="mb-8">
+            <h2 className="text-3xl font-black tracking-tight">Live Deals</h2>
+            <p className="text-slate-500 mt-1">Oppdateres automatisk. Prisene kan endre seg raskt — book når du ser en god deal.</p>
           </div>
 
-          {/* Nav */}
-          <nav style={{ flex: 1, padding: '4px 12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            {navItems.map((item) => (
-              <Link key={item.key} href={item.href} className={`nav-link${active === item.key ? ' nav-active' : ''}`}
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '0 12px 12px 0', textDecoration: 'none', color: active === item.key ? '#ff6b00' : 'rgba(255,255,255,0.4)' }}>
-                <span className={`ms${active === item.key ? ' ms-fill' : ''}`} style={{ fontSize: '18px' }}>{item.icon}</span>
-                <span style={{ fontSize: '13px', fontWeight: active === item.key ? 700 : 500 }}>{item.label}</span>
-              </Link>
+          <div className="flex flex-wrap gap-2 mb-8">
+            {airports.map(a => (
+              <button
+                key={a.code}
+                onClick={() => setFilter(a.code)}
+                className={`px-4 py-2 rounded-full text-sm transition-all ${filter === a.code ? 'font-semibold bg-[#ff6b00] text-white' : 'font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40'}`}
+              >
+                {a.label}
+              </button>
             ))}
-            <div style={{ borderTop: '1px solid #1e1e1e', marginTop: '12px', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {bottomItems.map((item) => (
-                <Link key={item.key} href={item.href} className={`nav-link${active === item.key ? ' nav-active' : ''}`}
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '0 12px 12px 0', textDecoration: 'none', color: active === item.key ? '#ff6b00' : 'rgba(255,255,255,0.4)' }}>
-                  <span className={`ms${active === item.key ? ' ms-fill' : ''}`} style={{ fontSize: '18px' }}>{item.icon}</span>
-                  <span style={{ fontSize: '13px', fontWeight: active === item.key ? 700 : 500 }}>{item.label}</span>
-                </Link>
-              ))}
-            </div>
-          </nav>
-
-          {/* User */}
-          <div style={{ padding: '12px', borderTop: '1px solid #1e1e1e' }}>
-            <div style={{ background: '#111', borderRadius: '12px', padding: '12px', border: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span className="ms" style={{ fontSize: '18px', color: 'rgba(255,255,255,0.4)' }}>person</span>
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: '13px', fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Marius Jensen</p>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>marius@flydeals.no</p>
-              </div>
-              <Link href="/innstillinger" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none', flexShrink: 0 }}>
-                <span className="ms" style={{ fontSize: '16px' }}>settings</span>
-              </Link>
-            </div>
-          </div>
-        </aside>
-
-        {/* Main */}
-        <main style={{ flex: 1, overflowY: 'auto', background: '#050505' }}>
-          {/* Topbar */}
-          <div style={{ height: '56px', borderBottom: '1px solid #1e1e1e', position: 'sticky', top: 0, zIndex: 10, background: 'rgba(5,5,5,0.9)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ width: '8px', height: '8px', background: '#22c55e', borderRadius: '50%' }} />
-              <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>847 deals funnet hittil</span>
-            </div>
-            <button style={{ position: 'relative', padding: '8px', color: 'rgba(255,255,255,0.4)', background: 'none', border: 'none', cursor: 'pointer' }}>
-              <span className="ms" style={{ fontSize: '20px' }}>notifications</span>
-              <span style={{ position: 'absolute', top: '8px', right: '8px', width: '6px', height: '6px', background: '#ff6b00', borderRadius: '50%' }} />
-            </button>
           </div>
 
-          <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px' }}>
-            <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '-0.5px' }}>Live Deals</h2>
-              <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: '4px', fontSize: '13px' }}>Oppdateres automatisk. Prisene kan endre seg raskt — book når du ser en god deal.</p>
-            </div>
-
-            {/* Airport filter buttons */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '32px' }}>
-              {airports.map((a) => (
-                <button key={a} onClick={() => setFilter(a)}
-                  style={{ padding: '8px 16px', borderRadius: '100px', fontSize: '13px', fontWeight: filter === a ? 700 : 500, background: filter === a ? '#ff6b00' : '#111', border: filter === a ? 'none' : '1px solid #1e1e1e', color: filter === a ? '#fff' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'DM Sans', sans-serif" }}>
-                  {a}
-                </button>
-              ))}
-            </div>
-
-            {/* Deals grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-              {filtered.map((d, i) => (
-                <div key={i} className="deal-card" style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '12px', padding: '14px', transition: 'all 0.2s', cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                    <div>
-                      <span style={{ fontSize: '13px', fontWeight: 900 }}>{d.to}</span>
-                      <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>{d.from} → {d.toCode}</p>
-                    </div>
-                    <span style={{ padding: '2px 8px', borderRadius: '100px', fontSize: '10px', fontWeight: 700, background: 'rgba(34,197,94,0.1)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.2)', flexShrink: 0 }}>-{d.discount}%</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            {filtered.map((d, i) => (
+              <div key={i} className="deal-card bg-[#111] border border-[#1e1e1e] rounded-xl p-3.5 transition-all duration-200 cursor-pointer">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <span className="text-sm font-black">{d.to} {d.flag}</span>
+                    <p className="text-[11px] text-slate-500 mt-0.5">{d.from} → {d.toCode}</p>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', padding: '6px 8px', marginBottom: '8px' }}>
-                    <span className="ms" style={{ fontSize: '13px', color: '#ff6b00' }}>calendar_month</span>
-                    <span style={{ fontSize: '11px', fontWeight: 700 }}>{d.dates}</span>
-                  </div>
-                  <p style={{ fontSize: '22px', fontWeight: 900, color: '#ff6b00', lineHeight: 1 }}>{d.price.toLocaleString('no')} kr</p>
-                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', marginTop: '2px', textDecoration: 'line-through' }}>{d.orig.toLocaleString('no')} kr</p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #1e1e1e', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>
-                    <span className="ms" style={{ fontSize: '13px' }}>airlines</span>
-                    {d.airline} · {d.direct ? 'Direktefly' : '1 stopp'}
-                  </div>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">-{d.discount}%</span>
                 </div>
-              ))}
-            </div>
+                <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-md px-2 py-1.5 mb-2">
+                  <span className="ms text-[#ff6b00]" style={{fontSize:'13px'}}>calendar_month</span>
+                  <span className="text-xs font-bold text-white">{d.dates}</span>
+                </div>
+                <p className="text-xl font-black text-[#ff6b00] leading-none">{d.price.toLocaleString('no')} kr</p>
+                <p className="text-[11px] text-slate-600 mt-0.5 line-through">{d.orig.toLocaleString('no')} kr</p>
+                <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-[#1e1e1e] text-[11px] text-slate-500">
+                  <span className="ms" style={{fontSize:'13px'}}>airlines</span>
+                  <span>{d.airline} · {d.direct ? 'Direktefly' : '1 stopp'}</span>
+                </div>
+              </div>
+            ))}
           </div>
-        </main>
-      </div>
-    </>
+        </div>
+      </main>
+    </div>
   );
 }
