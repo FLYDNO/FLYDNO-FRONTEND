@@ -7,16 +7,32 @@ const STRIPE_PUBLISHABLE_KEY = 'pk_test_51T9S6wBH30TF6uROcvethaI0i1nDaH9mUvotyZA
 const STRIPE_PRICE_ID = 'price_1TCCV4BH30TF6uRO4Dshmthq'; // 149 NOK/mnd
 const STRIPE_TRIAL_DAYS = 7;
 
-// Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Initialize Supabase client — wait for SDK to be ready
+let supabase;
+if (window.supabase && window.supabase.createClient) {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+  // Fallback: try again after a tick
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.supabase && window.supabase.createClient) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  });
+}
 
 // Auth helpers
 async function getUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
+  if (!supabase) return null;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
+  } catch (e) {
+    return null;
+  }
 }
 
 async function getUserProfile(userId) {
+  if (!supabase) return null;
   const { data } = await supabase.from('users').select('*').eq('id', userId).single();
   return data;
 }
@@ -31,6 +47,6 @@ async function requireAuth() {
 }
 
 async function logout() {
-  await supabase.auth.signOut();
+  if (supabase) await supabase.auth.signOut();
   window.location.href = 'login.html';
 }

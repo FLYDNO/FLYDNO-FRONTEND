@@ -161,12 +161,6 @@
 
         <input type="hidden" id="regCountry" value="NO"/>
 
-        <!-- Airport preferences -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-medium text-slate-300">Flyplasser du vil følge</label>
-          <div id="airportChecks" class="grid grid-cols-2 gap-2"></div>
-        </div>
-
         <button id="regBtn" onclick="handleRegister()"
           class="w-full bg-primary hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-primary/20 text-sm mt-1">
           Start gratis prøveperiode
@@ -243,9 +237,8 @@ async function handleRegister() {
   const name = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const password = document.getElementById('regPwd').value;
-  const country = document.getElementById('regCountry').value;
-  const checkboxes = document.querySelectorAll('#airportChecks input[type="checkbox"]:checked');
-  const preferred_airports = Array.from(checkboxes).map(cb => cb.value);
+  const country = 'NO';
+  const preferred_airports = ['OSL', 'BGO', 'TRD', 'SVG', 'TOS', 'TRF'];
 
   if (!name || !email || !password) { alert('Vennligst fyll inn alle feltene.'); return; }
   if (password.length < 8) { alert('Passordet må være minst 8 tegn.'); return; }
@@ -313,40 +306,6 @@ function togglePwd(inputId, iconId) {
   else { input.type = 'password'; icon.textContent = 'visibility'; }
 }
 
-const airports = {
-  NO: [
-    { code: 'OSL', name: 'Oslo Gardermoen', cc: 'no' },
-    { code: 'BGO', name: 'Bergen Flesland', cc: 'no' },
-    { code: 'TRD', name: 'Trondheim Værnes', cc: 'no' },
-    { code: 'SVG', name: 'Stavanger Sola', cc: 'no' },
-    { code: 'TOS', name: 'Tromsø Langnes', cc: 'no' },
-    { code: 'TRF', name: 'Torp Sandefjord', cc: 'no' },
-  ],
-  DK: [
-    { code: 'CPH', name: 'København Kastrup', cc: 'dk' },
-    { code: 'BLL', name: 'Billund', cc: 'dk' },
-    { code: 'AAL', name: 'Aalborg', cc: 'dk' },
-  ],
-  SE: [
-    { code: 'ARN', name: 'Stockholm Arlanda', cc: 'se' },
-    { code: 'GOT', name: 'Göteborg Landvetter', cc: 'se' },
-    { code: 'MMX', name: 'Malmö Sturup', cc: 'se' },
-  ]
-};
-
-function updateAirports() {
-  const country = document.getElementById('regCountry').value;
-  const container = document.getElementById('airportChecks');
-  container.innerHTML = airports[country].map(a => `
-    <label class="flex items-center gap-2.5 bg-[#2e2e2e] border border-[#444444] rounded-xl px-3.5 py-2.5 cursor-pointer hover:border-primary/40 transition-all">
-      <input type="checkbox" checked value="${a.code}" class="w-4 h-4 rounded border-[#444] bg-[#2e2e2e] text-primary focus:ring-primary/40 focus:ring-offset-0"/>
-      <span class="fi fi-${a.cc} fis" style="width:1.2em;height:0.9em;display:inline-block;vertical-align:middle;border-radius:2px;"></span>
-      <span class="text-sm text-slate-200">${a.name}</span>
-    </label>
-  `).join('');
-}
-
-updateAirports();
 </script>
 </body>
 </html>
