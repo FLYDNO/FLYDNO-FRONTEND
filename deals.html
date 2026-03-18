@@ -32,7 +32,68 @@
 <div class="flex h-screen overflow-hidden">
 
   <!-- Sidebar -->
-  <aside class="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
+  <!-- Mobile sidebar overlay -->
+  <div id="mobileMenu" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/60" onclick="document.getElementById('mobileMenu').classList.add('hidden')"></div>
+    <aside class="relative w-72 h-full bg-[#050505] border-r border-[#1e1e1e] flex flex-col overflow-y-auto">
+      <div class="p-5 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#ff6b00]/20">
+            <span class="ms" style="font-size:18px">flight_takeoff</span>
+          </div>
+          <div>
+            <h1 class="text-base font-bold leading-tight text-white">FlyDeals</h1>
+            <p class="text-[11px] text-slate-500 font-medium">Varsler deg om flydeals</p>
+          </div>
+        </a>
+        <button onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-slate-500 hover:text-white p-1">
+          <span class="ms" style="font-size:22px">close</span>
+        </button>
+      </div>
+      <nav class="flex-1 px-3 space-y-0.5 mt-1">
+        <a href="deals.html" class="nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl">
+          <span class="ms ms-fill" style="font-size:18px">local_offer</span>
+          <span class="text-sm font-semibold">Live Deals</span>
+        </a>
+        <a href="varsler.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+          <span class="ms" style="font-size:18px">notifications</span>
+          <span class="text-sm font-medium">Dine Varsler</span>
+        </a>
+        <a href="oppdag.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+          <span class="ms" style="font-size:18px">explore</span>
+          <span class="text-sm font-medium">Oppdag Ruter</span>
+        </a>
+        <a href="historikk.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+          <span class="ms" style="font-size:18px">history</span>
+          <span class="text-sm font-medium">Historikk</span>
+        </a>
+        <div class="pt-3 mt-2 border-t border-[#1e1e1e] space-y-0.5">
+          <a href="innstillinger.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+            <span class="ms" style="font-size:18px">settings</span>
+            <span class="text-sm font-medium">Innstillinger</span>
+          </a>
+          <a href="brukerstotte.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
+            <span class="ms" style="font-size:18px">help</span>
+            <span class="text-sm font-medium">Brukerstøtte</span>
+          </a>
+        </div>
+      </nav>
+      <div class="p-3 mt-auto border-t border-[#1e1e1e]">
+        <div class="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
+          <div class="overflow-hidden flex-1 min-w-0">
+            <p class="text-sm font-semibold truncate">Marius Jensen</p>
+            <p class="text-[11px] text-slate-500 truncate">marius@flydeals.no</p>
+          </div>
+          <a href="innstillinger.html" class="text-slate-500 hover:text-[#ff6b00] transition-colors">
+            <span class="ms" style="font-size:16px">settings</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] hidden md:flex flex-col">
     <a href="index.html" class="p-5 flex items-center gap-3 hover:opacity-80 transition-opacity">
       <div class="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#ff6b00]/20 flex-shrink-0">
         <span class="ms" style="font-size:18px">flight_takeoff</span>
@@ -85,8 +146,11 @@
 
   <!-- Main -->
   <main class="flex-1 overflow-y-auto bg-[#050505]">
-    <div class="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-6">
+    <div class="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-4 md:px-6">
       <div class="flex items-center gap-2">
+        <button onclick="document.getElementById('mobileMenu').classList.remove('hidden')" class="md:hidden p-1.5 text-slate-400 hover:text-white mr-2">
+          <span class="ms" style="font-size:22px">menu</span>
+        </button>
         <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
@@ -103,7 +167,7 @@
       </div>
     </div>
 
-    <div class="max-w-5xl mx-auto px-6 py-8">
+    <div class="max-w-5xl mx-auto px-4 md:px-6 py-8">
       <div class="mb-8">
         <h2 class="text-3xl font-black tracking-tight">Live Deals</h2>
         <p class="text-slate-500 mt-1">Oppdateres automatisk. Prisene kan endre seg raskt — book når du ser en god deal.</p>
