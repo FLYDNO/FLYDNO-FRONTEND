@@ -222,6 +222,7 @@ export default function HomePage() {
               FlyDeals
             </Link>
             <div className="nav-links">
+              <Link href="/deals">Deals</Link>
               <a href="#how">Hvordan det fungerer</a>
               <Link href="/login" className="nav-login">Logg inn</Link>
               <Link href="/login" className="nav-btn">Prøv gratis</Link>
