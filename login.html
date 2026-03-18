@@ -284,7 +284,20 @@ async function handleRegister() {
       });
     }
 
-    window.location.href = 'deals.html';
+    // Redirect to Stripe Checkout (7-day free trial)
+    btn.textContent = 'Starter betaling...';
+    const checkoutRes = await fetch(SUPABASE_URL + '/functions/v1/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const checkoutData = await checkoutRes.json();
+    if (checkoutData.url) {
+      window.location.href = checkoutData.url;
+    } else {
+      // Fallback: go to deals if checkout fails
+      window.location.href = 'deals.html';
+    }
   } catch (err) {
     alert('Registrering feilet: ' + err.message);
     btn.disabled = false;
