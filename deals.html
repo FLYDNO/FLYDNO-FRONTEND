@@ -173,18 +173,34 @@
         <p class="text-slate-500 mt-1">Oppdateres automatisk. Prisene kan endre seg raskt — book når du ser en god deal.</p>
       </div>
 
-      <!-- Airport filters -->
-      <div class="flex flex-wrap gap-2 mb-8">
-        <button onclick="filterDeals('alle',this)" class="filter-btn active px-4 py-2 rounded-full text-sm font-semibold bg-[#ff6b00] text-white transition-all">Alle flyplasser</button>
-        <button onclick="filterDeals('OSL',this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all"><span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Oslo (OSL)</button>
-        <button onclick="filterDeals('BGO',this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all"><span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Bergen (BGO)</button>
-        <button onclick="filterDeals('TRD',this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all"><span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Trondheim (TRD)</button>
-        <button onclick="filterDeals('SVG',this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all"><span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Stavanger (SVG)</button>
-        <button onclick="filterDeals('TOS',this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all"><span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Tromsø (TOS)</button>
-        <button onclick="filterDeals('TRF',this)" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all"><span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Torp (TRF)</button>
+      <!-- Filters -->
+      <div class="space-y-3 mb-6">
+        <!-- Country filter -->
+        <div class="flex flex-wrap gap-2">
+          <button onclick="filterCountry('NO',this)" class="country-btn active px-3 py-1.5 rounded-full text-xs font-semibold bg-[#ff6b00] text-white transition-all"><span class="fi fi-no fis" style="width:1.1em;height:0.8em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Norge</button>
+          <button onclick="filterCountry('DK',this)" class="country-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all"><span class="fi fi-dk fis" style="width:1.1em;height:0.8em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Danmark</button>
+          <button onclick="filterCountry('SE',this)" class="country-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all"><span class="fi fi-se fis" style="width:1.1em;height:0.8em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Sverige</button>
+        </div>
+        <!-- Airport filter -->
+        <div id="airportFilters" class="flex flex-wrap gap-1.5">
+        </div>
+        <!-- Month filter -->
+        <div class="flex flex-wrap gap-1.5">
+          <button onclick="filterMonth('alle',this)" class="month-btn active px-3 py-1.5 rounded-full text-xs font-semibold bg-[#ff6b00] text-white transition-all">Alle måneder</button>
+          <button onclick="filterMonth('Mar',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Mar</button>
+          <button onclick="filterMonth('Apr',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Apr</button>
+          <button onclick="filterMonth('Mai',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Mai</button>
+          <button onclick="filterMonth('Jun',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Jun</button>
+          <button onclick="filterMonth('Jul',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Jul</button>
+          <button onclick="filterMonth('Aug',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Aug</button>
+          <button onclick="filterMonth('Sep',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Sep</button>
+          <button onclick="filterMonth('Okt',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Okt</button>
+          <button onclick="filterMonth('Nov',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Nov</button>
+          <button onclick="filterMonth('Des',this)" class="month-btn px-2.5 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">Des</button>
+        </div>
       </div>
 
-      <div id="dealsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+      <div id="dealsGrid" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3"></div>
     </div>
   </main>
 </div>
@@ -205,15 +221,70 @@ const deals = [
   { from: 'Oslo', fromCode: 'OSL', to: 'Bali', toCode: 'DPS', cc: 'id', price: 4290, orig: 6703, discount: 36, dates: 'Mai 2026', airline: 'Qatar Airways', direct: false, origin: 'OSL' },
 ];
 
-function flagSpan(cc) {
-  return '<span class="fi fi-' + cc + ' fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span>';
+function flagSpan(cc, small) {
+  const s = small ? 'width:1em;height:0.75em' : 'width:1.3em;height:1em';
+  return '<span class="fi fi-' + cc + ' fis" style="' + s + ';display:inline-block;vertical-align:middle;border-radius:2px;"></span>';
 }
 
-let currentFilter = 'alle';
+const countryAirports = {
+  NO: [
+    { code: 'OSL', name: 'Oslo', cc: 'no' },
+    { code: 'BGO', name: 'Bergen', cc: 'no' },
+    { code: 'TRD', name: 'Trondheim', cc: 'no' },
+    { code: 'SVG', name: 'Stavanger', cc: 'no' },
+    { code: 'TOS', name: 'Tromsø', cc: 'no' },
+    { code: 'TRF', name: 'Torp', cc: 'no' },
+  ],
+  DK: [
+    { code: 'CPH', name: 'København', cc: 'dk' },
+    { code: 'BLL', name: 'Billund', cc: 'dk' },
+    { code: 'AAL', name: 'Aalborg', cc: 'dk' },
+  ],
+  SE: [
+    { code: 'ARN', name: 'Stockholm', cc: 'se' },
+    { code: 'GOT', name: 'Göteborg', cc: 'se' },
+    { code: 'MMX', name: 'Malmö', cc: 'se' },
+  ]
+};
 
-function filterDeals(filter, btn) {
-  currentFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(b => {
+let currentAirport = 'alle';
+let currentMonth = 'alle';
+let currentCountry = 'NO';
+
+function filterCountry(country, btn) {
+  currentCountry = country;
+  currentAirport = 'alle';
+  document.querySelectorAll('.country-btn').forEach(b => {
+    b.classList.remove('active', 'bg-[#ff6b00]', 'text-white');
+    b.classList.add('bg-[#111]', 'text-slate-400', 'border', 'border-[#1e1e1e]');
+  });
+  btn.classList.add('active', 'bg-[#ff6b00]', 'text-white');
+  btn.classList.remove('bg-[#111]', 'text-slate-400', 'border', 'border-[#1e1e1e]');
+  renderAirportButtons();
+  renderDeals();
+}
+
+function renderAirportButtons() {
+  const container = document.getElementById('airportFilters');
+  const airports = countryAirports[currentCountry] || [];
+  container.innerHTML = `<button onclick="filterAirport('alle',this)" class="airport-btn active px-3 py-1.5 rounded-full text-xs font-semibold bg-[#ff6b00] text-white transition-all">Alle flyplasser</button>` +
+    airports.map(a => `<button onclick="filterAirport('${a.code}',this)" class="airport-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">${flagSpan(a.cc, true)} ${a.name}</button>`).join('');
+}
+
+function filterAirport(code, btn) {
+  currentAirport = code;
+  document.querySelectorAll('.airport-btn').forEach(b => {
+    b.classList.remove('active', 'bg-[#ff6b00]', 'text-white');
+    b.classList.add('bg-[#111]', 'text-slate-400', 'border', 'border-[#1e1e1e]');
+  });
+  btn.classList.add('active', 'bg-[#ff6b00]', 'text-white');
+  btn.classList.remove('bg-[#111]', 'text-slate-400', 'border', 'border-[#1e1e1e]');
+  renderDeals();
+}
+
+function filterMonth(month, btn) {
+  currentMonth = month;
+  document.querySelectorAll('.month-btn').forEach(b => {
     b.classList.remove('active', 'bg-[#ff6b00]', 'text-white');
     b.classList.add('bg-[#111]', 'text-slate-400', 'border', 'border-[#1e1e1e]');
   });
@@ -223,30 +294,38 @@ function filterDeals(filter, btn) {
 }
 
 function renderDeals() {
-  const filtered = currentFilter === 'alle' ? deals : deals.filter(d => d.origin === currentFilter);
+  let filtered = deals;
+  if (currentAirport !== 'alle') filtered = filtered.filter(d => d.origin === currentAirport);
+  if (currentMonth !== 'alle') filtered = filtered.filter(d => d.dates.toLowerCase().includes(currentMonth.toLowerCase()));
   const grid = document.getElementById('dealsGrid');
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-slate-500">Ingen deals funnet for dette filteret.</p></div>';
+    return;
+  }
   grid.innerHTML = filtered.map((d, i) => `
-    <div onclick="openDeal(${i})" class="deal-card bg-[#111] border border-[#1e1e1e] rounded-xl p-3.5 transition-all duration-200 cursor-pointer" data-idx="${i}">
-      <div class="flex items-start justify-between mb-2">
+    <div onclick="openDeal(${deals.indexOf(d)})" class="deal-card bg-[#111] border border-[#1e1e1e] rounded-xl p-2.5 md:p-3.5 transition-all duration-200 cursor-pointer">
+      <div class="flex items-start justify-between mb-1.5 md:mb-2">
         <div>
-          <span class="text-sm font-black">${d.to} ${flagSpan(d.cc)}</span>
-          <p class="text-[11px] text-slate-500 mt-0.5">${d.from} → ${d.toCode}</p>
+          <span class="text-xs md:text-sm font-black">${d.to} ${flagSpan(d.cc, true)}</span>
+          <p class="text-[10px] md:text-[11px] text-slate-500 mt-0.5">${d.from} → ${d.toCode}</p>
         </div>
-        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">-${d.discount}%</span>
+        <span class="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">-${d.discount}%</span>
       </div>
-      <div class="flex items-center gap-1 bg-white/5 border border-white/10 rounded-md px-2 py-1.5 mb-2">
-        <span class="ms text-[#ff6b00]" style="font-size:13px">calendar_month</span>
-        <span class="text-xs font-bold text-white">${d.dates}</span>
+      <div class="flex items-center gap-1 bg-white/5 border border-white/10 rounded-md px-1.5 md:px-2 py-1 md:py-1.5 mb-1.5 md:mb-2">
+        <span class="ms text-[#ff6b00]" style="font-size:11px">calendar_month</span>
+        <span class="text-[10px] md:text-xs font-bold text-white">${d.dates}</span>
       </div>
-      <p class="text-xl font-black text-[#ff6b00] leading-none">${d.price.toLocaleString('no')} kr</p>
-      <p class="text-[11px] text-slate-600 mt-0.5 line-through">${d.orig.toLocaleString('no')} kr</p>
-      <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-[#1e1e1e] text-[11px] text-slate-500">
+      <p class="text-base md:text-xl font-black text-[#ff6b00] leading-none">${d.price.toLocaleString('no')} kr</p>
+      <p class="text-[10px] md:text-[11px] text-slate-600 mt-0.5 line-through">${d.orig.toLocaleString('no')} kr</p>
+      <div class="hidden md:flex items-center gap-1.5 mt-2 pt-2 border-t border-[#1e1e1e] text-[11px] text-slate-500">
         <span class="ms" style="font-size:13px">airlines</span>
         <span>${d.airline} · ${d.direct ? 'Direktefly' : '1 stopp'}</span>
       </div>
     </div>
   `).join('');
 }
+
+renderAirportButtons();
 
 let filteredDealsCache = [];
 
