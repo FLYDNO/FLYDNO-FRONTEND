@@ -415,34 +415,30 @@ async function saveProfile(btn) {
 async function loadProfile() {
   const user = await requireAuth();
   if (!user) return;
-  const profile = await getUserProfile(user.id);
-  if (profile) {
-    document.getElementById('profileName').value = profile.name || '';
-    document.getElementById('profileEmail').value = profile.email || user.email || '';
-    document.getElementById('profileCountry').value = profile.country || 'NO';
-    // Set email frequency radio
-    if (profile.email_frequency) {
-      const radio = document.querySelector('input[name="freq"][value="' + profile.email_frequency + '"]');
-      if (radio) {
-        radio.checked = true;
-        const label = radio.closest('label');
-        if (label) {
-          document.querySelectorAll('label[onclick^="selectFreq"]').forEach(l => {
-            l.classList.remove('border-primary/30');
-            l.classList.add('border-[#1e1e1e]');
-          });
-          label.classList.remove('border-[#1e1e1e]');
-          label.classList.add('border-primary/30');
-        }
-      }
+  // Ensure profile exists (creates one for Google OAuth users)
+  const profile = await ensureUserProfile(user);
+  const name = (profile && profile.name) || user.user_metadata?.full_name || user.user_metadata?.name || '';
+  const email = (profile && profile.email) || user.email || '';
+
+  document.getElementById('profileName').value = name;
+  document.getElementById('profileEmail').value = email;
+  document.getElementById('profilePhone').value = (profile && profile.phone) || '';
+  document.getElementById('profileCountry').value = (profile && profile.country) || 'NO';
+
+  // Set email frequency radio from saved value
+  const freq = (profile && profile.email_frequency) || 'daily';
+  const radio = document.querySelector('input[name="freq"][value="' + freq + '"]');
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('label');
+    if (label) {
+      document.querySelectorAll('label[onclick^="selectFreq"]').forEach(l => {
+        l.classList.remove('border-primary/30');
+        l.classList.add('border-[#1e1e1e]');
+      });
+      label.classList.remove('border-[#1e1e1e]');
+      label.classList.add('border-primary/30');
     }
-    // Update sidebar user info
-    document.querySelectorAll('.sidebar-user-name').forEach(el => el.textContent = profile.name || 'Bruker');
-    document.querySelectorAll('.sidebar-user-email').forEach(el => el.textContent = profile.email || user.email || '');
-  } else {
-    // No profile row yet, populate from auth user
-    document.getElementById('profileEmail').value = user.email || '';
-    document.getElementById('profileName').value = user.user_metadata?.name || '';
   }
 }
 loadProfile();
@@ -461,15 +457,33 @@ function closeModal(id) {
   document.getElementById(id).style.display = 'none';
 }
 
-function confirmCancel() {
+async function confirmCancel() {
   closeModal('cancelModal');
-  showToast('Abonnementet er sagt opp. Du beholder tilgangen til 24. mai 2026.', 'success');
+  try {
+    const user = await getUser();
+    if (user && supabase) {
+      await supabase.from('users').update({ subscription_status: 'cancelled' }).eq('id', user.id);
+    }
+    showToast('Abonnementet er sagt opp. Du beholder tilgangen ut perioden.', 'success');
+  } catch (err) {
+    showToast('Kunne ikke si opp: ' + err.message, 'error');
+  }
 }
 
 async function confirmDelete() {
   closeModal('deleteModal');
-  showToast('Konto slettet. Du blir nå logget ut...', 'success');
-  await logout();
+  try {
+    const user = await getUser();
+    if (user && supabase) {
+      // Delete user data
+      await supabase.from('alerts').delete().eq('user_id', user.id);
+      await supabase.from('users').delete().eq('id', user.id);
+    }
+    showToast('Konto slettet. Du blir nå logget ut...', 'success');
+    setTimeout(async () => { await logout(); }, 1500);
+  } catch (err) {
+    showToast('Feil ved sletting: ' + err.message, 'error');
+  }
 }
 </script>
 </body>

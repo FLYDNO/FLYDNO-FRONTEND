@@ -85,8 +85,8 @@
       <div class="p-3 mt-auto border-t border-[#1e1e1e]">
         <div class="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
           <div class="overflow-hidden flex-1 min-w-0">
-            <p class="text-sm font-semibold truncate">Marius Jensen</p>
-            <p class="text-[11px] text-slate-500 truncate">marius@flydeals.no</p>
+            <p class="text-sm font-semibold truncate sidebar-user-name">Bruker</p>
+            <p class="text-[11px] text-slate-500 truncate sidebar-user-email"></p>
           </div>
           <a href="innstillinger.html" class="text-slate-500 hover:text-[#ff6b00] transition-colors">
             <span class="ms" style="font-size:16px">settings</span>
@@ -138,8 +138,8 @@
     <div class="p-3 mt-auto border-t border-[#1e1e1e]">
       <div class="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
         <div class="overflow-hidden flex-1 min-w-0">
-          <p class="text-sm font-semibold truncate">Marius Jensen</p>
-          <p class="text-[11px] text-slate-500 truncate">marius@flydeals.no</p>
+          <p class="text-sm font-semibold truncate sidebar-user-name">Bruker</p>
+          <p class="text-[11px] text-slate-500 truncate sidebar-user-email"></p>
         </div>
         <a href="innstillinger.html" class="text-slate-500 hover:text-[#ff6b00] transition-colors">
           <span class="ms" style="font-size:16px">settings</span>
@@ -198,63 +198,6 @@
       <!-- Alerts rendered here -->
       <div id="alertsContainer"></div>
 
-      <!-- Nylige treff -->
-      <div class="mt-12">
-        <h3 class="text-white text-2xl font-bold mb-6">Nylige treff</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Hit Card 1 -->
-          <div class="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden hover:border-primary/50 transition-all cursor-pointer">
-            <div class="h-32 w-full relative">
-              <img alt="New York City skyline" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMyQ7Ej_HvzjUGYDimJD_eeZgup8ctf5DG9qJl9dAShyN0auUjybhzlxz3-Sg3-LC-Vp-baSRT4egzQ0yFSoUwmQOf1HXbb_VQwbAnrAJQU6gbCHQR2rXljso05jywLtYhYWnMYbaLbNb-fgYQiDj4j1osnBCRB5aFiAPnQGVHax-qWgVR_QgvKfGE6CKPFbwR3W-WuFl1feLOIZ2ZcPPzdPiXophgnKjQnO2fAmmRufjW2I3a4Q9aNdA8nCrqzbumaKxaOrFYqHOC"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
-              <div class="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Tilgjengelig nå</div>
-            </div>
-            <div class="p-4">
-              <div class="flex justify-between items-start mb-1">
-                <div>
-                  <h4 class="font-bold text-white">New York <span class="fi fi-us fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span></h4>
-                  <p class="text-xs text-slate-500">fra <span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Oslo (OSL → JFK)</p>
-                </div>
-                <p class="text-primary font-black">4 290 kr</p>
-              </div>
-              <div class="flex items-center gap-2 text-xs text-slate-400 mb-4 mt-2">
-                <span class="ms" style="font-size:14px">calendar_month</span>
-                <span>12. Okt - 19. Okt</span>
-              </div>
-              <button onclick="showToast('Åpner tilbud fra Norwegian — OSL → JFK', 'info')" class="w-full py-2 bg-[#2a2a2a] hover:bg-primary text-white text-sm font-bold rounded-lg transition-colors">Se tilbud</button>
-            </div>
-          </div>
-          <!-- Hit Card 2 -->
-          <div class="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden hover:border-primary/50 transition-all cursor-pointer">
-            <div class="h-32 w-full relative">
-              <img alt="London Big Ben" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAumTOdngZO2sKCQWqh5hWkF_O5cqp17fSZ6JtS2zcc9wVotKAMgPn0flGE4gcCBgAXFjRIMiIJctoNM0DDJK6GsQMmyGvvHcrc92_747biMzkJn13JNfQ8p4egYZjiRqS9W7RhiPJ-G3npza1LX4eCs3JgnAyyXo3q_VReXGeH09o-HQBUsTZTA4dRId_vxjCfTBVL_ELPcGtY_DXjWRQyyaTmGzF_1kMZV4Cvalofz8UcPBxrT1MP842wvbsnGAWfmw7GKt4-liYX"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
-              <div class="absolute top-2 right-2 bg-slate-700 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Utgått</div>
-            </div>
-            <div class="p-4 opacity-75">
-              <div class="flex justify-between items-start mb-1">
-                <div>
-                  <h4 class="font-bold text-white">London <span class="fi fi-gb fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span></h4>
-                  <p class="text-xs text-slate-500">fra <span class="fi fi-no fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span> Bergen (BGO → LHR)</p>
-                </div>
-                <p class="text-slate-400 font-black">980 kr</p>
-              </div>
-              <div class="flex items-center gap-2 text-xs text-slate-400 mb-4 mt-2">
-                <span class="ms" style="font-size:14px">calendar_month</span>
-                <span>05. Nov - 08. Nov</span>
-              </div>
-              <button class="w-full py-2 bg-[#2a2a2a] text-slate-500 text-sm font-bold rounded-lg cursor-not-allowed">Ikke tilgjengelig</button>
-            </div>
-          </div>
-          <!-- Add New -->
-          <div onclick="openModal()" class="border-2 border-dashed border-[#1e1e1e] rounded-xl flex flex-col items-center justify-center p-6 hover:bg-white/5 transition-colors cursor-pointer group">
-            <div class="w-12 h-12 rounded-full border-2 border-dashed border-[#1e1e1e] flex items-center justify-center text-slate-500 group-hover:border-primary group-hover:text-primary mb-3">
-              <span class="ms">add</span>
-            </div>
-            <p class="text-slate-400 font-medium group-hover:text-slate-200">Opprett nytt søk</p>
-          </div>
-        </div>
-      </div>
 
     </div>
   </main>

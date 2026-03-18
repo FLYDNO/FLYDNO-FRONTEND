@@ -229,7 +229,7 @@ async function handleLogin() {
     if (error) throw error;
     window.location.href = 'deals.html';
   } catch (err) {
-    alert('Innlogging feilet: ' + err.message);
+    showLoginError(translateAuthError(err.message));
     btn.disabled = false;
     btn.textContent = 'Logg inn';
   }
@@ -283,7 +283,7 @@ async function handleRegister() {
       window.location.href = 'deals.html';
     }
   } catch (err) {
-    alert('Registrering feilet: ' + err.message);
+    showLoginError(translateAuthError(err.message));
     btn.disabled = false;
     btn.textContent = 'Start gratis prøveperiode';
   }
@@ -291,16 +291,36 @@ async function handleRegister() {
 
 async function handleGoogleLogin() {
   if (!ensureSupabase()) return;
+  // Redirect to a callback page that handles Stripe checkout for new Google users
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + '/deals.html' }
+    options: { redirectTo: window.location.origin + '/auth-callback.html' }
   });
-  if (error) alert('Google-innlogging feilet: ' + error.message);
+  if (error) showLoginError(translateAuthError(error.message));
+}
+
+// Inline error display instead of ugly browser alert
+function showLoginError(msg) {
+  let errEl = document.getElementById('loginError');
+  if (!errEl) {
+    errEl = document.createElement('div');
+    errEl.id = 'loginError';
+    errEl.style.cssText = 'background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    // Insert at the top of the active view's card
+    const activeView = document.querySelector('.view.active .space-y-5');
+    if (activeView) activeView.parentElement.insertBefore(errEl, activeView);
+  }
+  errEl.innerHTML = '<span class="ms" style="font-size:18px;color:#ef4444;">error</span>' + msg;
+  errEl.style.display = 'flex';
+  setTimeout(() => { if (errEl) errEl.style.display = 'none'; }, 6000);
 }
 
 function switchView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  // Hide error when switching views
+  const errEl = document.getElementById('loginError');
+  if (errEl) errEl.style.display = 'none';
   window.scrollTo(0, 0);
 }
 function togglePwd(inputId, iconId) {

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html class="dark" lang="no">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: { "primary": "#ff6b00", "background-dark": "#050505" },
+        fontFamily: { "sans": ["DM Sans", "sans-serif"] }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'DM Sans', sans-serif; }
+  .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+</style>
+<title>FlyDeals — Logger inn...</title>
+</head>
+<body class="bg-[#050505] text-slate-100 min-h-screen flex flex-col items-center justify-center">
+  <div class="flex flex-col items-center gap-4">
+    <div class="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary/25">
+      <span class="ms" style="font-size:30px">flight_takeoff</span>
+    </div>
+    <h1 class="text-xl font-bold text-white">Logger inn...</h1>
+    <p class="text-slate-400 text-sm" id="statusMsg">Vennligst vent mens vi setter opp kontoen din.</p>
+    <div class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mt-2"></div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-config.js"></script>
+<script>
+async function handleCallback() {
+  const statusMsg = document.getElementById('statusMsg');
+
+  // Wait a moment for Supabase to process the OAuth callback
+  await new Promise(r => setTimeout(r, 500));
+
+  const user = await getUser();
+  if (!user) {
+    statusMsg.textContent = 'Innlogging feilet. Sender deg tilbake...';
+    setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+    return;
+  }
+
+  // Ensure user has a profile row
+  statusMsg.textContent = 'Setter opp profilen din...';
+  const profile = await ensureUserProfile(user);
+
+  // Check if user has active subscription (subscription_status field)
+  const hasSubscription = profile && profile.subscription_status === 'active';
+
+  if (!hasSubscription) {
+    // New Google user — redirect to Stripe checkout
+    statusMsg.textContent = 'Starter betalingsoppsett...';
+    try {
+      const checkoutRes = await fetch(SUPABASE_URL + '/functions/v1/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email })
+      });
+      const checkoutData = await checkoutRes.json();
+      if (checkoutData.url) {
+        window.location.href = checkoutData.url;
+        return;
+      }
+    } catch (e) {
+      console.error('Stripe checkout feilet:', e);
+    }
+  }
+
+  // Already has subscription or Stripe failed — go to deals
+  window.location.href = 'deals.html';
+}
+
+handleCallback();
+</script>
+</body>
+</html>

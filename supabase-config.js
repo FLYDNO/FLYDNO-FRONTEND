@@ -8,7 +8,6 @@ const STRIPE_PRICE_ID = 'price_1TCCV4BH30TF6uRO4Dshmthq'; // 149 NOK/mnd
 const STRIPE_TRIAL_DAYS = 7;
 
 // Initialize Supabase client
-// Extract createClient from SDK namespace before declaring our client variable
 var _sbCreateClient = (window.supabase && typeof window.supabase.createClient === 'function')
   ? window.supabase.createClient
   : null;
@@ -44,7 +43,42 @@ async function requireAuth() {
     window.location.href = 'login.html';
     return null;
   }
+  // Auto-fill sidebar on every authenticated page
+  fillSidebar(user);
   return user;
+}
+
+// Fill sidebar user card on all pages
+async function fillSidebar(user) {
+  if (!user) return;
+  // Try profile from DB first, fallback to auth metadata
+  const profile = await getUserProfile(user.id);
+  const name = (profile && profile.name) || user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Bruker';
+  const email = (profile && profile.email) || user.email || '';
+
+  document.querySelectorAll('.sidebar-user-name').forEach(el => el.textContent = name);
+  document.querySelectorAll('.sidebar-user-email').forEach(el => el.textContent = email);
+}
+
+// Ensure user has a profile row in users table (for Google OAuth users)
+async function ensureUserProfile(user) {
+  if (!user || !supabase) return null;
+  let profile = await getUserProfile(user.id);
+  if (!profile) {
+    // Create profile row for OAuth users
+    const name = user.user_metadata?.full_name || user.user_metadata?.name || '';
+    const email = user.email || '';
+    await supabase.from('users').insert({
+      id: user.id,
+      name,
+      email,
+      country: 'NO',
+      preferred_airports: ['OSL', 'BGO', 'TRD', 'SVG', 'TOS', 'TRF'],
+      email_frequency: 'daily'
+    });
+    profile = await getUserProfile(user.id);
+  }
+  return profile;
 }
 
 async function logout() {
@@ -58,4 +92,22 @@ function ensureSupabase() {
     return false;
   }
   return true;
+}
+
+// Translate Supabase error messages to Norwegian
+function translateAuthError(msg) {
+  const translations = {
+    'Invalid login credentials': 'Feil e-post eller passord. Prøv igjen.',
+    'Email not confirmed': 'E-posten din er ikke bekreftet. Sjekk innboksen.',
+    'User already registered': 'Det finnes allerede en konto med denne e-posten.',
+    'Password should be at least 6 characters': 'Passordet må være minst 6 tegn.',
+    'Signup requires a valid password': 'Vennligst oppgi et gyldig passord.',
+    'User not found': 'Ingen konto funnet med denne e-posten.',
+    'Email rate limit exceeded': 'For mange forsøk. Vent litt før du prøver igjen.',
+    'For security purposes, you can only request this once every 60 seconds': 'Av sikkerhetshensyn kan du bare gjøre dette hvert 60. sekund.',
+  };
+  for (const [en, no] of Object.entries(translations)) {
+    if (msg.includes(en)) return no;
+  }
+  return msg;
 }
