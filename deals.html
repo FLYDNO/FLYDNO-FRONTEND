@@ -2,7 +2,9 @@
 <html class="dark" lang="no">
 <head>
 <meta charset="utf-8"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ff6b00'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-size='20'%3E✈%3C/text%3E%3C/svg%3E"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="description" content="Se de beste flydealsene fra norske flyplasser."/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -18,6 +20,7 @@
     }
   }
 </script>
+<title>FlyDeals — Live Deals</title>
 <style>
   body { font-family: 'DM Sans', sans-serif; background: #050505; }
   .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
@@ -26,6 +29,10 @@
   .nav-link { border-left: 3px solid transparent; }
   ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
   .deal-card:hover { border-color: rgba(255,107,0,0.3); transform: translateY(-1px); }
+  html:not(.auth-ready) body > div { visibility: hidden; }
+  html:not(.auth-ready) body::after { content: ''; position: fixed; inset: 0; z-index: 9999; background: #050505; }
+  html:not(.auth-ready) body::before { content: ''; position: fixed; top: 50%; left: 50%; z-index: 10000; width: 32px; height: 32px; margin: -16px 0 0 -16px; border: 3px solid #1e1e1e; border-top-color: #ff6b00; border-radius: 50%; animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body class="text-slate-100 min-h-screen">

@@ -43,6 +43,8 @@ async function requireAuth() {
     window.location.href = 'login.html';
     return null;
   }
+  // Show page content (hidden by default via .auth-loading)
+  document.documentElement.classList.add('auth-ready');
   // Auto-fill sidebar on every authenticated page
   fillSidebar(user);
   return user;
