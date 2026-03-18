@@ -150,13 +150,13 @@
 
   <!-- Main -->
   <main class="flex-1 md:overflow-y-auto bg-[#050505]">
-    <div class="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-4 md:px-6">
+    <div class="h-14 border-b border-[#1e1e1e] md:sticky md:top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-4 md:px-6">
       <div class="flex items-center gap-2">
         <button onclick="document.getElementById('mobileMenu').classList.remove('hidden')" class="md:hidden p-1.5 text-slate-400 hover:text-white mr-2">
           <span class="ms" style="font-size:22px">menu</span>
         </button>
-        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-        <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
+        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse hidden md:block"></span>
+        <span class="text-sm text-slate-400 font-medium hidden md:block">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
         <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
