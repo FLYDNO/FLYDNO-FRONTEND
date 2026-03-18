@@ -53,8 +53,8 @@ async function handleCallback() {
   statusMsg.textContent = 'Setter opp profilen din...';
   const profile = await ensureUserProfile(user);
 
-  // Check if user has active subscription (subscription_status field)
-  const hasSubscription = profile && profile.subscription_status === 'active';
+  // Check if user has active subscription (subscription_active boolean, set by stripe-webhook)
+  const hasSubscription = profile && profile.subscription_active === true;
 
   if (!hasSubscription) {
     // New Google user — redirect to Stripe checkout

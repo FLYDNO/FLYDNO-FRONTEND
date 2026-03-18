@@ -462,7 +462,7 @@ async function confirmCancel() {
   try {
     const user = await getUser();
     if (user && supabase) {
-      await supabase.from('users').update({ subscription_status: 'cancelled' }).eq('id', user.id);
+      await supabase.from('users').update({ subscription_active: false }).eq('id', user.id);
     }
     showToast('Abonnementet er sagt opp. Du beholder tilgangen ut perioden.', 'success');
   } catch (err) {

@@ -200,7 +200,38 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase-config.js"></script>
 <script>
-requireAuth();
+// Check auth and subscription status
+async function initPage() {
+  const user = await requireAuth();
+  if (!user) return;
+
+  // Ensure profile exists (creates for Google OAuth users)
+  const profile = await ensureUserProfile(user);
+
+  // Check if user needs Stripe checkout (Google OAuth users without subscription)
+  // DB field is subscription_active (boolean), set by stripe-webhook
+  const hasSubscription = profile && profile.subscription_active === true;
+  const isOAuthUser = user.app_metadata?.provider === 'google' || user.identities?.some(i => i.provider === 'google');
+
+  if (isOAuthUser && !hasSubscription) {
+    try {
+      const checkoutRes = await fetch(SUPABASE_URL + '/functions/v1/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email })
+      });
+      const checkoutData = await checkoutRes.json();
+      if (checkoutData && checkoutData.url) {
+        window.location.href = checkoutData.url;
+        return;
+      }
+    } catch (e) {
+      console.warn('Stripe checkout feilet:', e);
+      // Continue to deals page if Stripe fails
+    }
+  }
+}
+initPage();
 
 const deals = [
   { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', cc: 'th', price: 2489, orig: 4700, discount: 47, dates: 'Mar–Apr 2026', airline: 'Thai Airways', direct: true, origin: 'OSL' },

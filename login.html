@@ -220,7 +220,7 @@ async function handleLogin() {
   if (!ensureSupabase()) return;
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPwd').value;
-  if (!email || !password) { alert('Vennligst fyll inn e-post og passord.'); return; }
+  if (!email || !password) { showLoginError('Vennligst fyll inn e-post og passord.'); return; }
   const btn = document.getElementById('loginBtn');
   btn.disabled = true;
   btn.textContent = 'Logger inn...';
@@ -243,8 +243,8 @@ async function handleRegister() {
   const country = 'NO';
   const preferred_airports = ['OSL', 'BGO', 'TRD', 'SVG', 'TOS', 'TRF'];
 
-  if (!name || !email || !password) { alert('Vennligst fyll inn alle feltene.'); return; }
-  if (password.length < 8) { alert('Passordet må være minst 8 tegn.'); return; }
+  if (!name || !email || !password) { showLoginError('Vennligst fyll inn alle feltene.'); return; }
+  if (password.length < 8) { showLoginError('Passordet må være minst 8 tegn.'); return; }
 
   const btn = document.getElementById('regBtn');
   btn.disabled = true;

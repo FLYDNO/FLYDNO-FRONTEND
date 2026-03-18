@@ -60,23 +60,38 @@ async function fillSidebar(user) {
   document.querySelectorAll('.sidebar-user-email').forEach(el => el.textContent = email);
 }
 
-// Ensure user has a profile row in users table (for Google OAuth users)
+// Ensure user has a complete profile row in users table
+// on-auth-user-created hook may have already created a minimal row (id, email, subscription_active)
+// This function fills in missing fields like name, country, preferred_airports
 async function ensureUserProfile(user) {
   if (!user || !supabase) return null;
+  const authName = user.user_metadata?.full_name || user.user_metadata?.name || '';
+  const authEmail = user.email || '';
   let profile = await getUserProfile(user.id);
+
   if (!profile) {
-    // Create profile row for OAuth users
-    const name = user.user_metadata?.full_name || user.user_metadata?.name || '';
-    const email = user.email || '';
+    // No row at all — create one (edge case if hook didn't fire)
     await supabase.from('users').insert({
       id: user.id,
-      name,
-      email,
+      name: authName,
+      email: authEmail,
       country: 'NO',
       preferred_airports: ['OSL', 'BGO', 'TRD', 'SVG', 'TOS', 'TRF'],
-      email_frequency: 'daily'
+      email_frequency: 'daily',
+      subscription_active: false
     });
     profile = await getUserProfile(user.id);
+  } else if (!profile.name && authName) {
+    // Row exists (from hook) but missing name/details — update it
+    const updates = {};
+    if (!profile.name && authName) updates.name = authName;
+    if (!profile.country) updates.country = 'NO';
+    if (!profile.preferred_airports) updates.preferred_airports = ['OSL', 'BGO', 'TRD', 'SVG', 'TOS', 'TRF'];
+    if (!profile.email_frequency) updates.email_frequency = 'daily';
+    if (Object.keys(updates).length > 0) {
+      await supabase.from('users').update(updates).eq('id', user.id);
+      profile = await getUserProfile(user.id);
+    }
   }
   return profile;
 }
