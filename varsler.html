@@ -649,16 +649,49 @@ function closeConfirm() {
 }
 
 function confirmDelete(id) {
+  const deletedAlert = alerts.find(a => a.id === id);
   alerts = alerts.filter(a => a.id !== id);
   saveAlerts();
   renderAlerts();
   closeConfirm();
   showToast('Varselet er slettet.', 'success');
+
+  // Sync deletion to Supabase
+  if (deletedAlert) {
+    getUser().then(user => {
+      if (user) {
+        supabase.from('alerts').delete()
+          .eq('user_id', user.id)
+          .eq('departure_airport', deletedAlert.fromCode)
+          .eq('arrival_airport', deletedAlert.toCode)
+          .then(({ error }) => {
+            if (error) console.error('Supabase alert delete failed:', error.message);
+          });
+      }
+    });
+  }
 }
 
 function toggleAlert(id, active) {
   const a = alerts.find(x => x.id === id);
-  if (a) { a.active = active; saveAlerts(); renderAlerts(); }
+  if (a) {
+    a.active = active;
+    saveAlerts();
+    renderAlerts();
+
+    // Sync toggle to Supabase
+    getUser().then(user => {
+      if (user) {
+        supabase.from('alerts').update({ active })
+          .eq('user_id', user.id)
+          .eq('departure_airport', a.fromCode)
+          .eq('arrival_airport', a.toCode)
+          .then(({ error }) => {
+            if (error) console.error('Supabase alert toggle failed:', error.message);
+          });
+      }
+    });
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
