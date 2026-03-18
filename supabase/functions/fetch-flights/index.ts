@@ -84,22 +84,30 @@ interface ParsedFlight {
 
 /**
  * Attempt to extract the best (cheapest) flight from the API response body.
- * The Google Flights2 API may return data under several possible keys,
- * so we try multiple paths to be resilient against format changes.
+ *
+ * The Google Flights2 API returns flights at:
+ *   body.data.itineraries.topFlights[]
+ *
+ * Each flight object has:
+ *   - price: number (NOK)
+ *   - flights: array of leg segments (length 1 = direct, 2+ = stops)
+ *   - flights[0].airline: string
+ *   - flights[0].departure_airport.time: string
+ *   - duration.raw: number (minutes)
  */
 // deno-lint-ignore no-explicit-any
 function parseBestFlight(body: any): ParsedFlight | null {
-  // Potential arrays that contain flight results
+  // Primary path: data.itineraries.topFlights
+  const topFlights = body?.data?.itineraries?.topFlights;
+
+  // Fallback paths for resilience
   const candidates =
+    topFlights ??
+    body?.data?.itineraries?.otherFlights ??
     body?.data?.best_flights ??
     body?.data?.flights ??
-    body?.best_flights ??
-    body?.flights ??
-    body?.data?.results ??
-    body?.results ??
     [];
 
-  // If the API returned a single object instead of an array, wrap it
   const flights = Array.isArray(candidates) ? candidates : [candidates];
 
   if (flights.length === 0) return null;
@@ -107,50 +115,36 @@ function parseBestFlight(body: any): ParsedFlight | null {
   let best: ParsedFlight | null = null;
 
   for (const flight of flights) {
-    // --- Price ---
+    // --- Price (direct number on the flight object) ---
     const price: number | undefined =
-      flight?.price?.total ??
-      flight?.price?.amount ??
-      flight?.price ??
-      flight?.total_price ??
-      deepFind(flight, "price");
+      typeof flight?.price === "number"
+        ? flight.price
+        : flight?.price?.total ?? flight?.price?.amount ?? undefined;
 
     if (typeof price !== "number" || price <= 0) continue;
 
-    // --- Airline ---
+    // --- Airline (from first flight segment) ---
     const airline: string =
+      flight?.flights?.[0]?.airline ??
       flight?.airline ??
-      flight?.airline_name ??
-      flight?.airlines?.[0] ??
-      flight?.legs?.[0]?.airline ??
-      flight?.segments?.[0]?.airline ??
-      deepFind(flight, "airline") ??
       "Ukjent";
 
-    // --- Stops ---
-    const stopsRaw =
-      flight?.stops ??
-      flight?.num_stops ??
-      flight?.legs?.length != null
-        ? (flight?.legs?.length ?? 1) - 1
-        : deepFind(flight, "stops") ?? 0;
-    const stops = typeof stopsRaw === "number" ? stopsRaw : 0;
+    // --- Stops (number of flight segments minus 1) ---
+    const segmentCount = Array.isArray(flight?.flights)
+      ? flight.flights.length
+      : 1;
+    const stops = segmentCount - 1;
 
-    // --- Departure date ---
+    // --- Departure date (from first segment's departure_airport.time) ---
     const departureDate: string | null =
+      flight?.flights?.[0]?.departure_airport?.time ??
       flight?.departure_date ??
-      flight?.departure ??
-      flight?.legs?.[0]?.departure ??
-      flight?.segments?.[0]?.departure ??
-      deepFind(flight, "departure_date") ??
       null;
 
     // --- Duration (minutes) ---
     const durationMinutes: number | null =
-      flight?.duration ??
-      flight?.total_duration ??
-      deepFind(flight, "duration") ??
-      null;
+      flight?.duration?.raw ??
+      (typeof flight?.duration === "number" ? flight.duration : null);
 
     // Keep the cheapest
     if (best === null || price < best.price) {
@@ -227,10 +221,16 @@ Deno.serve(async (req: Request) => {
     const routeLabel = `${route.from}→${route.to}`;
 
     try {
+      // Search ~30 days ahead
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 30);
+      const outboundDate = futureDate.toISOString().split("T")[0];
+
       // Build query params
       const params = new URLSearchParams({
         departure_id: route.from,
         arrival_id: route.to,
+        outbound_date: outboundDate,
         travel_class: "ECONOMY",
         adults: "1",
         show_hidden: "true",
@@ -285,7 +285,7 @@ Deno.serve(async (req: Request) => {
       const datesText = buildDatesText(best.departureDate);
 
       // Upsert into the flights table — update when the same route already exists
-      const { error: upsertError } = await supabase
+      const upsertResult = await supabase
         .from("flights")
         .upsert(
           {
@@ -300,17 +300,19 @@ Deno.serve(async (req: Request) => {
             airline: best.airline,
             direct: best.stops === 0,
             dates_text: datesText,
-            travel_date: best.departureDate,
+            travel_date: best.departureDate ?? outboundDate,
             updated_at: new Date().toISOString(),
           },
           { onConflict: "departure_airport,arrival_airport" },
         );
 
+      const upsertError = upsertResult?.error;
+
       if (upsertError) {
         results.push({
           route: routeLabel,
           status: "error",
-          message: `Supabase upsert failed: ${upsertError.message}`,
+          message: `Supabase upsert failed: ${upsertError.message ?? JSON.stringify(upsertError)}`,
         });
       } else {
         results.push({
