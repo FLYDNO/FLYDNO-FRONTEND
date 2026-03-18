@@ -1,13 +1,15 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/lib/useAuth';
+import { useRouter } from 'next/navigation';
 
 const deals = [
   { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', flag: '🇹🇭', price: 2489, orig: 4700, discount: 47, dates: 'Mar–Apr 2026', airline: 'Thai Airways', direct: true, origin: 'OSL' },
   { from: 'Bergen', fromCode: 'BGO', to: 'London', toCode: 'LHR', flag: '🇬🇧', price: 489, orig: 1020, discount: 52, dates: 'Mars 2026', airline: 'Norwegian', direct: true, origin: 'BGO' },
   { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', flag: '🇺🇸', price: 2890, orig: 4900, discount: 41, dates: 'Apr–Mai 2026', airline: 'SAS', direct: true, origin: 'OSL' },
   { from: 'Trondheim', fromCode: 'TRD', to: 'Barcelona', toCode: 'BCN', flag: '🇪🇸', price: 699, orig: 1130, discount: 38, dates: 'April 2026', airline: 'Norwegian', direct: false, origin: 'TRD' },
-  { from: 'Stavanger', fromCode: 'SVG', to: 'Amsterdam', toCode: 'AMS', flag: '🇳🇱', price: 549, orig: 980, discount: 44, dates: 'Mars 2026', airline: 'KLM', direct: false, origin: 'SVG' },
+  { from: 'Stavanger', fromCode: 'SVG', to: 'Amsterdam', toCode: 'AMS', flag: '🇳🇱', price: 549, orig: 980, discount: 44, dates: 'Mars 2026', airline: 'Norwegian', direct: false, origin: 'SVG' },
   { from: 'Oslo', fromCode: 'OSL', to: 'Tokyo', toCode: 'HND', flag: '🇯🇵', price: 3490, orig: 5720, discount: 39, dates: 'Mai–Jun 2026', airline: 'ANA', direct: false, origin: 'OSL' },
   { from: 'Tromsø', fromCode: 'TOS', to: 'Reykjavik', toCode: 'KEF', flag: '🇮🇸', price: 890, orig: 1370, discount: 35, dates: 'April 2026', airline: 'Icelandair', direct: true, origin: 'TOS' },
   { from: 'Torp', fromCode: 'TRF', to: 'Alicante', toCode: 'ALC', flag: '🇪🇸', price: 399, orig: 814, discount: 51, dates: 'Mar–Apr 2026', airline: 'Ryanair', direct: true, origin: 'TRF' },
@@ -27,7 +29,7 @@ const airports = [
   { code: 'TRF', label: '🇳🇴 Torp (TRF)' },
 ];
 
-const Sidebar = ({ active }: { active: string }) => (
+const Sidebar = ({ active, userName, userEmail }: { active: string; userName: string; userEmail: string }) => (
   <aside className="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
     <div className="p-5 flex items-center gap-3">
       <div className="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0">
@@ -69,8 +71,8 @@ const Sidebar = ({ active }: { active: string }) => (
     <div className="p-3 mt-auto border-t border-[#1e1e1e]">
       <div className="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
         <div className="overflow-hidden flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate">Marius Jensen</p>
-          <p className="text-[11px] text-slate-500 truncate">marius@flydeals.no</p>
+          <p className="text-sm font-semibold truncate">{userName}</p>
+          <p className="text-[11px] text-slate-500 truncate">{userEmail}</p>
         </div>
         <Link href="/innstillinger" className="text-slate-500 hover:text-[#ff6b00] transition-colors">
           <span className="ms" style={{fontSize:'16px'}}>settings</span>
@@ -80,7 +82,7 @@ const Sidebar = ({ active }: { active: string }) => (
   </aside>
 );
 
-const Topbar = () => (
+const Topbar = ({ logout }: { logout: () => void }) => (
   <div className="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-6">
     <div className="flex items-center gap-2">
       <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -92,7 +94,7 @@ const Topbar = () => (
         <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
       </button>
       <div className="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-      <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+      <button onClick={logout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
         <span className="ms" style={{fontSize:'16px'}}>logout</span>
         Logg ut
       </button>
@@ -101,8 +103,14 @@ const Topbar = () => (
 );
 
 export default function DealsPage() {
+  const { user, loading: authLoading, logout, userName, userEmail } = useAuth();
+  const router = useRouter();
   const [filter, setFilter] = useState('alle');
+  useEffect(() => { if (!authLoading && !user) router.push('/login'); }, [authLoading, user, router]);
+
   const filtered = filter === 'alle' ? deals : deals.filter(d => d.origin === filter);
+
+  if (authLoading || !user) return <div className="flex h-screen items-center justify-center bg-[#050505]"><p className="text-slate-500 animate-pulse">Laster...</p></div>;
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -114,10 +122,10 @@ export default function DealsPage() {
         .deal-card:hover { border-color: rgba(255,107,0,0.3); transform: translateY(-1px); }
       `}</style>
 
-      <Sidebar active="deals" />
+      <Sidebar active="deals" userName={userName} userEmail={userEmail} />
 
       <main className="flex-1 overflow-y-auto bg-[#050505]">
-        <Topbar />
+        <Topbar logout={logout} />
 
         <div className="max-w-5xl mx-auto px-6 py-8">
           <div className="mb-8">

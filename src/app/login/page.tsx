@@ -55,21 +55,31 @@ export default function LoginPage() {
     setLoading(false)
   }
 
+  const inputClass = "login-input w-full rounded-xl py-3.5 text-sm transition-all outline-none"
+
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       <style>{`
         body { font-family: 'DM Sans', sans-serif; background: #050505; }
         .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .login-input { background: #2e2e2e; border: 1px solid #444444; color: #e2e8f0; }
+        .login-input::placeholder { color: #475569; }
+        .login-input:focus { outline: none; ring: none; border-color: #ff6b00; box-shadow: 0 0 0 2px rgba(255,107,0,0.4); }
+        .login-card { background: #242424; border: 1px solid #383838; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .btn-primary-login { background: #ff6b00; box-shadow: 0 10px 25px rgba(255,107,0,0.2); }
+        .btn-primary-login:hover { background: #e55f00; }
+        .btn-primary-login:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-google { background: #2e2e2e; border: 1px solid #444444; color: #e2e8f0; }
+        .btn-google:hover { background: #383838; }
+        .link-orange { color: #ff6b00; }
+        .link-orange:hover { opacity: 0.8; }
+        .link-subtle:hover { color: #94a3b8; }
       `}</style>
 
       <div className="min-h-screen flex flex-col" style={{ background: '#050505', color: '#f1f5f9', fontFamily: "'DM Sans', sans-serif" }}>
-        {/* Orange top bar */}
         <div className="fixed top-0 left-0 w-full h-0.5 z-50" style={{ background: 'linear-gradient(to right, rgba(255,107,0,0.2), #ff6b00, rgba(255,107,0,0.2))' }}></div>
 
         <div className="flex-1 flex flex-col justify-center items-center px-4 py-16">
-          {/* Logo */}
           <div className="mb-8 flex flex-col items-center gap-2">
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white" style={{ background: '#ff6b00', boxShadow: '0 10px 25px rgba(255,107,0,0.25)' }}>
               <span className="ms" style={{ fontSize: '30px' }}>flight_takeoff</span>
@@ -86,7 +96,7 @@ export default function LoginPage() {
           {/* LOGIN VIEW */}
           {view === 'login' && (
             <div className="w-full max-w-md">
-              <div className="w-full p-8 rounded-2xl border" style={{ background: '#242424', borderColor: '#383838' }}>
+              <div className="login-card w-full p-8 rounded-2xl">
                 <div className="mb-7">
                   <h2 className="text-2xl font-bold mb-1.5 text-white">Velkommen tilbake</h2>
                   <p className="text-sm" style={{ color: '#94a3b8' }}>Finn de beste reisetilbudene ved å logge inn</p>
@@ -98,44 +108,40 @@ export default function LoginPage() {
                     <div className="relative">
                       <span className="ms absolute left-3.5 top-1/2 -translate-y-1/2" style={{ fontSize: '20px', color: '#64748b' }}>mail</span>
                       <input type="email" placeholder="din@epost.no" value={loginEmail} onChange={e => setLoginEmail(e.target.value)}
-                        className="w-full rounded-xl py-3.5 pl-11 pr-4 text-sm transition-all outline-none"
-                        style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }} />
+                        className={`${inputClass} pl-11 pr-4`} />
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-sm font-medium" style={{ color: '#cbd5e1' }}>Passord</label>
-                      <a href="#" className="text-xs font-semibold" style={{ color: '#ff6b00' }}>Glemt passord?</a>
+                      <a href="#" className="text-xs font-semibold link-orange">Glemt passord?</a>
                     </div>
                     <div className="relative">
                       <span className="ms absolute left-3.5 top-1/2 -translate-y-1/2" style={{ fontSize: '20px', color: '#64748b' }}>lock</span>
                       <input type={showLoginPwd ? 'text' : 'password'} placeholder="••••••••" value={loginPassword} onChange={e => setLoginPassword(e.target.value)}
-                        className="w-full rounded-xl py-3.5 pl-11 pr-12 text-sm transition-all outline-none"
-                        style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }} />
-                      <button type="button" onClick={() => setShowLoginPwd(!showLoginPwd)} className="absolute right-3.5 top-1/2 -translate-y-1/2" style={{ color: '#64748b' }}>
+                        className={`${inputClass} pl-11 pr-12`} />
+                      <button type="button" onClick={() => setShowLoginPwd(!showLoginPwd)} className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors" style={{ color: '#64748b' }}>
                         <span className="ms" style={{ fontSize: '20px' }}>{showLoginPwd ? 'visibility_off' : 'visibility'}</span>
                       </button>
                     </div>
                   </div>
 
                   <button onClick={handleLogin} disabled={loading}
-                    className="w-full text-white font-bold py-3.5 rounded-xl transition-colors text-sm mt-1"
-                    style={{ background: '#ff6b00', boxShadow: '0 4px 15px rgba(255,107,0,0.2)' }}>
+                    className="btn-primary-login w-full text-white font-bold py-3.5 rounded-xl transition-colors text-sm mt-1">
                     {loading ? 'Logger inn...' : 'Logg inn'}
                   </button>
                 </div>
 
                 <div className="relative my-7">
-                  <div className="absolute inset-0 flex items-center"><div className="w-full border-t" style={{ borderColor: '#262626' }}></div></div>
+                  <div className="absolute inset-0 flex items-center"><div className="w-full border-t" style={{ borderColor: '#383838' }}></div></div>
                   <div className="relative flex justify-center" style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                     <span className="px-3" style={{ background: '#242424', color: '#64748b' }}>Eller logg inn med</span>
                   </div>
                 </div>
 
                 <button onClick={handleGoogleLogin} disabled={loading}
-                  className="flex items-center justify-center gap-3 w-full py-3 rounded-xl transition-all font-medium text-sm"
-                  style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }}>
+                  className="btn-google flex items-center justify-center gap-3 w-full py-3 rounded-xl transition-all font-medium text-sm">
                   <svg width="18" height="18" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -147,11 +153,11 @@ export default function LoginPage() {
 
                 <p className="mt-7 text-center text-sm" style={{ color: '#64748b' }}>
                   Ny hos FlyDeals?{' '}
-                  <button onClick={() => setView('register')} className="font-semibold ml-1" style={{ color: '#ff6b00' }}>Prøv gratis</button>
+                  <button onClick={() => setView('register')} className="font-semibold ml-1 link-orange">Prøv gratis</button>
                 </p>
               </div>
               <p className="mt-6 text-center text-xs leading-relaxed" style={{ color: '#475569' }}>
-                Ved å logge inn godtar du våre <a href="#" className="underline">vilkår</a> og <a href="#" className="underline">personvernregler</a>.
+                Ved å logge inn godtar du våre <a href="#" className="underline link-subtle">vilkår</a> og <a href="#" className="underline link-subtle">personvernregler</a>.
               </p>
             </div>
           )}
@@ -159,7 +165,7 @@ export default function LoginPage() {
           {/* REGISTER VIEW */}
           {view === 'register' && (
             <div className="w-full max-w-md">
-              <div className="w-full p-8 rounded-2xl border" style={{ background: '#242424', borderColor: '#383838' }}>
+              <div className="login-card w-full p-8 rounded-2xl">
                 <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full mb-6" style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', color: '#4ade80' }}>
                   <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#4ade80' }}></span>
                   7 dager gratis — ingen binding
@@ -176,8 +182,7 @@ export default function LoginPage() {
                     <div className="relative">
                       <span className="ms absolute left-3.5 top-1/2 -translate-y-1/2" style={{ fontSize: '20px', color: '#64748b' }}>person</span>
                       <input type="text" placeholder="Ditt navn" value={regName} onChange={e => setRegName(e.target.value)}
-                        className="w-full rounded-xl py-3.5 pl-11 pr-4 text-sm transition-all outline-none"
-                        style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }} />
+                        className={`${inputClass} pl-11 pr-4`} />
                     </div>
                   </div>
 
@@ -186,8 +191,7 @@ export default function LoginPage() {
                     <div className="relative">
                       <span className="ms absolute left-3.5 top-1/2 -translate-y-1/2" style={{ fontSize: '20px', color: '#64748b' }}>mail</span>
                       <input type="email" placeholder="din@epost.no" value={regEmail} onChange={e => setRegEmail(e.target.value)}
-                        className="w-full rounded-xl py-3.5 pl-11 pr-4 text-sm transition-all outline-none"
-                        style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }} />
+                        className={`${inputClass} pl-11 pr-4`} />
                     </div>
                   </div>
 
@@ -196,17 +200,15 @@ export default function LoginPage() {
                     <div className="relative">
                       <span className="ms absolute left-3.5 top-1/2 -translate-y-1/2" style={{ fontSize: '20px', color: '#64748b' }}>lock</span>
                       <input type={showRegPwd ? 'text' : 'password'} placeholder="Minst 8 tegn" value={regPassword} onChange={e => setRegPassword(e.target.value)}
-                        className="w-full rounded-xl py-3.5 pl-11 pr-12 text-sm transition-all outline-none"
-                        style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }} />
-                      <button type="button" onClick={() => setShowRegPwd(!showRegPwd)} className="absolute right-3.5 top-1/2 -translate-y-1/2" style={{ color: '#64748b' }}>
+                        className={`${inputClass} pl-11 pr-12`} />
+                      <button type="button" onClick={() => setShowRegPwd(!showRegPwd)} className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors" style={{ color: '#64748b' }}>
                         <span className="ms" style={{ fontSize: '20px' }}>{showRegPwd ? 'visibility_off' : 'visibility'}</span>
                       </button>
                     </div>
                   </div>
 
                   <button onClick={handleRegister} disabled={loading}
-                    className="w-full text-white font-bold py-3.5 rounded-xl transition-colors text-sm mt-1"
-                    style={{ background: '#ff6b00', boxShadow: '0 4px 15px rgba(255,107,0,0.2)' }}>
+                    className="btn-primary-login w-full text-white font-bold py-3.5 rounded-xl transition-colors text-sm mt-1">
                     {loading ? 'Oppretter konto...' : 'Start gratis prøveperiode'}
                   </button>
 
@@ -219,15 +221,14 @@ export default function LoginPage() {
                 </div>
 
                 <div className="relative my-7">
-                  <div className="absolute inset-0 flex items-center"><div className="w-full border-t" style={{ borderColor: '#262626' }}></div></div>
+                  <div className="absolute inset-0 flex items-center"><div className="w-full border-t" style={{ borderColor: '#383838' }}></div></div>
                   <div className="relative flex justify-center" style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                     <span className="px-3" style={{ background: '#242424', color: '#64748b' }}>Eller registrer med</span>
                   </div>
                 </div>
 
                 <button onClick={handleGoogleLogin} disabled={loading}
-                  className="flex items-center justify-center gap-3 w-full py-3 rounded-xl transition-all font-medium text-sm"
-                  style={{ background: '#2e2e2e', border: '1px solid #444444', color: '#e2e8f0' }}>
+                  className="btn-google flex items-center justify-center gap-3 w-full py-3 rounded-xl transition-all font-medium text-sm">
                   <svg width="18" height="18" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -239,11 +240,11 @@ export default function LoginPage() {
 
                 <p className="mt-7 text-center text-sm" style={{ color: '#64748b' }}>
                   Har du allerede konto?{' '}
-                  <button onClick={() => setView('login')} className="font-semibold ml-1" style={{ color: '#ff6b00' }}>Logg inn</button>
+                  <button onClick={() => setView('login')} className="font-semibold ml-1 link-orange">Logg inn</button>
                 </p>
               </div>
               <p className="mt-6 text-center text-xs leading-relaxed" style={{ color: '#475569' }}>
-                Ved å registrere deg godtar du våre <a href="#" className="underline">vilkår</a> og <a href="#" className="underline">personvernregler</a>.
+                Ved å registrere deg godtar du våre <a href="#" className="underline link-subtle">vilkår</a> og <a href="#" className="underline link-subtle">personvernregler</a>.
               </p>
             </div>
           )}

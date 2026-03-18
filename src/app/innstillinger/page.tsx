@@ -1,9 +1,15 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/useAuth';
 
 export default function InnstillingerPage() {
+  const { user, loading: authLoading, logout, userName, userEmail } = useAuth();
+  const router = useRouter();
   const [saveState, setSaveState] = useState<'idle'|'saving'|'saved'>('idle');
+  useEffect(() => { if (!authLoading && !user) router.push('/login'); }, [authLoading, user, router]);
+  if (authLoading || !user) return <div className="flex h-screen items-center justify-center bg-[#050505]"><p className="text-slate-500 animate-pulse">Laster...</p></div>;
 
   const saveSettings = () => {
     setSaveState('saving');
@@ -64,8 +70,8 @@ export default function InnstillingerPage() {
         <div className="p-3 mt-auto border-t border-[#1e1e1e]">
           <div className="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
             <div className="overflow-hidden flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">Marius Jensen</p>
-              <p className="text-[11px] text-slate-500 truncate">marius@flydeals.no</p>
+              <p className="text-sm font-semibold truncate">{userName}</p>
+              <p className="text-[11px] text-slate-500 truncate">{userEmail}</p>
             </div>
             <Link href="/innstillinger" className="text-slate-500 hover:text-[#ff6b00] transition-colors">
               <span className="ms" style={{fontSize:'16px'}}>settings</span>
@@ -86,7 +92,7 @@ export default function InnstillingerPage() {
               <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
             </button>
             <div className="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+            <button onClick={logout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
               <span className="ms" style={{fontSize:'16px'}}>logout</span>
               Logg ut
             </button>

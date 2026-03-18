@@ -1,8 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/useAuth';
 
-const Sidebar = ({ active }: { active: string }) => (
+const Sidebar = ({ active, userName, userEmail }: { active: string; userName: string; userEmail: string }) => (
   <aside className="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
     <div className="p-5 flex items-center gap-3">
       <div className="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0">
@@ -44,8 +46,8 @@ const Sidebar = ({ active }: { active: string }) => (
     <div className="p-3 mt-auto border-t border-[#1e1e1e]">
       <div className="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
         <div className="overflow-hidden flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate">Marius Jensen</p>
-          <p className="text-[11px] text-slate-500 truncate">marius@flydeals.no</p>
+          <p className="text-sm font-semibold truncate">{userName}</p>
+          <p className="text-[11px] text-slate-500 truncate">{userEmail}</p>
         </div>
         <Link href="/innstillinger" className="text-slate-500 hover:text-[#ff6b00] transition-colors">
           <span className="ms" style={{fontSize:'16px'}}>settings</span>
@@ -56,11 +58,17 @@ const Sidebar = ({ active }: { active: string }) => (
 );
 
 export default function VarslerPage() {
+  const { user, loading: authLoading, logout, userName, userEmail } = useAuth();
+  const router = useRouter();
+  useEffect(() => { if (!authLoading && !user) router.push('/login'); }, [authLoading, user, router]);
+
   const [row1, setRow1] = useState(true);
   const [row2, setRow2] = useState(true);
   const [row3, setRow3] = useState(false);
 
   const activeCount = [row1, row2, row3].filter(Boolean).length;
+
+  if (authLoading || !user) return <div className="flex h-screen items-center justify-center bg-[#050505]"><p className="text-slate-500 animate-pulse">Laster...</p></div>;
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -72,7 +80,7 @@ export default function VarslerPage() {
         input[type="checkbox"].peer:checked ~ .toggle-track { background-color: #ff6b00 !important; }
       `}</style>
 
-      <Sidebar active="varsler" />
+      <Sidebar active="varsler" userName={userName} userEmail={userEmail} />
 
       <main className="flex-1 overflow-y-auto bg-[#050505]">
         <div className="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-6">
@@ -86,7 +94,7 @@ export default function VarslerPage() {
               <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
             </button>
             <div className="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+            <button onClick={logout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
               <span className="ms" style={{fontSize:'16px'}}>logout</span>
               Logg ut
             </button>
