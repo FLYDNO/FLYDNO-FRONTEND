@@ -337,8 +337,7 @@ renderAirportButtons();
 let filteredDealsCache = [];
 
 function openDeal(idx) {
-  const filtered = currentFilter === 'alle' ? deals : deals.filter(d => d.origin === currentFilter);
-  const d = filtered[idx];
+  const d = deals[idx];
   if (!d) return;
   document.getElementById('modalFlag').innerHTML = flagSpan(d.cc);
   document.getElementById('modalRoute').textContent = d.from + ' (' + d.fromCode + ') → ' + d.to + ' (' + d.toCode + ')';

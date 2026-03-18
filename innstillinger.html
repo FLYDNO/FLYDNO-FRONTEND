@@ -461,9 +461,17 @@ async function confirmCancel() {
   closeModal('cancelModal');
   try {
     const user = await getUser();
-    if (user && supabase) {
-      await supabase.from('users').update({ subscription_active: false }).eq('id', user.id);
-    }
+    if (!user) { showToast('Kunne ikke si opp: Ikke innlogget.', 'error'); return; }
+
+    // Kanseller i Stripe (cancel_at_period_end) + oppdater DB
+    const res = await fetch(SUPABASE_URL + '/functions/v1/cancel-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: user.email })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Kanselleringsfeil');
+
     showToast('Abonnementet er sagt opp. Du beholder tilgangen ut perioden.', 'success');
   } catch (err) {
     showToast('Kunne ikke si opp: ' + err.message, 'error');
@@ -474,11 +482,23 @@ async function confirmDelete() {
   closeModal('deleteModal');
   try {
     const user = await getUser();
-    if (user && supabase) {
-      // Delete user data
-      await supabase.from('alerts').delete().eq('user_id', user.id);
-      await supabase.from('users').delete().eq('id', user.id);
+    if (!user) { showToast('Feil ved sletting: Ikke innlogget.', 'error'); return; }
+
+    // Kanseller Stripe-abonnement først
+    try {
+      await fetch(SUPABASE_URL + '/functions/v1/cancel-subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email })
+      });
+    } catch (e) {
+      console.warn('Stripe-kanselering feilet under sletting:', e);
     }
+
+    // Slett brukerdata fra DB
+    await supabase.from('alerts').delete().eq('user_id', user.id);
+    await supabase.from('users').delete().eq('id', user.id);
+
     showToast('Konto slettet. Du blir nå logget ut...', 'success');
     setTimeout(async () => { await logout(); }, 1500);
   } catch (err) {
