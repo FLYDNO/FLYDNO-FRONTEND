@@ -30,7 +30,7 @@
 </style>
 </head>
 <body class="text-slate-100 min-h-screen">
-<div class="flex h-screen overflow-hidden">
+<div class="flex min-h-screen md:h-screen md:overflow-hidden">
 
   <!-- Sidebar -->
   <!-- Mobile sidebar overlay -->
@@ -146,7 +146,7 @@
   </aside>
 
   <!-- Main -->
-  <main class="flex-1 overflow-y-auto bg-[#050505]">
+  <main class="flex-1 md:overflow-y-auto bg-[#050505]">
     <div class="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-4 md:px-6">
       <div class="flex items-center gap-2">
         <button onclick="document.getElementById('mobileMenu').classList.remove('hidden')" class="md:hidden p-1.5 text-slate-400 hover:text-white mr-2">
@@ -172,7 +172,7 @@
 
       <!-- Header + search -->
       <div>
-        <h1 class="text-3xl font-black tracking-tight mb-1">Oppdag Ruter</h1>
+        <h1 class="text-xl md:text-3xl font-black tracking-tight mb-1">Oppdag Ruter</h1>
         <p class="text-slate-500 mb-6">Finn de beste destinasjonene fra norske flyplasser.</p>
         <div class="relative group">
           <span class="ms absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#ff6b00] transition-colors" style="font-size:20px">search</span>

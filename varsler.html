@@ -33,7 +33,7 @@
 </style>
 </head>
 <body class="text-slate-100 min-h-screen">
-<div class="flex h-screen overflow-hidden">
+<div class="flex min-h-screen md:h-screen md:overflow-hidden">
 
   <!-- Sidebar -->
   <!-- Mobile sidebar overlay -->
@@ -149,7 +149,7 @@
   </aside>
 
   <!-- Main -->
-  <main class="flex-1 overflow-y-auto bg-[#050505]">
+  <main class="flex-1 md:overflow-y-auto bg-[#050505]">
     <div class="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-4 md:px-6">
       <div class="flex items-center gap-2">
         <button onclick="document.getElementById('mobileMenu').classList.remove('hidden')" class="md:hidden p-1.5 text-slate-400 hover:text-white mr-2">
@@ -175,7 +175,7 @@
       <!-- Header -->
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
-          <h2 class="text-4xl font-black tracking-tight">Dine varsler</h2>
+          <h2 class="text-2xl md:text-4xl font-black tracking-tight">Dine varsler</h2>
           <p class="text-slate-400 mt-1">Administrer dine aktive prisvarsler for flyreiser over hele verden.</p>
         </div>
         <button onclick="openModal()" class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-primary/20 whitespace-nowrap">
@@ -469,8 +469,40 @@ function renderAlerts() {
       </td>
     </tr>`).join('');
 
+  const mobileCards = alerts.map(a => `
+    <div class="bg-[#111] border border-[#1e1e1e] rounded-xl p-4 ${a.active ? '' : 'opacity-40'} transition-all duration-300">
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2 ${a.active ? 'bg-primary/10 text-primary' : 'bg-white/5 text-slate-500'} rounded-lg flex-shrink-0">
+            <span class="ms text-xl">flight_takeoff</span>
+          </div>
+          <div>
+            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold text-sm">${a.toFlag.startsWith('<') ? a.toFlag : flagSpan(a.toFlag)} ${a.to} <span class="text-slate-500 font-normal text-xs">(${a.toCode})</span></p>
+            <p class="text-xs text-slate-500">fra ${FLAG_NO} ${AIRPORT_NAMES[a.fromCode] || a.fromCode} (${a.fromCode})</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
+          <span class="ms" style="font-size:13px">calendar_month</span>${a.months.length ? a.months.join(' · ') : 'Alle'}
+        </span>
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${a.active ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-white/5 text-slate-500 border border-white/5'}">
+          ≥${a.minDiscount}%
+        </span>
+      </div>
+      <div class="flex items-center justify-between pt-3 border-t border-[#1e1e1e]">
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input ${a.active ? 'checked' : ''} class="sr-only peer" type="checkbox" onchange="toggleAlert('${a.id}', this.checked)"/>
+          <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+        </label>
+        <button onclick="askDelete('${a.id}')" class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]">
+          <span class="ms">delete</span>
+        </button>
+      </div>
+    </div>`).join('');
+
   container.innerHTML = `
-    <div class="bg-[#111] rounded-2xl border border-[#1e1e1e] overflow-hidden shadow-2xl">
+    <div class="hidden md:block bg-[#111] rounded-2xl border border-[#1e1e1e] overflow-hidden shadow-2xl">
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
@@ -485,7 +517,8 @@ function renderAlerts() {
           <tbody class="divide-y divide-[#1e1e1e]">${rows}</tbody>
         </table>
       </div>
-    </div>`;
+    </div>
+    <div class="md:hidden space-y-3">${mobileCards}</div>`;
 }
 
 function openModal(prefill) {

@@ -36,7 +36,7 @@
 </style>
 </head>
 <body class="text-slate-100 min-h-screen">
-<div class="flex h-screen overflow-hidden">
+<div class="flex min-h-screen md:h-screen md:overflow-hidden">
 
   <!-- Mobile sidebar overlay -->
   <div id="mobileMenu" class="fixed inset-0 z-50 hidden">
@@ -151,7 +151,7 @@
   </aside>
 
   <!-- Main -->
-  <main class="flex-1 overflow-y-auto bg-[#050505]">
+  <main class="flex-1 md:overflow-y-auto bg-[#050505]">
     <div class="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-4 md:px-6">
       <div class="flex items-center gap-2">
         <button onclick="document.getElementById('mobileMenu').classList.remove('hidden')" class="md:hidden p-1.5 text-slate-400 hover:text-white mr-2">
@@ -177,7 +177,7 @@
 
       <!-- Hero -->
       <div>
-        <h1 class="text-3xl font-black tracking-tight mb-1">Hvordan kan vi hjelpe?</h1>
+        <h1 class="text-xl md:text-3xl font-black tracking-tight mb-1">Hvordan kan vi hjelpe?</h1>
         <p class="text-slate-500">Finn svar i FAQ-en vår, eller send oss en melding.</p>
       </div>
 
