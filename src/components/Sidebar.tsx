@@ -18,18 +18,7 @@ export default function Sidebar() {
   ]
 
   return (
-    <>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet" />
-      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-      <style>{`
-        .ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
-        .ms-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;}
-        .nav-active{background:rgba(255,107,0,0.1);border-left:3px solid #ff6b00;color:#ff6b00;}
-        .nav-link{border-left:3px solid transparent;}
-        .nav-link:hover{color:#ff6b00;background:rgba(255,107,0,0.05);}
-        ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:#050505;}::-webkit-scrollbar-thumb{background:#1e1e1e;border-radius:3px;}::-webkit-scrollbar-thumb:hover{background:#ff6b00;}
-      `}</style>
-      <aside style={{width:'256px',flexShrink:0,borderRight:'1px solid #1e1e1e',background:'#050505',display:'flex',flexDirection:'column',height:'100vh'}}>
+    <aside style={{width:'256px',flexShrink:0,borderRight:'1px solid #1e1e1e',background:'#050505',display:'flex',flexDirection:'column',height:'100vh'}}>
         {/* Logo */}
         <div style={{padding:'20px',display:'flex',alignItems:'center',gap:'12px'}}>
           <div style={{width:'36px',height:'36px',background:'#ff6b00',borderRadius:'12px',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',boxShadow:'0 4px 12px rgba(255,107,0,0.2)',flexShrink:0}}>
@@ -84,6 +73,5 @@ export default function Sidebar() {
           </div>
         </div>
       </aside>
-    </>
   )
 }
