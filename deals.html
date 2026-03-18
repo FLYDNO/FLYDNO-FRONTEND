@@ -161,7 +161,7 @@
           <span class="ms" style="font-size:22px">menu</span>
         </button>
         <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse hidden md:block"></span>
-        <span class="text-sm text-slate-400 font-medium hidden md:block">847 deals funnet hittil</span>
+        <span id="dealCount" class="text-sm text-slate-400 font-medium hidden md:block">Laster deals…</span>
       </div>
       <div class="flex items-center gap-1">
         <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
@@ -240,10 +240,15 @@ async function initPage() {
       // Continue to deals page if Stripe fails
     }
   }
+
+  // Auth confirmed — load deals
+  await loadDeals();
 }
 initPage();
 
-const deals = [
+let deals = [];
+
+const fallbackDeals = [
   { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', cc: 'th', price: 2489, orig: 4700, discount: 47, dates: 'Mar–Apr 2026', airline: 'Thai Airways', direct: true, origin: 'OSL' },
   { from: 'Bergen', fromCode: 'BGO', to: 'London', toCode: 'LHR', cc: 'gb', price: 489, orig: 1020, discount: 52, dates: 'Mars 2026', airline: 'Norwegian', direct: true, origin: 'BGO' },
   { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', cc: 'us', price: 2890, orig: 4900, discount: 41, dates: 'Apr–Mai 2026', airline: 'SAS', direct: true, origin: 'OSL' },
@@ -257,6 +262,55 @@ const deals = [
   { from: 'Trondheim', fromCode: 'TRD', to: 'Paris', toCode: 'CDG', cc: 'fr', price: 649, orig: 1082, discount: 40, dates: 'April 2026', airline: 'Air France', direct: false, origin: 'TRD' },
   { from: 'Oslo', fromCode: 'OSL', to: 'Bali', toCode: 'DPS', cc: 'id', price: 4290, orig: 6703, discount: 36, dates: 'Mai 2026', airline: 'Qatar Airways', direct: false, origin: 'OSL' },
 ];
+
+async function loadDeals() {
+  const grid = document.getElementById('dealsGrid');
+  const dealCountEl = document.getElementById('dealCount');
+
+  // Show loading spinner
+  grid.innerHTML = '<div class="col-span-full flex justify-center py-16"><div style="width:32px;height:32px;border:3px solid #1e1e1e;border-top-color:#ff6b00;border-radius:50%;animation:spin 0.6s linear infinite;"></div></div>';
+
+  try {
+    if (!supabase) throw new Error('Supabase ikke tilgjengelig');
+
+    const { data, error } = await supabase
+      .from('flights')
+      .select('*')
+      .order('discount_pct', { ascending: false });
+
+    if (error) throw error;
+
+    if (data && data.length > 0) {
+      deals = data.map(row => ({
+        from: row.departure_city,
+        fromCode: row.departure_airport,
+        to: row.arrival_city,
+        toCode: row.arrival_airport,
+        cc: row.country_code,
+        price: row.price_nok,
+        orig: row.normal_price,
+        discount: row.discount_pct,
+        dates: row.dates_text,
+        airline: row.airline,
+        direct: row.direct,
+        origin: row.departure_airport
+      }));
+    } else {
+      console.warn('Ingen deals fra Supabase, bruker fallback-data');
+      deals = fallbackDeals;
+    }
+  } catch (e) {
+    console.error('Feil ved henting av deals:', e);
+    deals = fallbackDeals;
+  }
+
+  // Update deal count in navbar
+  dealCountEl.textContent = deals.length + ' deals funnet hittil';
+
+  // Render airport filter buttons and deals
+  renderAirportButtons();
+  renderDeals();
+}
 
 function flagSpan(cc, small) {
   const s = small ? 'width:1em;height:0.75em' : 'width:1.3em;height:1em';
@@ -342,8 +396,6 @@ function renderDeals() {
   `).join('');
 }
 
-renderAirportButtons();
-
 let filteredDealsCache = [];
 
 function openDeal(idx) {
@@ -359,8 +411,6 @@ function openDeal(idx) {
   document.getElementById('modalStops').textContent = d.direct ? 'Direktefly' : '1 stopp';
   document.getElementById('dealModal').style.display = 'flex';
 }
-
-renderDeals();
 </script>
 <!-- Deal detail modal -->
 <div id="dealModal" onclick="if(event.target===this)document.getElementById('dealModal').style.display='none'" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
