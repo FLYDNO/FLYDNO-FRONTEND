@@ -201,7 +201,7 @@
         </select>
       </div>
 
-      <div id="dealsGrid" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3"></div>
+      <div id="dealsGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3"></div>
     </div>
   </main>
 </div>
@@ -280,18 +280,18 @@ async function loadDeals() {
 
     if (data && data.length > 0) {
       deals = data.map(row => ({
-        from: row.departure_city,
-        fromCode: row.departure_airport,
-        to: row.arrival_city,
-        toCode: row.arrival_airport,
-        cc: row.country_code,
-        price: row.price_nok,
-        orig: row.normal_price,
-        discount: row.discount_pct,
-        dates: row.dates_text,
-        airline: row.airline,
-        direct: row.direct,
-        origin: row.departure_airport
+        from: row.departure_city || 'Ukjent',
+        fromCode: row.departure_airport || '???',
+        to: row.arrival_city || 'Ukjent',
+        toCode: row.arrival_airport || '???',
+        cc: row.country_code || 'no',
+        price: row.price_nok || 0,
+        orig: row.normal_price || 0,
+        discount: row.discount_pct || 0,
+        dates: row.dates_text || '',
+        airline: row.airline || 'Ukjent',
+        direct: row.direct ?? false,
+        origin: row.departure_airport || '???'
       }));
     } else {
       console.warn('Ingen deals fra Supabase, bruker fallback-data');
@@ -375,26 +375,24 @@ function renderDeals() {
     <div onclick="openDeal(${deals.indexOf(d)})" class="deal-card bg-[#111] border border-[#1e1e1e] rounded-xl p-2.5 md:p-3.5 transition-all duration-200 cursor-pointer">
       <div class="flex items-start justify-between mb-1.5 md:mb-2">
         <div>
-          <span class="text-xs md:text-sm font-black">${d.to} ${flagSpan(d.cc, true)}</span>
-          <p class="text-[10px] md:text-[11px] text-slate-500 mt-0.5">${d.from} → ${d.toCode}</p>
+          <span class="text-xs md:text-sm font-black">${escapeHtml(d.to)} ${flagSpan(d.cc, true)}</span>
+          <p class="text-[10px] md:text-[11px] text-slate-500 mt-0.5">${escapeHtml(d.from)} → ${escapeHtml(d.toCode)}</p>
         </div>
         <span class="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">-${d.discount}%</span>
       </div>
       <div class="flex items-center gap-1 bg-white/5 border border-white/10 rounded-md px-1.5 md:px-2 py-1 md:py-1.5 mb-1.5 md:mb-2">
         <span class="ms text-[#ff6b00]" style="font-size:11px">calendar_month</span>
-        <span class="text-[10px] md:text-xs font-bold text-white">${d.dates}</span>
+        <span class="text-[10px] md:text-xs font-bold text-white">${escapeHtml(d.dates)}</span>
       </div>
       <p class="text-base md:text-xl font-black text-[#ff6b00] leading-none">${d.price.toLocaleString('no')} kr</p>
       <p class="text-[10px] md:text-[11px] text-slate-600 mt-0.5 line-through">${d.orig.toLocaleString('no')} kr</p>
       <div class="hidden md:flex items-center gap-1.5 mt-2 pt-2 border-t border-[#1e1e1e] text-[11px] text-slate-500">
         <span class="ms" style="font-size:13px">airlines</span>
-        <span>${d.airline} · ${d.direct ? 'Direktefly' : '1 stopp'}</span>
+        <span>${escapeHtml(d.airline)} · ${d.direct ? 'Direktefly' : '1 stopp'}</span>
       </div>
     </div>
   `).join('');
 }
-
-let filteredDealsCache = [];
 
 function openDeal(idx) {
   const d = deals[idx];
@@ -411,7 +409,7 @@ function openDeal(idx) {
 }
 </script>
 <!-- Deal detail modal -->
-<div id="dealModal" onclick="if(event.target===this)document.getElementById('dealModal').style.display='none'" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+<div id="dealModal" role="dialog" aria-modal="true" onclick="if(event.target===this)document.getElementById('dealModal').style.display='none'" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
   <div style="background:#111;border:1px solid #1e1e1e;border-radius:20px;padding:32px;max-width:440px;width:90%;margin:auto;position:relative;">
     <button onclick="document.getElementById('dealModal').style.display='none'" style="position:absolute;top:16px;right:16px;background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:22px;line-height:1;">✕</button>
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">

@@ -111,6 +111,12 @@ function ensureSupabase() {
   return true;
 }
 
+// Escape HTML to prevent XSS
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 // Translate Supabase error messages to Norwegian
 function translateAuthError(msg) {
   const translations = {

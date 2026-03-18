@@ -391,8 +391,8 @@ function renderAlerts() {
             <span class="ms text-xl">flight_takeoff</span>
           </div>
           <div>
-            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold">${a.toFlag.startsWith('<') ? a.toFlag : flagSpan(a.toFlag)} ${a.to} <span class="text-slate-500 font-normal text-xs">(${a.toCode})</span></p>
-            <p class="text-xs text-slate-500">fra ${FLAG_NO} ${AIRPORT_NAMES[a.fromCode] || a.fromCode} (${a.fromCode})</p>
+            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold">${a.toFlag.startsWith('<') ? a.toFlag : flagSpan(a.toFlag)} ${escapeHtml(a.to)} <span class="text-slate-500 font-normal text-xs">(${escapeHtml(a.toCode)})</span></p>
+            <p class="text-xs text-slate-500">fra ${FLAG_NO} ${escapeHtml(AIRPORT_NAMES[a.fromCode] || a.fromCode)} (${escapeHtml(a.fromCode)})</p>
           </div>
         </div>
       </td>
@@ -433,8 +433,8 @@ function renderAlerts() {
             <span class="ms text-xl">flight_takeoff</span>
           </div>
           <div>
-            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold text-sm">${a.toFlag.startsWith('<') ? a.toFlag : flagSpan(a.toFlag)} ${a.to} <span class="text-slate-500 font-normal text-xs">(${a.toCode})</span></p>
-            <p class="text-xs text-slate-500">fra ${FLAG_NO} ${AIRPORT_NAMES[a.fromCode] || a.fromCode} (${a.fromCode})</p>
+            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold text-sm">${a.toFlag.startsWith('<') ? a.toFlag : flagSpan(a.toFlag)} ${escapeHtml(a.to)} <span class="text-slate-500 font-normal text-xs">(${escapeHtml(a.toCode)})</span></p>
+            <p class="text-xs text-slate-500">fra ${FLAG_NO} ${escapeHtml(AIRPORT_NAMES[a.fromCode] || a.fromCode)} (${escapeHtml(a.fromCode)})</p>
           </div>
         </div>
       </div>
@@ -507,11 +507,11 @@ function filterDest(q) {
     d.name.toLowerCase().includes(q.toLowerCase()) || d.code.toLowerCase().includes(q.toLowerCase())
   ).slice(0, 8);
   box.innerHTML = results.map(d =>
-    `<button type="button" onmousedown="selectDest('${d.name}','${d.code}','${d.cc}')"
+    `<button type="button" onmousedown="selectDest('${escapeHtml(d.name)}','${escapeHtml(d.code)}','${escapeHtml(d.cc)}')"
       class="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 text-left transition-colors">
       <span class="text-xl">${flagSpan(d.cc)}</span>
-      <span class="font-medium text-slate-100">${d.name}</span>
-      <span class="text-slate-500 ml-auto text-xs">${d.code}</span>
+      <span class="font-medium text-slate-100">${escapeHtml(d.name)}</span>
+      <span class="text-slate-500 ml-auto text-xs">${escapeHtml(d.code)}</span>
     </button>`
   ).join('');
 }
@@ -533,7 +533,7 @@ function toggleMonth(m, btn) {
   }
 }
 
-function submitAlert() {
+async function submitAlert() {
   const name = document.getElementById('destInput').value.trim();
   const code = document.getElementById('destCode').value.trim();
   const flag = document.getElementById('destFlag').value.trim();
@@ -568,27 +568,34 @@ function submitAlert() {
     active: true
   };
 
+  const submitBtn = document.querySelector('#modal button[onclick="submitAlert()"]');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Oppretter…'; }
+
   alerts.push(newAlert);
   saveAlerts();
   renderAlerts();
-  closeModal();
-  showToast('Varsel opprettet for ' + name + '.', 'success');
 
   // Sync to Supabase
-  getUser().then(user => {
-    if (user) {
-      supabase.from('alerts').insert({
+  try {
+    const user = await getUser();
+    if (user && supabase) {
+      const { error } = await supabase.from('alerts').insert({
         user_id: user.id,
         departure_airport: fromCode,
         arrival_airport: code,
         travel_months: selectedMonths,
         min_discount: discount,
         active: true
-      }).then(({ error }) => {
-        if (error) console.error('Supabase alert sync failed:', error.message);
       });
+      if (error) console.error('Supabase alert sync failed:', error.message);
     }
-  });
+  } catch (e) {
+    console.error('Feil ved lagring av varsel:', e);
+  }
+
+  if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Opprett varsel'; }
+  closeModal();
+  showToast('Varsel opprettet for ' + name + '.', 'success');
 }
 
 function askDelete(id) {

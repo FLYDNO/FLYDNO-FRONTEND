@@ -371,9 +371,10 @@ function selectFreq(value, label) {
   label.classList.remove('border-[#1e1e1e]');
   label.classList.add('border-primary/30');
   // Save frequency to Supabase
-  getUser().then(user => {
-    if (user) {
-      supabase.from('users').update({ email_frequency: value }).eq('id', user.id);
+  getUser().then(async user => {
+    if (user && supabase) {
+      const { error } = await supabase.from('users').update({ email_frequency: value }).eq('id', user.id);
+      if (error) console.error('Feil ved lagring av frekvens:', error.message);
     }
   });
   showToast(value === 'instant' ? 'Varsler sendes umiddelbart' : 'Daglig oppsummering kl. 08:00', 'success');
@@ -556,7 +557,7 @@ async function confirmCancel() {
 
     showToast('Abonnementet er sagt opp. Du beholder tilgangen ut perioden.', 'success');
   } catch (err) {
-    showToast('Kunne ikke si opp: ' + err.message, 'error');
+    showToast('Kunne ikke si opp: ' + escapeHtml(err.message), 'error');
   }
 }
 
@@ -584,7 +585,7 @@ async function confirmDelete() {
     showToast('Konto slettet. Du blir nå logget ut...', 'success');
     setTimeout(async () => { await logout(); }, 1500);
   } catch (err) {
-    showToast('Feil ved sletting: ' + err.message, 'error');
+    showToast('Feil ved sletting: ' + escapeHtml(err.message), 'error');
   }
 }
 </script>

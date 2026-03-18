@@ -113,7 +113,7 @@
     </div>
 
     <p class="mt-6 text-center text-xs text-slate-600 leading-relaxed">
-      Ved å logge inn godtar du våre <a href="#" class="underline hover:text-slate-400">vilkår</a> og <a href="#" class="underline hover:text-slate-400">personvernregler</a>.
+      Ved å logge inn godtar du våre <a href="vilkar.html" class="underline hover:text-slate-400">vilkår</a> og <a href="personvern.html" class="underline hover:text-slate-400">personvernregler</a>.
     </p>
   </div>
 
@@ -207,7 +207,7 @@
     </div>
 
     <p class="mt-6 text-center text-xs text-slate-600 leading-relaxed">
-      Ved å registrere deg godtar du våre <a href="#" class="underline hover:text-slate-400">vilkår</a> og <a href="#" class="underline hover:text-slate-400">personvernregler</a>.
+      Ved å registrere deg godtar du våre <a href="vilkar.html" class="underline hover:text-slate-400">vilkår</a> og <a href="personvern.html" class="underline hover:text-slate-400">personvernregler</a>.
     </p>
   </div>
 
@@ -314,7 +314,7 @@ function showLoginError(msg) {
     const activeView = document.querySelector('.view.active .space-y-5');
     if (activeView) activeView.parentElement.insertBefore(errEl, activeView);
   }
-  errEl.innerHTML = '<span class="ms" style="font-size:18px;color:#ef4444;">error</span>' + msg;
+  errEl.innerHTML = '<span class="ms" style="font-size:18px;color:#ef4444;">error</span>' + escapeHtml(msg);
   errEl.style.display = 'flex';
   setTimeout(() => { if (errEl) errEl.style.display = 'none'; }, 6000);
 }
