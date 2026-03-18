@@ -6,6 +6,7 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" />
 <script>
   tailwind.config = {
     darkMode: "class",
@@ -158,6 +159,26 @@
           </div>
         </div>
 
+        <!-- Country selector -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-slate-300">Land</label>
+          <div class="relative">
+            <span class="ms absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:20px">public</span>
+            <select id="regCountry" onchange="updateAirports()"
+              class="w-full bg-[#2e2e2e] border border-[#444444] rounded-xl py-3.5 pl-11 pr-4 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all appearance-none">
+              <option value="NO">Norge</option>
+              <option value="DK">Danmark</option>
+              <option value="SE">Sverige</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Airport preferences -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-slate-300">Flyplasser du vil følge</label>
+          <div id="airportChecks" class="grid grid-cols-2 gap-2"></div>
+        </div>
+
         <button onclick="window.location.href='deals.html'"
           class="w-full bg-primary hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-primary/20 text-sm mt-1">
           Start gratis prøveperiode
@@ -218,6 +239,41 @@ function togglePwd(inputId, iconId) {
   if (input.type === 'password') { input.type = 'text'; icon.textContent = 'visibility_off'; }
   else { input.type = 'password'; icon.textContent = 'visibility'; }
 }
+
+const airports = {
+  NO: [
+    { code: 'OSL', name: 'Oslo Gardermoen', cc: 'no' },
+    { code: 'BGO', name: 'Bergen Flesland', cc: 'no' },
+    { code: 'TRD', name: 'Trondheim Værnes', cc: 'no' },
+    { code: 'SVG', name: 'Stavanger Sola', cc: 'no' },
+    { code: 'TOS', name: 'Tromsø Langnes', cc: 'no' },
+    { code: 'TRF', name: 'Torp Sandefjord', cc: 'no' },
+  ],
+  DK: [
+    { code: 'CPH', name: 'København Kastrup', cc: 'dk' },
+    { code: 'BLL', name: 'Billund', cc: 'dk' },
+    { code: 'AAL', name: 'Aalborg', cc: 'dk' },
+  ],
+  SE: [
+    { code: 'ARN', name: 'Stockholm Arlanda', cc: 'se' },
+    { code: 'GOT', name: 'Göteborg Landvetter', cc: 'se' },
+    { code: 'MMX', name: 'Malmö Sturup', cc: 'se' },
+  ]
+};
+
+function updateAirports() {
+  const country = document.getElementById('regCountry').value;
+  const container = document.getElementById('airportChecks');
+  container.innerHTML = airports[country].map(a => `
+    <label class="flex items-center gap-2.5 bg-[#2e2e2e] border border-[#444444] rounded-xl px-3.5 py-2.5 cursor-pointer hover:border-primary/40 transition-all">
+      <input type="checkbox" checked value="${a.code}" class="w-4 h-4 rounded border-[#444] bg-[#2e2e2e] text-primary focus:ring-primary/40 focus:ring-offset-0"/>
+      <span class="fi fi-${a.cc} fis" style="width:1.2em;height:0.9em;display:inline-block;vertical-align:middle;border-radius:2px;"></span>
+      <span class="text-sm text-slate-200">${a.name}</span>
+    </label>
+  `).join('');
+}
+
+updateAirports();
 </script>
 </body>
 </html>
