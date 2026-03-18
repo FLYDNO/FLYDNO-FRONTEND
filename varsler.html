@@ -23,7 +23,7 @@
   .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
   .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00; color: #ff6b00; }
   .nav-link { border-left: 3px solid transparent; }
-  /* Toggle switch � eksplisitt orange når checked */
+  /* Toggle switch — eksplisitt orange når checked */
   input[type="checkbox"].peer:checked ~ .toggle-track { background-color: #ff6b00 !important; }
   ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #050505; } ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
 </style>
@@ -91,12 +91,12 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
-        <button class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <a href="varsler.html" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
-        </button>
+        </a>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <button onclick="if(confirm('Er du sikker på at du vil logge ut?')) window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
           <span class="ms" style="font-size:16px">logout</span>
           Logg ut
         </button>
@@ -111,8 +111,8 @@
           <h2 class="text-white text-4xl font-black tracking-tight">Dine varsler</h2>
           <p class="text-slate-400 text-base">Administrer dine aktive prisvarsler for flyreiser over hele verden.</p>
         </div>
-        <button class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-primary/20">
-          <span class="material-symbols-outlined">add</span>
+        <button onclick="document.getElementById('addModal').classList.remove('hidden')" class="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg shadow-primary/20">
+          <span class="ms" style="font-size:18px">add</span>
           <span>Legg til nytt varsel</span>
         </button>
       </div>
@@ -121,11 +121,11 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div class="bg-[#111] border border-[#1e1e1e] p-4 rounded-xl">
           <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Aktive varsler</p>
-          <p class="text-2xl font-bold mt-1" id="activeCount">3</p>
+          <p class="text-2xl font-bold mt-1" id="activeCount">0</p>
         </div>
         <div class="bg-[#111] border border-[#1e1e1e] p-4 rounded-xl">
           <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Treff siste 24t</p>
-          <p class="text-2xl font-bold mt-1 text-green-500">12</p>
+          <p class="text-2xl font-bold mt-1 text-green-500">0</p>
         </div>
       </div>
 
@@ -143,201 +143,185 @@
                 <th class="px-6 py-4 text-slate-300 text-sm font-semibold text-right">Handlinger</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[#1e1e1e]">
-              <!-- Row 1 � aktiv -->
-              <tr id="row-1" class="hover:bg-white/5 transition-all duration-300 group">
-                <td class="px-6 py-5">
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-primary/10 rounded-lg text-primary"><span class="material-symbols-outlined text-xl">flight_takeoff</span></div>
-                    <div>
-                      <p class="text-white font-bold">New York �x!��x!� <span class="text-slate-500 font-normal text-xs">(JFK)</span></p>
-                      <p class="text-xs text-slate-500">fra <�<� Oslo (OSL)</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-5"><p class="text-slate-200 font-medium">5 500 kr</p></td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
-                      <span class="material-symbols-outlined" style="font-size:13px">calendar_month</span>Jul · Aug
-                    </span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">20% rabatt</span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input checked class="bg-[#111] text-slate-100 sr-only peer" type="checkbox" onchange="toggleRow('row-1', this.checked)"/>
-                      <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
-                  </div>
-                </td>
-                <td class="px-6 py-5 text-right">
-                  <button class="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">edit</span></button>
-                  <button class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">delete</span></button>
-                </td>
-              </tr>
-              <!-- Row 2 � aktiv -->
-              <tr id="row-2" class="hover:bg-white/5 transition-all duration-300 group">
-                <td class="px-6 py-5">
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-primary/10 rounded-lg text-primary"><span class="material-symbols-outlined text-xl">flight_takeoff</span></div>
-                    <div>
-                      <p class="text-white font-bold">London �x!��x!� <span class="text-slate-500 font-normal text-xs">(LHR)</span></p>
-                      <p class="text-xs text-slate-500">fra <�<� Bergen (BGO)</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-5"><p class="text-slate-200 font-medium">1 200 kr</p></td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
-                      <span class="material-symbols-outlined" style="font-size:13px">calendar_month</span>Sep
-                    </span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">15% rabatt</span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input checked class="bg-[#111] text-slate-100 sr-only peer" type="checkbox" onchange="toggleRow('row-2', this.checked)"/>
-                      <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
-                  </div>
-                </td>
-                <td class="px-6 py-5 text-right">
-                  <button class="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">edit</span></button>
-                  <button class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">delete</span></button>
-                </td>
-              </tr>
-              <!-- Row 3 � starter inaktiv -->
-              <tr id="row-3" class="transition-all duration-300 group opacity-40">
-                <td class="px-6 py-5">
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-white/5 rounded-lg text-slate-500"><span class="material-symbols-outlined text-xl">flight_takeoff</span></div>
-                    <div>
-                      <p class="text-slate-400 font-bold">Dubai �x!��x!� <span class="text-slate-600 font-normal text-xs">(DXB)</span></p>
-                      <p class="text-xs text-slate-600">fra Stavanger (SVG)</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-5"><p class="text-slate-500 font-medium">4 800 kr</p></td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-600 border border-white/5">
-                      <span class="material-symbols-outlined" style="font-size:13px">calendar_month</span>Des
-                    </span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-500 border border-white/5">25% rabatt</span>
-                  </div>
-                </td>
-                <td class="px-6 py-5">
-                  <div class="flex justify-center">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input class="bg-[#111] text-slate-100 sr-only peer" type="checkbox" onchange="toggleRow('row-3', this.checked)"/>
-                      <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
-                  </div>
-                </td>
-                <td class="px-6 py-5 text-right">
-                  <button class="text-slate-600 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">edit</span></button>
-                  <button class="text-slate-600 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="material-symbols-outlined">delete</span></button>
-                </td>
-              </tr>
+            <tbody id="alertsBody" class="divide-y divide-[#1e1e1e]">
             </tbody>
           </table>
         </div>
-      </div>
-
-      <!-- Recent Hits -->
-      <div class="mt-12">
-        <h3 class="text-white text-2xl font-bold mb-6">Nylige treff</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Hit Card 1 -->
-          <div class="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden hover:border-primary/50 transition-all cursor-pointer">
-            <div class="h-32 w-full relative">
-              <img alt="New York City skyline" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMyQ7Ej_HvzjUGYDimJD_eeZgup8ctf5DG9qJl9dAShyN0auUjybhzlxz3-Sg3-LC-Vp-baSRT4egzQ0yFSoUwmQOf1HXbb_VQwbAnrAJQU6gbCHQR2rXljso05jywLtYhYWnMYbaLbNb-fgYQiDj4j1osnBCRB5aFiAPnQGVHax-qWgVR_QgvKfGE6CKPFbwR3W-WuFl1feLOIZ2ZcPPzdPiXophgnKjQnO2fAmmRufjW2I3a4Q9aNdA8nCrqzbumaKxaOrFYqHOC"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
-              <div class="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Tilgjengelig nå</div>
-            </div>
-            <div class="p-4">
-              <div class="flex justify-between items-start mb-1">
-                <div>
-                  <h4 class="font-bold text-white">New York �x!��x!�</h4>
-                  <p class="text-xs text-slate-500">fra <�<� Oslo (OSL �  JFK)</p>
-                </div>
-                <p class="text-primary font-black">4 290 kr</p>
-              </div>
-              <div class="flex items-center gap-2 text-xs text-slate-400 mb-4 mt-2">
-                <span class="material-symbols-outlined text-sm">calendar_month</span>
-                <span>12. Okt - 19. Okt</span>
-              </div>
-              <button class="w-full py-2 bg-[#2a2a2a] hover:bg-primary text-white text-sm font-bold rounded-lg transition-colors">Se tilbud</button>
-            </div>
+        <!-- Empty state -->
+        <div id="emptyState" class="flex flex-col items-center justify-center py-16 px-6">
+          <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4">
+            <span class="ms" style="font-size:32px">notifications_none</span>
           </div>
-          <!-- Hit Card 2 -->
-          <div class="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden hover:border-primary/50 transition-all cursor-pointer">
-            <div class="h-32 w-full relative">
-              <img alt="London Big Ben" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAumTOdngZO2sKCQWqh5hWkF_O5cqp17fSZ6JtS2zcc9wVotKAMgPn0flGE4gcCBgAXFjRIMiIJctoNM0DDJK6GsQMmyGvvHcrc92_747biMzkJn13JNfQ8p4egYZjiRqS9W7RhiPJ-G3npza1LX4eCs3JgnAyyXo3q_VReXGeH09o-HQBUsTZTA4dRId_vxjCfTBVL_ELPcGtY_DXjWRQyyaTmGzF_1kMZV4Cvalofz8UcPBxrT1MP842wvbsnGAWfmw7GKt4-liYX"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
-              <div class="absolute top-2 right-2 bg-slate-700 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Utgått</div>
-            </div>
-            <div class="p-4 opacity-75">
-              <div class="flex justify-between items-start mb-1">
-                <div>
-                  <h4 class="font-bold text-white">London �x!��x!�</h4>
-                  <p class="text-xs text-slate-500">fra <�<� Bergen (BGO �  LHR)</p>
-                </div>
-                <p class="text-slate-400 font-black">980 kr</p>
-              </div>
-              <div class="flex items-center gap-2 text-xs text-slate-400 mb-4 mt-2">
-                <span class="material-symbols-outlined text-sm">calendar_month</span>
-                <span>05. Nov - 08. Nov</span>
-              </div>
-              <button class="w-full py-2 bg-[#2a2a2a] text-slate-500 text-sm font-bold rounded-lg cursor-not-allowed">Ikke tilgjengelig</button>
-            </div>
-          </div>
-          <!-- Add New -->
-          <div class="border-2 border-dashed border-[#1e1e1e] rounded-xl flex flex-col items-center justify-center p-6 hover:bg-white/5 transition-colors cursor-pointer group">
-            <div class="w-12 h-12 rounded-full border-2 border-dashed border-[#1e1e1e] flex items-center justify-center text-slate-500 group-hover:border-primary group-hover:text-primary mb-3">
-              <span class="material-symbols-outlined">add</span>
-            </div>
-            <p class="text-slate-400 font-medium group-hover:text-slate-200">Opprett nytt søk</p>
-          </div>
+          <h3 class="text-lg font-bold text-white mb-1">Ingen varsler ennå</h3>
+          <p class="text-sm text-slate-500 mb-5 text-center max-w-sm">Opprett ditt første prisvarsel for å bli varslet når flypriser faller til ønsket nivå.</p>
+          <button onclick="document.getElementById('addModal').classList.remove('hidden')" class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all">
+            <span class="ms" style="font-size:16px">add</span>Opprett varsel
+          </button>
         </div>
       </div>
 
     </div>
   </main>
 </div>
+
+<!-- Add Alert Modal -->
+<div id="addModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+  <div class="bg-[#111] border border-[#1e1e1e] rounded-2xl w-full max-w-lg mx-4 shadow-2xl">
+    <div class="flex items-center justify-between p-6 border-b border-[#1e1e1e]">
+      <h3 class="text-xl font-bold">Nytt prisvarsel</h3>
+      <button onclick="document.getElementById('addModal').classList.add('hidden')" class="text-slate-500 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors">
+        <span class="ms" style="font-size:22px">close</span>
+      </button>
+    </div>
+    <div class="p-6 space-y-5">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-300">Fra flyplass</label>
+          <select id="modalFrom" class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+            <option value="OSL">🇳🇴 Oslo (OSL)</option>
+            <option value="BGO">🇳🇴 Bergen (BGO)</option>
+            <option value="TRD">🇳🇴 Trondheim (TRD)</option>
+            <option value="SVG">🇳🇴 Stavanger (SVG)</option>
+            <option value="TOS">🇳🇴 Tromsø (TOS)</option>
+            <option value="TRF">🇳🇴 Torp (TRF)</option>
+          </select>
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-300">Til destinasjon</label>
+          <input id="modalTo" class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="F.eks. London, Bangkok..." type="text"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-300">Makspris (kr)</label>
+          <input id="modalPrice" class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="F.eks. 3000" type="number"/>
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-slate-300">Reisemåned</label>
+          <select id="modalMonth" class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+            <option>Alle måneder</option>
+            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option>
+            <option>Mai</option><option>Jun</option><option>Jul</option><option>Aug</option>
+            <option>Sep</option><option>Okt</option><option>Nov</option><option>Des</option>
+          </select>
+        </div>
+      </div>
+      <div class="space-y-1.5">
+        <label class="text-sm font-medium text-slate-300">Minimum rabatt</label>
+        <select id="modalDiscount" class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+          <option value="10">10% eller mer</option>
+          <option value="15">15% eller mer</option>
+          <option value="20" selected>20% eller mer</option>
+          <option value="25">25% eller mer</option>
+          <option value="30">30% eller mer</option>
+        </select>
+      </div>
+    </div>
+    <div class="p-6 border-t border-[#1e1e1e] flex justify-end gap-3">
+      <button onclick="document.getElementById('addModal').classList.add('hidden')" class="px-5 py-2.5 rounded-xl border border-[#1e1e1e] text-slate-400 text-sm font-medium hover:bg-white/5 transition-colors">Avbryt</button>
+      <button onclick="addAlert()" class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold transition-all shadow-lg shadow-primary/20">Opprett varsel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success toast -->
+<div id="toast" class="hidden fixed bottom-6 right-6 z-50 bg-green-500 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-2xl flex items-center gap-2 transition-all">
+  <span class="ms" style="font-size:18px">check_circle</span>
+  <span id="toastMsg">Varsel opprettet!</span>
+</div>
+
 <script>
+let alertId = 0;
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.remove('hidden');
+  setTimeout(() => t.classList.add('hidden'), 3000);
+}
+
 function updateCount() {
-  const total = document.querySelectorAll('tbody tr input[type="checkbox"]').length;
-  const active = document.querySelectorAll('tbody tr input[type="checkbox"]:checked').length;
+  const rows = document.querySelectorAll('#alertsBody tr');
+  const active = document.querySelectorAll('#alertsBody tr input[type="checkbox"]:checked').length;
   document.getElementById('activeCount').textContent = active;
+  document.getElementById('emptyState').classList.toggle('hidden', rows.length > 0);
 }
 
 function toggleRow(rowId, active) {
   const row = document.getElementById(rowId);
-  if (active) {
-    row.classList.remove('opacity-40');
-    row.classList.add('hover:bg-white/5');
-  } else {
-    row.classList.add('opacity-40');
-    row.classList.remove('hover:bg-white/5');
-  }
+  if (active) { row.classList.remove('opacity-40'); row.classList.add('hover:bg-white/5'); }
+  else { row.classList.add('opacity-40'); row.classList.remove('hover:bg-white/5'); }
   updateCount();
+}
+
+function deleteAlert(rowId) {
+  if (confirm('Er du sikker på at du vil slette dette varselet?')) {
+    document.getElementById(rowId).remove();
+    updateCount();
+    showToast('Varsel slettet');
+  }
+}
+
+function addAlert() {
+  const from = document.getElementById('modalFrom');
+  const to = document.getElementById('modalTo').value.trim();
+  const price = document.getElementById('modalPrice').value.trim();
+  const month = document.getElementById('modalMonth').value;
+  const discount = document.getElementById('modalDiscount').value;
+
+  if (!to) { alert('Skriv inn en destinasjon'); return; }
+  if (!price) { alert('Skriv inn en makspris'); return; }
+
+  alertId++;
+  const rowId = 'row-' + alertId;
+  const fromText = from.options[from.selectedIndex].text;
+  const fromCode = from.value;
+
+  const tr = document.createElement('tr');
+  tr.id = rowId;
+  tr.className = 'hover:bg-white/5 transition-all duration-300 group';
+  tr.innerHTML = `
+    <td class="px-6 py-5">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-primary/10 rounded-lg text-primary"><span class="ms" style="font-size:20px">flight_takeoff</span></div>
+        <div>
+          <p class="text-white font-bold">${to}</p>
+          <p class="text-xs text-slate-500">fra ${fromText}</p>
+        </div>
+      </div>
+    </td>
+    <td class="px-6 py-5"><p class="text-slate-200 font-medium">${Number(price).toLocaleString('no')} kr</p></td>
+    <td class="px-6 py-5">
+      <div class="flex justify-center">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
+          <span class="ms" style="font-size:13px">calendar_month</span>${month}
+        </span>
+      </div>
+    </td>
+    <td class="px-6 py-5">
+      <div class="flex justify-center">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">${discount}% rabatt</span>
+      </div>
+    </td>
+    <td class="px-6 py-5">
+      <div class="flex justify-center">
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input checked class="sr-only peer" type="checkbox" onchange="toggleRow('${rowId}', this.checked)"/>
+          <div class="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+        </label>
+      </div>
+    </td>
+    <td class="px-6 py-5 text-right">
+      <button onclick="deleteAlert('${rowId}')" class="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span class="ms" style="font-size:20px">delete</span></button>
+    </td>
+  `;
+  document.getElementById('alertsBody').appendChild(tr);
+
+  document.getElementById('addModal').classList.add('hidden');
+  document.getElementById('modalTo').value = '';
+  document.getElementById('modalPrice').value = '';
+  updateCount();
+  showToast('Varsel opprettet!');
 }
 
 document.addEventListener('DOMContentLoaded', updateCount);

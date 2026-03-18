@@ -93,12 +93,12 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
-        <button class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <a href="varsler.html" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
-        </button>
+        </a>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <button onclick="if(confirm('Er du sikker på at du vil logge ut?')) window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
           <span class="ms" style="font-size:16px">logout</span>
           Logg ut
         </button>
@@ -213,19 +213,21 @@
       <section class="bg-[#111] border border-[#1e1e1e] rounded-2xl p-6">
         <h2 class="text-xl font-bold mb-1">Fant du ikke svaret?</h2>
         <p class="text-slate-500 text-sm mb-6">Send oss en melding — vi svarer som regel innen 24 timer.</p>
+        <form id="supportForm" onsubmit="return sendSupport(event)">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Fullt navn</label>
-            <input class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="Ola Nordmann" type="text"/>
+            <input id="supportName" required class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="Ola Nordmann" type="text"/>
           </div>
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-slate-300">E-postadresse</label>
-            <input class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="ola@eksempel.no" type="email"/>
+            <input id="supportEmail" required class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="ola@eksempel.no" type="email"/>
+            <p id="emailError" class="hidden text-xs text-red-500 mt-1">Vennligst skriv inn en gyldig e-postadresse</p>
           </div>
           <div class="md:col-span-2 space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Emne</label>
-            <select class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-400">
-              <option>Velg kategori</option>
+            <select id="supportSubject" required class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-400">
+              <option value="">Velg kategori</option>
               <option>Spørsmål om abonnement</option>
               <option>Problem med deals</option>
               <option>Teknisk problem</option>
@@ -234,13 +236,22 @@
           </div>
           <div class="md:col-span-2 space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Melding</label>
-            <textarea class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600 resize-none" rows="4" placeholder="Beskriv spørsmålet ditt..."></textarea>
+            <textarea id="supportMessage" required class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600 resize-none" rows="4" placeholder="Beskriv spørsmålet ditt..."></textarea>
           </div>
           <div class="md:col-span-2">
-            <button class="flex items-center gap-2 bg-[#ff6b00] hover:bg-[#e55f00] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#ff6b00]/20 text-sm">
+            <button type="submit" class="flex items-center gap-2 bg-[#ff6b00] hover:bg-[#e55f00] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#ff6b00]/20 text-sm">
               Send melding
               <span class="ms" style="font-size:18px">send</span>
             </button>
+          </div>
+        </div>
+        </form>
+        <!-- Success message -->
+        <div id="supportSuccess" class="hidden mt-6 bg-green-500/10 border border-green-500/20 rounded-xl p-4 flex items-center gap-3">
+          <span class="ms text-green-500" style="font-size:22px">check_circle</span>
+          <div>
+            <p class="text-green-400 font-bold text-sm">Melding sendt!</p>
+            <p class="text-slate-400 text-xs">Vi svarer deg innen 24 timer på e-posten du oppga.</p>
           </div>
         </div>
       </section>
@@ -251,7 +262,7 @@
           <span class="ms text-[#ff6b00]" style="font-size:24px">mail</span>
           <div>
             <p class="text-[10px] uppercase tracking-widest font-bold text-slate-500">E-post</p>
-            <p class="font-semibold text-sm"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d2528240d2b213429282c213e632322">[email&#160;protected]</a></p>
+            <p class="font-semibold text-sm">hjelp@flydeals.no</p>
           </div>
         </div>
         <div class="flex items-center gap-3">
@@ -266,5 +277,32 @@
     </div>
   </main>
 </div>
+<script>
+function sendSupport(e) {
+  e.preventDefault();
+  const email = document.getElementById('supportEmail');
+  const emailError = document.getElementById('emailError');
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(email.value)) {
+    emailError.classList.remove('hidden');
+    email.classList.add('border-red-500');
+    email.focus();
+    return false;
+  }
+  emailError.classList.add('hidden');
+  email.classList.remove('border-red-500');
+
+  document.getElementById('supportForm').reset();
+  document.getElementById('supportSuccess').classList.remove('hidden');
+  setTimeout(() => document.getElementById('supportSuccess').classList.add('hidden'), 5000);
+  return false;
+}
+
+document.getElementById('supportEmail').addEventListener('input', function() {
+  document.getElementById('emailError').classList.add('hidden');
+  this.classList.remove('border-red-500');
+});
+</script>
 </body>
 </html>

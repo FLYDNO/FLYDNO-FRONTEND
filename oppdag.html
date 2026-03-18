@@ -91,12 +91,12 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
-        <button class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <a href="varsler.html" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
-        </button>
+        </a>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <button onclick="if(confirm('Er du sikker på at du vil logge ut?')) window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
           <span class="ms" style="font-size:16px">logout</span>
           Logg ut
         </button>
@@ -116,25 +116,25 @@
       </div>
 
       <!-- Region filters -->
-      <div class="flex flex-wrap gap-2">
-        <button class="px-4 py-2 rounded-full text-sm font-semibold bg-[#ff6b00] text-white">Alle</button>
-        <button class="px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">�xR� Europa</button>
-        <button class="px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">�xR� Asia</button>
-        <button class="px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">�xR} Amerika</button>
-        <button class="px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">�xR� Afrika</button>
-        <button class="px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">�x� Norden</button>
+      <div class="flex flex-wrap gap-2" id="regionFilters">
+        <button onclick="filterRegion('alle',this)" class="region-btn px-4 py-2 rounded-full text-sm font-semibold bg-[#ff6b00] text-white">Alle</button>
+        <button onclick="filterRegion('europa',this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🌍 Europa</button>
+        <button onclick="filterRegion('asia',this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🌍 Asia</button>
+        <button onclick="filterRegion('amerika',this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🌎 Amerika</button>
+        <button onclick="filterRegion('afrika',this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">🌍 Afrika</button>
+        <button onclick="filterRegion('norden',this)" class="region-btn px-4 py-2 rounded-full text-sm font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40 transition-all">❄️ Norden</button>
       </div>
 
       <!-- Featured destinations -->
       <section>
         <div class="flex items-center justify-between mb-5">
           <h3 class="text-xl font-bold">Populære destinasjoner</h3>
-          <a href="deals.html" class="text-[#ff6b00] text-sm font-semibold hover:underline">Se alle deals � </a>
+          <a href="deals.html" class="text-[#ff6b00] text-sm font-semibold hover:underline">Se alle deals →</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
           <!-- Card: Barcelona -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="europa">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80" alt="Barcelona"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -150,7 +150,7 @@
             <div class="p-4">
               <div class="flex items-start justify-between">
                 <div>
-                  <h4 class="font-bold text-base">Barcelona <span class="fi fi-es fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span></h4>
+                  <h4 class="font-bold text-base">Barcelona 🇪🇸</h4>
                   <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                     <span class="ms" style="font-size:13px">flight</span> Fra Trondheim ⬢ Direktefly
                   </p>
@@ -168,7 +168,7 @@
           </div>
 
           <!-- Card: London -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="europa">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80" alt="London"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -182,7 +182,7 @@
             </div>
             <div class="p-4">
               <div>
-                <h4 class="font-bold text-base">London <span class="fi fi-gb fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span></h4>
+                <h4 class="font-bold text-base">London 🇬🇧</h4>
                 <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                   <span class="ms" style="font-size:13px">flight</span> Fra Bergen ⬢ Direktefly
                 </p>
@@ -199,7 +199,7 @@
           </div>
 
           <!-- Card: Bangkok -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="asia">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80" alt="Bangkok"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -213,7 +213,7 @@
             </div>
             <div class="p-4">
               <div>
-                <h4 class="font-bold text-base">Bangkok <span class="fi fi-th fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span></h4>
+                <h4 class="font-bold text-base">Bangkok 🇹🇭</h4>
                 <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                   <span class="ms" style="font-size:13px">flight</span> Fra Oslo ⬢ Thai Airways
                 </p>
@@ -221,7 +221,7 @@
               <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
                 <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">schedule</span>11t 20m</span>
                 <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
-                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Mar�Apr 2026</span>
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Mar–Apr 2026</span>
               </div>
               <button class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
                 <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
@@ -230,7 +230,7 @@
           </div>
 
           <!-- Card: Dubai -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="asia">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80" alt="Dubai"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -244,7 +244,7 @@
             </div>
             <div class="p-4">
               <div>
-                <h4 class="font-bold text-base">Dubai <span class="fi fi-ae fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span></h4>
+                <h4 class="font-bold text-base">Dubai 🇦🇪</h4>
                 <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                   <span class="ms" style="font-size:13px">flight</span> Fra Oslo ⬢ Emirates
                 </p>
@@ -261,7 +261,7 @@
           </div>
 
           <!-- Card: New York -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="amerika">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80" alt="New York"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -275,7 +275,7 @@
             </div>
             <div class="p-4">
               <div>
-                <h4 class="font-bold text-base">New </h4>
+                <h4 class="font-bold text-base">New York 🇺🇸</h4>
                 <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                   <span class="ms" style="font-size:13px">flight</span> Fra Oslo ⬢ SAS
                 </p>
@@ -283,7 +283,7 @@
               <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
                 <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">schedule</span>9t 15m</span>
                 <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
-                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Apr�Mai 2026</span>
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Apr–Mai 2026</span>
               </div>
               <button class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
                 <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
@@ -292,7 +292,7 @@
           </div>
 
           <!-- Card: Tokyo -->
-          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
+          <div class="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer" data-region="asia">
             <div class="h-44 overflow-hidden relative">
               <img class="dest-img w-full h-full object-cover transition-transform duration-500" src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80" alt="Tokyo"/>
               <div class="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
@@ -306,7 +306,7 @@
             </div>
             <div class="p-4">
               <div>
-                <h4 class="font-bold text-base">Tokyo <span class="fi fi-jp fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span></h4>
+                <h4 class="font-bold text-base">Tokyo 🇯🇵</h4>
                 <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                   <span class="ms" style="font-size:13px">flight</span> Fra Oslo ⬢ ANA
                 </p>
@@ -314,7 +314,7 @@
               <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
                 <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">schedule</span>14t 30m</span>
                 <span class="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
-                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Mai�Jun 2026</span>
+                <span class="flex items-center gap-1"><span class="ms" style="font-size:13px">calendar_month</span>Mai–Jun 2026</span>
               </div>
               <button class="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
                 <span class="ms" style="font-size:14px">notifications</span>Opprett varsel
@@ -331,9 +331,9 @@
         <div class="bg-[#111] border border-[#1e1e1e] rounded-2xl divide-y divide-[#1e1e1e] overflow-hidden">
           <div class="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/3 transition-colors cursor-pointer">
             <div class="flex items-center gap-3">
-              <span class="text-base">�x!��x!�</span>
+              <span class="text-base">🇪🇸</span>
               <div>
-                <p class="text-sm font-semibold">Oslo �  Alicante</p>
+                <p class="text-sm font-semibold">Oslo → Alicante</p>
                 <p class="text-xs text-slate-500">Ryanair · Mars 2026</p>
               </div>
             </div>
@@ -341,9 +341,9 @@
           </div>
           <div class="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/3 transition-colors cursor-pointer">
             <div class="flex items-center gap-3">
-              <span class="text-base">�x!��x!�</span>
+              <span class="text-base">🇮🇸</span>
               <div>
-                <p class="text-sm font-semibold">Tromsø �  Reykjavik</p>
+                <p class="text-sm font-semibold">Tromsø → Reykjavik</p>
                 <p class="text-xs text-slate-500">Icelandair · April 2026</p>
               </div>
             </div>
@@ -351,9 +351,9 @@
           </div>
           <div class="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/3 transition-colors cursor-pointer">
             <div class="flex items-center gap-3">
-              <span class="text-base">�x!��x!�</span>
+              <span class="text-base">🇳🇱</span>
               <div>
-                <p class="text-sm font-semibold">Stavanger �  Amsterdam</p>
+                <p class="text-sm font-semibold">Stavanger → Amsterdam</p>
                 <p class="text-xs text-slate-500">KLM · Mars 2026</p>
               </div>
             </div>
@@ -361,9 +361,9 @@
           </div>
           <div class="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/3 transition-colors cursor-pointer">
             <div class="flex items-center gap-3">
-              <span class="text-base">�x!��x!�</span>
+              <span class="text-base">🇮🇹</span>
               <div>
-                <p class="text-sm font-semibold">Bergen �  Roma</p>
+                <p class="text-sm font-semibold">Bergen → Roma</p>
                 <p class="text-xs text-slate-500">SAS · Mars 2026</p>
               </div>
             </div>
@@ -371,9 +371,9 @@
           </div>
           <div class="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/3 transition-colors cursor-pointer">
             <div class="flex items-center gap-3">
-              <span class="text-base">�x!��x!�</span>
+              <span class="text-base">🇫🇷</span>
               <div>
-                <p class="text-sm font-semibold">Trondheim �  Paris</p>
+                <p class="text-sm font-semibold">Trondheim → Paris</p>
                 <p class="text-xs text-slate-500">Air France · April 2026</p>
               </div>
             </div>
@@ -385,6 +385,24 @@
     </div>
   </main>
 </div>
+<script>
+function filterRegion(region, btn) {
+  document.querySelectorAll('.region-btn').forEach(b => {
+    b.classList.remove('bg-[#ff6b00]', 'text-white', 'font-semibold');
+    b.classList.add('bg-[#111]', 'text-slate-400', 'font-medium', 'border', 'border-[#1e1e1e]');
+  });
+  btn.classList.add('bg-[#ff6b00]', 'text-white', 'font-semibold');
+  btn.classList.remove('bg-[#111]', 'text-slate-400', 'font-medium', 'border', 'border-[#1e1e1e]');
+
+  document.querySelectorAll('.dest-card').forEach(card => {
+    if (region === 'alle' || card.dataset.region === region) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
 </body>
 </html>
 
