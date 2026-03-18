@@ -3,17 +3,21 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const DESTS = [
-  {f:'🇪🇸',n:'Barcelona'},{f:'🇬🇧',n:'London'},{f:'🇹🇭',n:'Bangkok'},
-  {f:'🇺🇸',n:'New York'},{f:'🇯🇵',n:'Tokyo'},{f:'🇮🇹',n:'Roma'},
-  {f:'🇦🇪',n:'Dubai'},{f:'🇫🇷',n:'Paris'},{f:'🇩🇪',n:'Berlin'},
-  {f:'🇬🇷',n:'Aten'},{f:'🇵🇹',n:'Lisboa'},{f:'🇮🇩',n:'Bali'},
-  {f:'🇸🇬',n:'Singapore'},{f:'🇲🇦',n:'Marrakech'},{f:'🇹🇷',n:'Istanbul'},
-  {f:'🇨🇦',n:'Toronto'},{f:'🇦🇺',n:'Sydney'},{f:'🇮🇸',n:'Reykjavik'},
-  {f:'🇿🇦',n:'Cape Town'},{f:'🇳🇱',n:'Amsterdam'},{f:'🇨🇿',n:'Praha'},
-  {f:'🇭🇷',n:'Dubrovnik'},{f:'🇲🇽',n:'Mexico City'},{f:'🇮🇳',n:'Mumbai'},
-  {f:'🇪🇬',n:'Kairo'},{f:'🇰🇷',n:'Seoul'},{f:'🇲🇻',n:'Maldivene'},
-  {f:'🇪🇪',n:'Tallinn'},{f:'🇨🇴',n:'Bogotá'},{f:'🇧🇷',n:'Rio de Janeiro'},
+  {c:'es',n:'Barcelona'},{c:'gb',n:'London'},{c:'th',n:'Bangkok'},
+  {c:'us',n:'New York'},{c:'jp',n:'Tokyo'},{c:'it',n:'Roma'},
+  {c:'ae',n:'Dubai'},{c:'fr',n:'Paris'},{c:'de',n:'Berlin'},
+  {c:'gr',n:'Aten'},{c:'pt',n:'Lisboa'},{c:'id',n:'Bali'},
+  {c:'sg',n:'Singapore'},{c:'ma',n:'Marrakech'},{c:'tr',n:'Istanbul'},
+  {c:'ca',n:'Toronto'},{c:'au',n:'Sydney'},{c:'is',n:'Reykjavik'},
+  {c:'za',n:'Cape Town'},{c:'nl',n:'Amsterdam'},{c:'cz',n:'Praha'},
+  {c:'hr',n:'Dubrovnik'},{c:'mx',n:'Mexico City'},{c:'in',n:'Mumbai'},
+  {c:'eg',n:'Kairo'},{c:'kr',n:'Seoul'},{c:'mv',n:'Maldivene'},
+  {c:'ee',n:'Tallinn'},{c:'co',n:'Bogotá'},{c:'br',n:'Rio de Janeiro'},
 ];
+
+const Flag = ({code}: {code: string}) => (
+  <span className={`fi fi-${code} fis`} style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',marginBottom:'1px',borderRadius:'2px'}}></span>
+);
 
 const faqs = [
   { q: 'Hvilke flyplasser overvåker dere?', a: 'Vi overvåker per dags dato Oslo (OSL), Bergen (BGO), Stavanger (SVG), Trondheim (TRD), Tromsø (TOS) og Sandefjord/Torp (TRF).' },
@@ -84,7 +88,7 @@ export default function HomePage() {
         }
 
         .hero { padding: 120px 0 80px; position: relative; overflow: hidden; }
-        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(255,107,0,0.08) 0%, transparent 70%); pointer-events: none; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse 60% 50% at 80% 30%, rgba(255,107,0,0.05) 0%, transparent 70%); pointer-events: none; }
         .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
         .hero-badge { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); border-radius: 100px; font-size: 12px; font-weight: 600; color: #22c55e; margin-bottom: 24px; }
         .hero-badge .dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
@@ -272,14 +276,14 @@ export default function HomePage() {
                     <span className="live-dot"></span> Siste deals
                   </div>
                   {[
-                    { from: 'Oslo (OSL)', dest: 'New York 🇺🇸', price: '2 890 kr', unit: 't/r', pct: '-41%' },
-                    { from: 'Bergen (BGO)', dest: 'London 🇬🇧', price: '489 kr', unit: 'enkel', pct: '-52%' },
-                    { from: 'Oslo (OSL)', dest: 'Bangkok 🇹🇭', price: '2 489 kr', unit: 't/r', pct: '-47%' },
+                    { from: 'Oslo (OSL)', dest: 'New York', flag: 'us', price: '2 890 kr', unit: 't/r', pct: '-41%' },
+                    { from: 'Bergen (BGO)', dest: 'London', flag: 'gb', price: '489 kr', unit: 'enkel', pct: '-52%' },
+                    { from: 'Oslo (OSL)', dest: 'Bangkok', flag: 'th', price: '2 489 kr', unit: 't/r', pct: '-47%' },
                   ].map((d, i) => (
                     <div key={i} className="deal-row">
                       <div>
                         <div className="deal-from">fra {d.from}</div>
-                        <div className="deal-dest">{d.dest}</div>
+                        <div className="deal-dest">{d.dest} <Flag code={d.flag} /></div>
                       </div>
                       <div className="deal-price-col">
                         <div className="deal-price-val">{d.price}</div>
@@ -303,7 +307,7 @@ export default function HomePage() {
           <div className="ticker-track">
             {[...DESTS, ...DESTS].map((d, i) => (
               <div key={i} className="t-dest">
-                <span style={{ fontSize: '15px' }}>{d.f}</span>{d.n}
+                <Flag code={d.c} />{d.n}
               </div>
             ))}
           </div>
@@ -332,8 +336,8 @@ export default function HomePage() {
         {/* EARTH SECTION */}
         <section style={{ position: 'relative', height: '620px', overflow: 'hidden', margin: 0 }}>
           <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/earth.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #050505 0%, transparent 18%, transparent 82%, #050505 100%)', pointerEvents: 'none' }}></div>
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(5,5,5,0.6) 0%, transparent 18%, transparent 82%, rgba(5,5,5,0.6) 100%)', pointerEvents: 'none' }}></div>
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #050505 0%, transparent 12%, transparent 88%, #050505 100%)', pointerEvents: 'none' }}></div>
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(5,5,5,0.35) 0%, transparent 15%, transparent 85%, rgba(5,5,5,0.35) 100%)', pointerEvents: 'none' }}></div>
           <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ textAlign: 'center', maxWidth: '620px', padding: '0 24px' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,107,0,0.15)', border: '1px solid rgba(255,107,0,0.35)', borderRadius: '100px', padding: '6px 16px', fontSize: '12px', fontWeight: 600, color: '#ff6b00', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '20px' }}>
@@ -367,9 +371,9 @@ export default function HomePage() {
             <h2 className="section-title" style={{ fontSize: '32px', letterSpacing: '-1px' }}>Aktuelle reisedeals akkurat nå</h2>
             <div className="deals-cards">
               {[
-                { iata: 'OSL', airport: 'Oslo Gardermoen', dest: 'Firenze 🇮🇹', price: '849 kr', unit: 't/r', pct: '-38%' },
-                { iata: 'BGO', airport: 'Bergen Flesland', dest: 'Barcelona 🇪🇸', price: '520 kr', unit: 't/r', pct: '-44%' },
-                { iata: 'SVG', airport: 'Stavanger Sola', dest: 'London 🇬🇧', price: '3 190 kr', unit: 't/r', pct: '-31%' },
+                { iata: 'OSL', airport: 'Oslo Gardermoen', dest: 'Firenze', flag: 'it', price: '849 kr', unit: 't/r', pct: '-38%' },
+                { iata: 'BGO', airport: 'Bergen Flesland', dest: 'Barcelona', flag: 'es', price: '520 kr', unit: 't/r', pct: '-44%' },
+                { iata: 'SVG', airport: 'Stavanger Sola', dest: 'London', flag: 'gb', price: '3 190 kr', unit: 't/r', pct: '-31%' },
               ].map((d, i) => (
                 <div key={i} className="deal-card">
                   <div className="deal-card-from">
@@ -377,7 +381,7 @@ export default function HomePage() {
                     <span className="iata">{d.iata}</span>
                     <span>{d.airport}</span>
                   </div>
-                  <div className="deal-card-dest">{d.dest}</div>
+                  <div className="deal-card-dest">{d.dest} <Flag code={d.flag} /></div>
                   <div className="deal-card-footer">
                     <div>
                       <div className="deal-card-price">{d.price} <span>{d.unit}</span></div>
