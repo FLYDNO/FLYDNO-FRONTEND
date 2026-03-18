@@ -28,6 +28,10 @@
   .faq-item.open .faq-answer { max-height: 200px; padding-bottom: 16px; }
   .faq-icon { transition: transform 0.3s; }
   .faq-item.open .faq-icon { transform: rotate(45deg); }
+  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 100; display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; box-shadow: 0 8px 32px rgba(0,0,0,0.4); transform: translateY(80px); opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); pointer-events: none; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-success { background: #111; border: 1px solid rgba(34,197,94,0.3); color: #22c55e; }
+  .toast-error { background: #111; border: 1px solid rgba(239,68,68,0.3); color: #ef4444; }
 </style>
 </head>
 <body class="text-slate-100 min-h-screen">
@@ -93,12 +97,12 @@
         <span class="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
       </div>
       <div class="flex items-center gap-1">
-        <a href="varsler.html" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
           <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
-        </a>
+        </button>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-        <button onclick="if(confirm('Er du sikker på at du vil logge ut?')) window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
+        <button onclick="window.location.href='login.html'" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
           <span class="ms" style="font-size:16px">logout</span>
           Logg ut
         </button>
@@ -213,21 +217,30 @@
       <section class="bg-[#111] border border-[#1e1e1e] rounded-2xl p-6">
         <h2 class="text-xl font-bold mb-1">Fant du ikke svaret?</h2>
         <p class="text-slate-500 text-sm mb-6">Send oss en melding — vi svarer som regel innen 24 timer.</p>
-        <form id="supportForm" onsubmit="return sendSupport(event)">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="kontakt-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Fullt navn</label>
-            <input id="supportName" required class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="Ola Nordmann" type="text"/>
+            <input id="kontakt-navn" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="Ola Nordmann" type="text"/>
           </div>
           <div class="space-y-1.5">
             <label class="text-sm font-medium text-slate-300">E-postadresse</label>
-            <input id="supportEmail" required class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="ola@eksempel.no" type="email"/>
-            <p id="emailError" class="hidden text-xs text-red-500 mt-1">Vennligst skriv inn en gyldig e-postadresse</p>
+            <input id="kontakt-epost" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="ola@eksempel.no" type="email"/>
+            <p id="epost-feil" class="text-xs text-red-400 hidden">Skriv inn en gyldig e-postadresse.</p>
           </div>
           <div class="md:col-span-2 space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Emne</label>
-            <select id="supportSubject" required class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-400">
+            <select id="kontakt-emne" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-400">
               <option value="">Velg kategori</option>
+            <input id="contactName" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="Ola Nordmann" type="text"/>
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-slate-300">E-postadresse</label>
+            <input id="contactEmail" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600" placeholder="ola@eksempel.no" type="email"/>
+          </div>
+          <div class="md:col-span-2 space-y-1.5">
+            <label class="text-sm font-medium text-slate-300">Emne</label>
+            <select id="contactTopic" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-400">
+              <option>Velg kategori</option>
               <option>Spørsmål om abonnement</option>
               <option>Problem med deals</option>
               <option>Teknisk problem</option>
@@ -236,23 +249,27 @@
           </div>
           <div class="md:col-span-2 space-y-1.5">
             <label class="text-sm font-medium text-slate-300">Melding</label>
-            <textarea id="supportMessage" required class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600 resize-none" rows="4" placeholder="Beskriv spørsmålet ditt..."></textarea>
+            <textarea id="kontakt-melding" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600 resize-none" rows="4" placeholder="Beskriv spørsmålet ditt..."></textarea>
           </div>
           <div class="md:col-span-2">
-            <button type="submit" class="flex items-center gap-2 bg-[#ff6b00] hover:bg-[#e55f00] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#ff6b00]/20 text-sm">
+            <button id="kontakt-send-btn" onclick="sendMelding()" class="flex items-center gap-2 bg-[#ff6b00] hover:bg-[#e55f00] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#ff6b00]/20 text-sm">
+            <textarea id="contactMessage" class="w-full bg-[#050505] border border-[#1e1e1e] rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none text-slate-100 placeholder:text-slate-600 resize-none" rows="4" placeholder="Beskriv spørsmålet ditt..."></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <button onclick="sendMessage()" id="sendBtn" class="flex items-center gap-2 bg-[#ff6b00] hover:bg-[#e55f00] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#ff6b00]/20 text-sm">
               Send melding
               <span class="ms" style="font-size:18px">send</span>
             </button>
           </div>
         </div>
-        </form>
-        <!-- Success message -->
-        <div id="supportSuccess" class="hidden mt-6 bg-green-500/10 border border-green-500/20 rounded-xl p-4 flex items-center gap-3">
-          <span class="ms text-green-500" style="font-size:22px">check_circle</span>
-          <div>
-            <p class="text-green-400 font-bold text-sm">Melding sendt!</p>
-            <p class="text-slate-400 text-xs">Vi svarer deg innen 24 timer på e-posten du oppga.</p>
+        <!-- Success state -->
+        <div id="kontakt-suksess" class="hidden text-center py-8">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2)">
+            <span class="ms text-green-400" style="font-size:28px">check_circle</span>
           </div>
+          <h3 class="font-bold text-lg mb-1">Melding sendt!</h3>
+          <p class="text-slate-400 text-sm">Vi svarer deg på <span id="suksess-epost" class="text-slate-200 font-medium"></span> innen 24 timer.</p>
+          <button onclick="resetKontaktForm()" class="mt-5 text-sm text-[#ff6b00] hover:underline">Send en ny melding</button>
         </div>
       </section>
 
@@ -262,7 +279,7 @@
           <span class="ms text-[#ff6b00]" style="font-size:24px">mail</span>
           <div>
             <p class="text-[10px] uppercase tracking-widest font-bold text-slate-500">E-post</p>
-            <p class="font-semibold text-sm">hjelp@flydeals.no</p>
+            <p class="font-semibold text-sm"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d2528240d2b213429282c213e632322">[email&#160;protected]</a></p>
           </div>
         </div>
         <div class="flex items-center gap-3">
@@ -278,31 +295,84 @@
   </main>
 </div>
 <script>
-function sendSupport(e) {
-  e.preventDefault();
-  const email = document.getElementById('supportEmail');
-  const emailError = document.getElementById('emailError');
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function sendMelding() {
+  const navn = document.getElementById('kontakt-navn').value.trim();
+  const epost = document.getElementById('kontakt-epost').value.trim();
+  const emne = document.getElementById('kontakt-emne').value;
+  const melding = document.getElementById('kontakt-melding').value.trim();
+  const epostFeil = document.getElementById('epost-feil');
 
-  if (!emailRegex.test(email.value)) {
-    emailError.classList.remove('hidden');
-    email.classList.add('border-red-500');
-    email.focus();
-    return false;
+  // Validate email
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(epost);
+  if (!emailOk) {
+    epostFeil.classList.remove('hidden');
+    document.getElementById('kontakt-epost').style.borderColor = '#ef4444';
+    document.getElementById('kontakt-epost').focus();
+    return;
   }
-  emailError.classList.add('hidden');
-  email.classList.remove('border-red-500');
+  epostFeil.classList.add('hidden');
+  document.getElementById('kontakt-epost').style.borderColor = '';
 
-  document.getElementById('supportForm').reset();
-  document.getElementById('supportSuccess').classList.remove('hidden');
-  setTimeout(() => document.getElementById('supportSuccess').classList.add('hidden'), 5000);
-  return false;
+  if (!navn || !emne || !melding) {
+    alert('Fyll ut alle feltene før du sender.');
+    return;
+  }
+
+  // Show success
+  document.getElementById('suksess-epost').textContent = epost;
+  document.getElementById('kontakt-form').classList.add('hidden');
+  document.getElementById('kontakt-suksess').classList.remove('hidden');
 }
 
-document.getElementById('supportEmail').addEventListener('input', function() {
-  document.getElementById('emailError').classList.add('hidden');
-  this.classList.remove('border-red-500');
-});
+function resetKontaktForm() {
+  document.getElementById('kontakt-navn').value = '';
+  document.getElementById('kontakt-epost').value = '';
+  document.getElementById('kontakt-emne').value = '';
+  document.getElementById('kontakt-melding').value = '';
+  document.getElementById('kontakt-form').classList.remove('hidden');
+  document.getElementById('kontakt-suksess').classList.add('hidden');
+<!-- Toast notification -->
+<div id="toast" class="toast toast-success">
+  <span class="ms" style="font-size:18px" id="toastIcon">check_circle</span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  const icon = document.getElementById('toastIcon');
+  t.className = 'toast ' + (type === 'error' ? 'toast-error' : 'toast-success');
+  icon.textContent = type === 'error' ? 'error' : 'check_circle';
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function sendMessage() {
+  const name = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const topic = document.getElementById('contactTopic').value;
+  const message = document.getElementById('contactMessage').value.trim();
+
+  if (!name) { showToast('Vennligst skriv inn fullt navn.', 'error'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Vennligst oppgi en gyldig e-postadresse.', 'error'); return; }
+  if (topic === 'Velg kategori') { showToast('Vennligst velg en kategori.', 'error'); return; }
+  if (!message) { showToast('Vennligst skriv en melding.', 'error'); return; }
+
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="ms" style="font-size:18px">hourglass_empty</span> Sender...';
+
+  setTimeout(() => {
+    document.getElementById('contactName').value = '';
+    document.getElementById('contactEmail').value = '';
+    document.getElementById('contactTopic').value = 'Velg kategori';
+    document.getElementById('contactMessage').value = '';
+    btn.disabled = false;
+    btn.innerHTML = 'Send melding <span class="ms" style="font-size:18px">send</span>';
+    showToast('Meldingen er sendt! Vi svarer innen 24 timer.', 'success');
+  }, 800);
+}
 </script>
 </body>
 </html>
