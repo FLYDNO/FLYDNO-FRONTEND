@@ -26,6 +26,8 @@
   input { font-family: 'DM Sans', sans-serif; }
 </style>
 <title>FlyDeals — Logg inn</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 </head>
 <body class="bg-[#050505] text-slate-100 min-h-screen flex flex-col">
 
@@ -56,7 +58,7 @@
           <label class="text-sm font-medium text-slate-300">E-post</label>
           <div class="relative">
             <span class="ms absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:20px">mail</span>
-            <input type="email" placeholder="din@epost.no"
+            <input type="email" placeholder="din@epost.no" id="loginEmail"
               class="w-full bg-[#2e2e2e] border border-[#444444] rounded-xl py-3.5 pl-11 pr-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"/>
           </div>
         </div>
@@ -78,7 +80,7 @@
         </div>
 
         <!-- Login button -->
-        <button onclick="window.location.href='deals.html'"
+        <button id="loginBtn" onclick="handleLogin()"
           class="w-full bg-primary hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-primary/20 text-sm mt-1">
           Logg inn
         </button>
@@ -93,7 +95,7 @@
       </div>
 
       <!-- Google -->
-      <button class="flex items-center justify-center gap-3 w-full bg-[#2e2e2e] border border-[#444444] hover:bg-[#383838] py-3 rounded-xl transition-all font-medium text-sm text-slate-200">
+      <button onclick="handleGoogleLogin()" class="flex items-center justify-center gap-3 w-full bg-[#2e2e2e] border border-[#444444] hover:bg-[#383838] py-3 rounded-xl transition-all font-medium text-sm text-slate-200">
         <svg class="w-4.5 h-4.5" width="18" height="18" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
           <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -133,7 +135,7 @@
           <label class="text-sm font-medium text-slate-300">Navn</label>
           <div class="relative">
             <span class="ms absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:20px">person</span>
-            <input type="text" placeholder="Ditt navn"
+            <input type="text" placeholder="Ditt navn" id="regName"
               class="w-full bg-[#2e2e2e] border border-[#444444] rounded-xl py-3.5 pl-11 pr-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"/>
           </div>
         </div>
@@ -142,7 +144,7 @@
           <label class="text-sm font-medium text-slate-300">E-post</label>
           <div class="relative">
             <span class="ms absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:20px">mail</span>
-            <input type="email" placeholder="din@epost.no"
+            <input type="email" placeholder="din@epost.no" id="regEmail"
               class="w-full bg-[#2e2e2e] border border-[#444444] rounded-xl py-3.5 pl-11 pr-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"/>
           </div>
         </div>
@@ -179,7 +181,7 @@
           <div id="airportChecks" class="grid grid-cols-2 gap-2"></div>
         </div>
 
-        <button onclick="window.location.href='deals.html'"
+        <button id="regBtn" onclick="handleRegister()"
           class="w-full bg-primary hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-primary/20 text-sm mt-1">
           Start gratis prøveperiode
         </button>
@@ -204,7 +206,7 @@
       </div>
 
       <!-- Google -->
-      <button class="flex items-center justify-center gap-3 w-full bg-[#2e2e2e] border border-[#444444] hover:bg-[#383838] py-3 rounded-xl transition-all font-medium text-sm text-slate-200">
+      <button onclick="handleGoogleLogin()" class="flex items-center justify-center gap-3 w-full bg-[#2e2e2e] border border-[#444444] hover:bg-[#383838] py-3 rounded-xl transition-all font-medium text-sm text-slate-200">
         <svg width="18" height="18" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
           <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -228,6 +230,76 @@
 </div>
 
 <script>
+// Redirect if already logged in
+getUser().then(user => { if (user) window.location.href = 'deals.html'; });
+
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPwd').value;
+  if (!email || !password) { alert('Vennligst fyll inn e-post og passord.'); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.textContent = 'Logger inn...';
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    window.location.href = 'deals.html';
+  } catch (err) {
+    alert('Innlogging feilet: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = 'Logg inn';
+  }
+}
+
+async function handleRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPwd').value;
+  const country = document.getElementById('regCountry').value;
+  const checkboxes = document.querySelectorAll('#airportChecks input[type="checkbox"]:checked');
+  const preferred_airports = Array.from(checkboxes).map(cb => cb.value);
+
+  if (!name || !email || !password) { alert('Vennligst fyll inn alle feltene.'); return; }
+  if (password.length < 8) { alert('Passordet må være minst 8 tegn.'); return; }
+
+  const btn = document.getElementById('regBtn');
+  btn.disabled = true;
+  btn.textContent = 'Oppretter konto...';
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name } }
+    });
+    if (error) throw error;
+
+    // Insert user profile into users table
+    if (data.user) {
+      await supabase.from('users').insert({
+        id: data.user.id,
+        name,
+        email,
+        country,
+        preferred_airports
+      });
+    }
+
+    window.location.href = 'deals.html';
+  } catch (err) {
+    alert('Registrering feilet: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = 'Start gratis prøveperiode';
+  }
+}
+
+async function handleGoogleLogin() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + '/deals.html' }
+  });
+  if (error) alert('Google-innlogging feilet: ' + error.message);
+}
+
 function switchView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
