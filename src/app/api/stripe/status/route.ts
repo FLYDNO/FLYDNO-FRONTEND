@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2025-02-24.acacia' as Stripe.LatestApiVersion,
-})
 
 // Admin emails that bypass paywall
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean)
+
+// Lazy Stripe initialization to avoid build-time errors
+function getStripe() {
+  const Stripe = require('stripe').default || require('stripe')
+  return new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+    apiVersion: '2025-02-24.acacia',
+  })
+}
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
@@ -26,6 +31,8 @@ export async function POST(request: Request) {
         message: 'Admin-tilgang',
       })
     }
+
+    const stripe = getStripe()
 
     // Check Stripe for active subscription
     const customers = await stripe.customers.list({ email, limit: 1 })
@@ -47,14 +54,17 @@ export async function POST(request: Request) {
       limit: 5,
     })
 
-    const activeSub = subscriptions.data.find(
-      s => s.status === 'active' || s.status === 'trialing'
-    )
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const activeSub = subscriptions.data.find((s: any) => s.status === 'active' || s.status === 'trialing')
 
     if (activeSub) {
       const isTrialing = activeSub.status === 'trialing'
       const trialEnd = activeSub.trial_end ? new Date(activeSub.trial_end * 1000) : null
       const daysLeft = trialEnd ? Math.ceil((trialEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : null
+
+      // Get current_period_end from the first subscription item
+      const items = activeSub.items?.data
+      const periodEnd = items && items.length > 0 ? items[0].current_period_end : null
 
       return NextResponse.json({
         hasAccess: true,
@@ -62,7 +72,7 @@ export async function POST(request: Request) {
         status: activeSub.status,
         isTrialing,
         trialDaysLeft: daysLeft,
-        currentPeriodEnd: activeSub.current_period_end ? new Date(activeSub.current_period_end * 1000).toISOString() : null,
+        currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
         message: isTrialing ? `Prøveperiode (${daysLeft} dager igjen)` : 'Aktivt abonnement',
       })
     }

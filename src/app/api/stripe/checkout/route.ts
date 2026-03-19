@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2025-02-24.acacia' as Stripe.LatestApiVersion,
-})
 
 const PRICE_ID = process.env.STRIPE_PRICE_ID || 'price_1TCCV4BH30TF6uRO4Dshmthq'
+
+function getStripe() {
+  const Stripe = require('stripe').default || require('stripe')
+  return new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+    apiVersion: '2025-02-24.acacia',
+  })
+}
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
@@ -16,9 +20,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'E-post er påkrevd' }, { status: 400 })
     }
 
+    const stripe = getStripe()
+
     // Check if customer already exists
     const existingCustomers = await stripe.customers.list({ email, limit: 1 })
-    let customer: Stripe.Customer
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let customer: any
 
     if (existingCustomers.data.length > 0) {
       customer = existingCustomers.data[0]

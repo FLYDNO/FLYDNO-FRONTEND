@@ -1,30 +1,38 @@
 import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
-import { createClient } from '@supabase/supabase-js'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2025-02-24.acacia' as Stripe.LatestApiVersion,
-})
+export const dynamic = 'force-dynamic'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-)
+function getStripe() {
+  const Stripe = require('stripe').default || require('stripe')
+  return new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+    apiVersion: '2025-02-24.acacia',
+  })
+}
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
+function getSupabase() {
+  const { createClient } = require('@supabase/supabase-js')
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  )
+}
 
 export async function POST(request: Request) {
   const body = await request.text()
   const sig = request.headers.get('stripe-signature')
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
 
-  let event: Stripe.Event
+  const stripe = getStripe()
+  const supabase = getSupabase()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let event: any
 
   try {
     if (webhookSecret && sig) {
       event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
     } else {
-      // Fallback for development (no webhook secret)
-      event = JSON.parse(body) as Stripe.Event
+      event = JSON.parse(body)
     }
   } catch (err) {
     console.error('Webhook signature verification failed:', err)
@@ -34,12 +42,11 @@ export async function POST(request: Request) {
   try {
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.Checkout.Session
+        const session = event.data.object
         const customerEmail = session.customer_details?.email
-        const customerId = session.customer as string
+        const customerId = session.customer
 
         if (customerEmail) {
-          // Update user in Supabase
           await supabase
             .from('payments')
             .upsert({
@@ -54,16 +61,16 @@ export async function POST(request: Request) {
       }
 
       case 'customer.subscription.updated': {
-        const subscription = event.data.object as Stripe.Subscription
-        const customer = await stripe.customers.retrieve(subscription.customer as string)
-        const email = (customer as Stripe.Customer).email
+        const subscription = event.data.object
+        const customer = await stripe.customers.retrieve(subscription.customer)
+        const email = customer.email
 
         if (email) {
           await supabase
             .from('payments')
             .upsert({
               email,
-              stripe_customer_id: subscription.customer as string,
+              stripe_customer_id: subscription.customer,
               status: subscription.status === 'active' || subscription.status === 'trialing' ? 'active' : 'inactive',
               plan: subscription.status === 'active' || subscription.status === 'trialing' ? 'premium' : 'free',
               updated_at: new Date().toISOString(),
@@ -73,16 +80,16 @@ export async function POST(request: Request) {
       }
 
       case 'customer.subscription.deleted': {
-        const subscription = event.data.object as Stripe.Subscription
-        const customer = await stripe.customers.retrieve(subscription.customer as string)
-        const email = (customer as Stripe.Customer).email
+        const subscription = event.data.object
+        const customer = await stripe.customers.retrieve(subscription.customer)
+        const email = customer.email
 
         if (email) {
           await supabase
             .from('payments')
             .upsert({
               email,
-              stripe_customer_id: subscription.customer as string,
+              stripe_customer_id: subscription.customer,
               status: 'cancelled',
               plan: 'free',
               updated_at: new Date().toISOString(),
@@ -92,7 +99,7 @@ export async function POST(request: Request) {
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice
+        const invoice = event.data.object
         const email = invoice.customer_email
 
         if (email) {
