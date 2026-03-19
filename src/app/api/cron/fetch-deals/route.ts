@@ -310,7 +310,7 @@ export async function GET(request: Request) {
         arrival_airport: dest,
         price_nok: best.price,
         travel_date: best.date,
-        return_date: bestType === 'roundtrip' ? (best.returnDate ?? returnDate) : null,
+        return_date: bestType === 'roundtrip' ? (best.returnDate ?? null) : null,
         normal_price: best.avg,
         avg_price: best.avg,
         discount_pct: best.discount,
