@@ -43,25 +43,42 @@
 async function handleCallback() {
   const statusMsg = document.getElementById('statusMsg');
 
-  // Wait a moment for Supabase to process the OAuth callback
-  await new Promise(r => setTimeout(r, 500));
-
-  const user = await getUser();
-  if (!user) {
-    statusMsg.textContent = 'Innlogging feilet. Sender deg tilbake...';
+  if (!supabase) {
+    statusMsg.textContent = 'Feil: Kunne ikke koble til serveren.';
     setTimeout(() => { window.location.href = 'login.html'; }, 2000);
     return;
   }
 
-  // Ensure user has a profile row
-  statusMsg.textContent = 'Setter opp profilen din...';
-  const profile = await ensureUserProfile(user);
+  // Supabase SDK automatically reads the #access_token hash fragment
+  // We need to wait for the auth state change to complete
+  let resolved = false;
 
-  // Check if user has active subscription (subscription_active boolean, set by stripe-webhook)
-  const hasSubscription = profile && profile.subscription_active === true;
+  // Listen for auth state change (triggered when SDK processes the hash)
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (resolved) return;
 
-  // Always go to deals — subscription check happens there via paywall banner
-  window.location.href = 'deals.html';
+    if (event === 'SIGNED_IN' && session?.user) {
+      resolved = true;
+      statusMsg.textContent = 'Setter opp profilen din...';
+      const profile = await ensureUserProfile(session.user);
+      window.location.href = 'deals.html';
+    }
+  });
+
+  // Fallback: if onAuthStateChange doesn't fire within 3 seconds, try getUser directly
+  setTimeout(async () => {
+    if (resolved) return;
+    const user = await getUser();
+    if (user) {
+      resolved = true;
+      statusMsg.textContent = 'Setter opp profilen din...';
+      await ensureUserProfile(user);
+      window.location.href = 'deals.html';
+    } else {
+      statusMsg.textContent = 'Innlogging feilet. Prøv igjen...';
+      setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+    }
+  }, 3000);
 }
 
 handleCallback();
