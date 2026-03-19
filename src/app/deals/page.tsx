@@ -76,6 +76,56 @@ const airportCity: Record<string, string> = {
   'TOS': 'Tromsø', 'TRF': 'Torp', 'KRS': 'Kristiansand',
 }
 
+// Full city names for destination airports
+const destCityName: Record<string, string> = {
+  'AMS': 'Amsterdam', 'ATH': 'Athen', 'AYT': 'Antalya', 'BCN': 'Barcelona',
+  'BEG': 'Beograd', 'BER': 'Berlin', 'BHX': 'Birmingham', 'BKK': 'Bangkok',
+  'BLQ': 'Bologna', 'BOD': 'Bordeaux', 'BRE': 'Bremen', 'BRS': 'Bristol',
+  'BRU': 'Brussel', 'BTS': 'Bratislava', 'BUD': 'Budapest', 'CAG': 'Cagliari',
+  'CDG': 'Paris', 'CFU': 'Korfu', 'CGN': 'Köln', 'CHQ': 'Chania',
+  'CIA': 'Roma', 'CRL': 'Brussel', 'CTA': 'Catania', 'DBV': 'Dubrovnik',
+  'DLM': 'Dalaman', 'DTM': 'Dortmund', 'DUB': 'Dublin', 'DUS': 'Düsseldorf',
+  'DXB': 'Dubai', 'EDI': 'Edinburgh', 'EIN': 'Eindhoven', 'FAO': 'Faro',
+  'FCO': 'Roma', 'FKB': 'Karlsruhe', 'FMM': 'Memmingen', 'FNC': 'Funchal',
+  'FRA': 'Frankfurt', 'GDN': 'Gdansk', 'GLA': 'Glasgow', 'GRO': 'Girona',
+  'GRZ': 'Graz', 'GVA': 'Genève', 'HAJ': 'Hannover', 'HAM': 'Hamburg',
+  'HEL': 'Helsinki', 'HER': 'Heraklion', 'IBZ': 'Ibiza', 'INN': 'Innsbruck',
+  'IST': 'Istanbul', 'JFK': 'New York', 'KBP': 'Kyiv', 'KGS': 'Kos',
+  'KRK': 'Kraków', 'KTW': 'Katowice', 'LCA': 'Larnaka', 'LCJ': 'Łódź',
+  'LGW': 'London', 'LHR': 'London', 'LIS': 'Lisboa', 'LJU': 'Ljubljana',
+  'LPA': 'Las Palmas', 'LTN': 'London', 'LYS': 'Lyon', 'MAD': 'Madrid',
+  'MAN': 'Manchester', 'MLA': 'Malta', 'MRS': 'Marseille', 'MUC': 'München',
+  'MXP': 'Milano', 'NAP': 'Napoli', 'NCE': 'Nice', 'NUE': 'Nürnberg',
+  'NYO': 'Stockholm', 'OPO': 'Porto', 'OTP': 'Bucuresti', 'OUL': 'Oulu',
+  'PAD': 'Paderborn', 'PMI': 'Mallorca', 'PMO': 'Palermo', 'PRG': 'Praha',
+  'PSA': 'Pisa', 'PUY': 'Pula', 'RHO': 'Rhodos', 'RIX': 'Riga',
+  'RUH': 'Riyadh', 'SAW': 'Istanbul', 'SCQ': 'Santiago', 'SDR': 'Santander',
+  'SKG': 'Thessaloniki', 'SKP': 'Skopje', 'SOF': 'Sofia', 'SPU': 'Split',
+  'STN': 'London Stansted', 'SXF': 'Berlin', 'SZG': 'Salzburg', 'TBS': 'Tbilisi',
+  'TFS': 'Tenerife', 'TIA': 'Tirana', 'TLL': 'Tallinn', 'TLS': 'Toulouse',
+  'TRN': 'Torino', 'TSF': 'Venezia', 'VCE': 'Venezia', 'VIE': 'Wien',
+  'VLC': 'Valencia', 'VNO': 'Vilnius', 'VRN': 'Verona', 'WAW': 'Warszawa',
+  'WMI': 'Warszawa', 'WRO': 'Wrocław', 'ZAD': 'Zadar', 'ZAG': 'Zagreb',
+  'ZRH': 'Zürich', 'ZTH': 'Zakynthos', 'ACE': 'Lanzarote', 'AGP': 'Malaga',
+  'ALC': 'Alicante', 'AQJ': 'Aqaba', 'ARN': 'Stockholm', 'BJV': 'Bodrum',
+  'BOJ': 'Burgas', 'BVA': 'Paris', 'CPH': 'København', 'CUF': 'Cuneo',
+  'EFL': 'Kefalonia', 'FLR': 'Firenze', 'GPA': 'Patras', 'HKT': 'Phuket',
+  'IKA': 'Teheran', 'JER': 'Jersey', 'KIV': 'Chisinau', 'KLX': 'Kalamata',
+  'KSC': 'Košice', 'LAX': 'Los Angeles', 'LBA': 'Leeds', 'LCY': 'London',
+  'LEJ': 'Leipzig', 'LGG': 'Liège', 'LNZ': 'Linz', 'LPP': 'Lappeenranta',
+  'LUZ': 'Lublin', 'MHQ': 'Mariehamn', 'MLX': 'Malatya', 'MSQ': 'Minsk',
+  'NTE': 'Nantes', 'OLB': 'Olbia', 'ORY': 'Paris', 'PFO': 'Paphos',
+  'PGF': 'Perpignan', 'PLQ': 'Palanga', 'POZ': 'Poznan', 'PVK': 'Preveza',
+  'RBA': 'Rabat', 'REU': 'Reus', 'RJK': 'Rijeka', 'RMI': 'Rimini',
+  'RNS': 'Rennes', 'RST': 'Rostock', 'RTM': 'Rotterdam', 'RZE': 'Rzeszów',
+  'SBZ': 'Sibiu', 'SCV': 'Suceava', 'SJJ': 'Sarajevo', 'SKD': 'Samarkand',
+  'SNN': 'Shannon', 'STR': 'Stuttgart', 'SXB': 'Strasbourg', 'SZZ': 'Szczecin',
+  'TAY': 'Tartu', 'TGD': 'Podgorica', 'TIV': 'Tivat', 'TMP': 'Tampere',
+  'TRF': 'Torp', 'TSR': 'Timisoara', 'TXL': 'Berlin', 'ULN': 'Ulaanbaatar',
+  'VAR': 'Varna', 'VBY': 'Visby', 'VKO': 'Moskva', 'VST': 'Västerås',
+  'XRY': 'Jerez', 'YVR': 'Vancouver', 'ZIA': 'Moskva', 'ZQW': 'Zweibrücken',
+}
+
 export default function DealsPage() {
   const { user, loading: authLoading, logout, userName, userEmail } = useAuth()
   const { hasAccess, loading: subLoading, startCheckout } = useSubscription(userEmail || undefined)
@@ -125,7 +175,7 @@ export default function DealsPage() {
             id: (f.id as string) || i,
             from: (f.departure_city as string) || airportCity[originCode] || originCode,
             fromCode: originCode,
-            to: (f.arrival_city as string) || destCode,
+            to: (f.arrival_city as string) || destCityName[destCode] || destCode,
             toCode: destCode,
             flag: (f.country_code as string) || 'un',
             price,
@@ -227,7 +277,7 @@ export default function DealsPage() {
                 <h1 style={{ fontSize: 22, fontWeight: 900, color: '#f0f0f0', letterSpacing: '-0.5px' }}>Live Deals</h1>
                 <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ width: 7, height: 7, background: isLive ? '#22c55e' : '#f59e0b', borderRadius: '50%', display: 'inline-block' }} />
-                  {filtered.length} deals · {isLive ? 'Live' : 'Eksempel'} · 3× daglig
+                  {filtered.length} deals · {isLive ? 'Live' : 'Eksempel'}
                 </p>
               </div>
               <select value={sortBy} onChange={e => setSortBy(e.target.value as 'discount' | 'price' | 'date')}
@@ -359,10 +409,7 @@ export default function DealsPage() {
                         {deal.returnDate && <span style={{ color: 'rgba(255,255,255,0.3)' }}> → {new Date(deal.returnDate).toLocaleDateString('no', { day: 'numeric', month: 'short' })}</span>}
                       </p>
                       {deal.hoursOld !== undefined && deal.hoursOld < 99 && (
-                        <p style={{ fontSize: 10, color: deal.hoursOld < 8 ? '#22c55e' : deal.hoursOld < 20 ? '#f59e0b' : 'rgba(255,255,255,0.3)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 3 }}>
-                          <span style={{ width: 5, height: 5, borderRadius: '50%', background: deal.hoursOld < 8 ? '#22c55e' : deal.hoursOld < 20 ? '#f59e0b' : 'rgba(255,255,255,0.3)', display: 'inline-block' }} />
-                          {deal.hoursOld < 1 ? 'Nettopp oppdatert' : deal.hoursOld < 8 ? `${deal.hoursOld}t siden` : deal.hoursOld < 24 ? `${deal.hoursOld}t siden` : `${Math.floor(deal.hoursOld / 24)}d siden`}
-                        </p>
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: deal.hoursOld < 8 ? '#22c55e' : deal.hoursOld < 20 ? '#f59e0b' : 'rgba(255,255,255,0.3)', display: 'inline-block', marginTop: 4 }} />
                       )}
                     </div>
                     <span style={{ fontSize: 12, fontWeight: 700, color: '#ff6b00', display: 'flex', alignItems: 'center', gap: 3 }}>

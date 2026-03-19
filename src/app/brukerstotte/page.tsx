@@ -5,14 +5,16 @@ import { useAuth } from '@/lib/useAuth'
 import Sidebar from '@/components/Sidebar'
 
 const FAQS = [
-  { q: 'Hvilke flyplasser overvåker dere?', a: 'Vi overvåker Oslo (OSL), Bergen (BGO), Stavanger (SVG), Trondheim (TRD), Tromsø (TOS) og Torp (TRF) — 6 norske flyplasser totalt.' },
-  { q: 'Hva er en "deal"?', a: 'En deal er en pris som er 25% eller mer under det historiske gjennomsnittet for den ruten. Vi sammenligner mot prisdata fra de siste månedene.' },
-  { q: 'Hvor ofte oppdateres prisene?', a: 'Vi sjekker prisene 2 ganger daglig — morgen og kveld. Du får e-post så snart vi finner en deal som matcher dine innstillinger.' },
+  { q: 'Hvilke flyplasser overvåker dere?', a: 'Vi overvåker Oslo (OSL), Bergen (BGO), Stavanger (SVG), Trondheim (TRD), Tromsø (TOS) og Torp/Sandefjord (TRF) — 6 norske flyplasser og totalt 886 ruter.' },
+  { q: 'Hva er en "deal"?', a: 'En deal er en pris som er 35% eller mer under gjennomsnittet for den ruten basert på prisdata over tid. Kun reelle kupp vises — ikke bare "litt billigere enn vanlig".' },
+  { q: 'Hva betyr fargene på deal-kortene?', a: 'Fargeprikken viser hvor fersk dealen er: Grønn = oppdatert siste 8 timer. Gul = oppdatert siste 20 timer. Grå = oppdatert for mer enn 20 timer siden (men alltid under 36 timer). Alle deals slettes automatisk etter 36 timer.' },
+  { q: 'Hvor ofte oppdateres prisene?', a: 'Vi sjekker alle 886 ruter 3 ganger daglig — kl. 06:00, 12:00 og 18:00 norsk tid. Hver kjøring dekker et annet tidsvindu: morgen (enveis april–september), middag (tur/retur vinter/vår) og kveld (tur/retur sommer).' },
   { q: 'Kan jeg si opp når som helst?', a: 'Ja, du kan si opp abonnementet når som helst via Innstillinger. Ingen bindingstid og ingen skjulte gebyrer.' },
   { q: 'Hva skjer etter prøveperioden?', a: 'Etter 7 dager gratis trekkes 149 kr/mnd automatisk. Du kan si opp når som helst før det uten å bli belastet.' },
-  { q: 'Booker dere for meg?', a: 'Nei — vi sender deg en direktelenke til Google Flights der du booker direkte hos flyselskapet. Vi tar ingen provisjon.' },
+  { q: 'Booker dere for meg?', a: 'Nei — vi sender deg en direktelenke til Google Flights der du booker direkte hos flyselskapet. Vi tar ingen provisjon og har ingen skjulte avgifter.' },
   { q: 'Kan jeg velge hvilke flyplasser jeg vil ha varsler fra?', a: 'Ja! Gå til Innstillinger og velg de flyplassene du ønsker varsler fra. Du kan også sette minimum rabatt-terskel.' },
-  { q: 'Dekker dere enveis og tur/retur?', a: 'Ja, vi finner deals for begge typer. Hvert deal-kort viser enveis-pris og tur/retur-pris slik at du kan velge selv.' },
+  { q: 'Dekker dere enveis og tur/retur?', a: 'Ja, vi finner deals for begge typer. Hvert deal-kort viser både enveis-pris og tur/retur-pris slik at du kan velge selv hva som passer best.' },
+  { q: 'Hvor langt frem i tid viser dere deals?', a: 'Vi viser deals fra nærmeste måned og opp til 6 måneder frem i tid (april–september). Bruk månedsfilteret øverst på deals-siden for å filtrere på spesifikke måneder.' },
 ]
 
 export default function BrukerstottePage() {
