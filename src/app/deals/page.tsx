@@ -183,13 +183,13 @@ export default function DealsPage() {
       <div style={{ display: 'flex', minHeight: '100dvh', background: '#050505' }}>
         <Sidebar active="deals" userName={userName} userEmail={userEmail} onLogout={logout} />
 
-        <main style={{ flex: 1, minWidth: 0, paddingBottom: 90 }}>
+        <main style={{ flex: 1, minWidth: 0, paddingBottom: 90, overflow: 'auto', height: '100vh' }}>
 
           {/* Header */}
-          <div style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '16px 16px 12px' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
+          <div style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '18px 24px 14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
               <div>
-                <h1 style={{ fontSize: 20, fontWeight: 900, color: '#f0f0f0', letterSpacing: '-0.5px' }}>Live Deals</h1>
+                <h1 style={{ fontSize: 22, fontWeight: 900, color: '#f0f0f0', letterSpacing: '-0.5px' }}>Live Deals</h1>
                 <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ width: 7, height: 7, background: isLive ? '#22c55e' : '#f59e0b', borderRadius: '50%', display: 'inline-block' }} />
                   {filtered.length} deals · {isLive ? 'Live' : 'Eksempel'} · 3× daglig
@@ -204,7 +204,7 @@ export default function DealsPage() {
             </div>
 
             {/* Trip type toggle */}
-            <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
               {[
                 { key: 'alle' as const, label: 'Alle' },
                 { key: 'roundtrip' as const, label: 'Tur/Retur' },
@@ -223,7 +223,7 @@ export default function DealsPage() {
             </div>
 
             {/* Airport filter */}
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 4 }}>
+            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 4 }}>
               {AIRPORTS.map(code => (
                 <button key={code} onClick={() => setSelectedAirport(code)} style={{
                   padding: '5px 12px', borderRadius: 100, fontSize: 12, fontWeight: 600,
@@ -240,7 +240,7 @@ export default function DealsPage() {
           </div>
 
           {/* Month filter */}
-          <div style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '8px 16px', display: 'flex', gap: 6, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '10px 24px', display: 'flex', gap: 8, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
             {MONTHS.map(m => (
               <button key={m.key} onClick={() => setSelectedMonth(m.key)} style={{
                 padding: '5px 12px', borderRadius: 100, fontSize: 11, fontWeight: 600,
@@ -256,11 +256,11 @@ export default function DealsPage() {
           </div>
 
           {/* Deal cards */}
-          <div style={{ padding: '16px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
+          <div style={{ padding: '20px 24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 14 }}>
               {filtered.map(deal => (
                 <div key={deal.id} onClick={() => { setSelectedDeal(deal); setSelectedPriceType(deal.bestType) }}
-                  style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 18px', cursor: 'pointer', transition: 'all 0.2s' }}
+                  style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: '18px 20px', cursor: 'pointer', transition: 'all 0.2s' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,107,0,0.3)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}>
 

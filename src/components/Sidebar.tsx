@@ -1,6 +1,5 @@
 'use client'
 import Link from 'next/link'
-import { useState } from 'react'
 
 interface SidebarProps {
   active: string
@@ -11,9 +10,7 @@ interface SidebarProps {
 
 const NAV = [
   { href: '/deals', icon: 'local_offer', label: 'Live Deals', shortLabel: 'Deals', key: 'deals' },
-  { href: '/varsler', icon: 'notifications', label: 'Dine Varsler', shortLabel: 'Varsler', key: 'varsler' },
   { href: '/oppdag', icon: 'explore', label: 'Oppdag Ruter', shortLabel: 'Oppdag', key: 'oppdag' },
-  { href: '/historikk', icon: 'history', label: 'Historikk', shortLabel: 'Historikk', key: 'historikk' },
 ]
 const NAV_BOTTOM = [
   { href: '/innstillinger', icon: 'settings', label: 'Innstillinger', shortLabel: 'Innst.', key: 'innstillinger' },
