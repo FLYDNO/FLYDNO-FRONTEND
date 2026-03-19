@@ -4,14 +4,17 @@ import { createClient } from '@supabase/supabase-js'
 /**
  * FlyDeals.no — Live Flight Deal Fetcher
  *
- * Strategy (based on research reports):
+ * Strategy (verified via API testing):
  * - 886 unique Norwegian routes across 6 airports (OSL, TRF, TRD, BGO, SVG, TOS)
  * - Each airport has its own real destination list (not all 153 for every airport)
  * - 3× daily: 06:00, 12:00, 18:00 Norwegian time (05:00, 11:00, 17:00 UTC)
- * - Each run processes 1/3 of all routes → all 886 covered per day
- * - 886 routes × 2 calls (OW+RT) = 1,772 calls/day × 3 = 5,316... 
- *   BUT we batch: ~296 routes/run × 2 = 592 calls/run × 3 = 1,776/day = ~53,280/mnd
- * - Deal detection: price ≥25% below average across returned dates
+ * - Each run processes ALL 886 routes with a different call type:
+ *   Run 1 (06:00): OW extended Apr-Sep (start_date+end_date = 183 dates per route)
+ *   Run 2 (12:00): RT Apr-May (outbound=Apr, return=Apr+7 = 60 dates per route)
+ *   Run 3 (18:00): RT Jul-Aug (outbound=Jul, return=Jul+7 = 62 dates per route)
+ * - Total: 886 routes × 3 calls = 2,658 calls/day = ~80,000/month (under 150k limit)
+ * - Coverage: April–September 2026 for both OW and RT
+ * - Deal detection: price ≥35% below average across returned dates (real deals only)
  * - updated_at timestamp used for freshness (stale after 36h)
  */
 
@@ -151,12 +154,34 @@ const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || '94d8ca287cmsh020d29e3ffb7fd3p1
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://erhlxomyatirrqhaxroh.supabase.co'
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
-function getStartDate(): string {
-  const d = new Date()
-  d.setDate(1)
-  if (d.getMonth() === 11) { d.setFullYear(d.getFullYear() + 1); d.setMonth(0) }
-  else d.setMonth(d.getMonth() + 1)
-  return d.toISOString().split('T')[0]
+// Determine which run type based on UTC hour:
+// Run 0 (05:00 UTC = 06:00 NO): OW extended Apr-Sep (start_date + end_date)
+// Run 1 (11:00 UTC = 12:00 NO): RT Apr-May (outbound=Apr, return=Apr+7)
+// Run 2 (17:00 UTC = 18:00 NO): RT Jul-Aug (outbound=Jul, return=Jul+7)
+function getRunConfig(): { type: 'ow_extended' | 'rt_spring' | 'rt_summer'; runIndex: number } {
+  const utcHour = new Date().getUTCHours()
+  if (utcHour >= 14) return { type: 'rt_summer', runIndex: 2 }   // 17:00+ UTC
+  if (utcHour >= 8)  return { type: 'rt_spring', runIndex: 1 }   // 11:00+ UTC
+  return { type: 'ow_extended', runIndex: 0 }                    // 05:00+ UTC
+}
+
+// Get the current year's April 1 (or next year if we're past September)
+function getSeasonStart(): string {
+  const now = new Date()
+  const year = now.getMonth() >= 9 ? now.getFullYear() + 1 : now.getFullYear()
+  return `${year}-04-01`
+}
+
+function getSeasonEnd(): string {
+  const now = new Date()
+  const year = now.getMonth() >= 9 ? now.getFullYear() + 1 : now.getFullYear()
+  return `${year}-09-30`
+}
+
+function getSummerStart(): string {
+  const now = new Date()
+  const year = now.getMonth() >= 9 ? now.getFullYear() + 1 : now.getFullYear()
+  return `${year}-07-01`
 }
 
 interface PriceEntry {
@@ -166,11 +191,12 @@ interface PriceEntry {
 }
 
 async function fetchPriceGraph(
-  origin: string, destination: string, startDate: string, returnDate?: string
+  origin: string, destination: string, outboundDate: string, returnDate?: string, endDate?: string
 ): Promise<PriceEntry[]> {
   try {
-    let url = `https://google-flights2.p.rapidapi.com/api/v1/getPriceGraph?departure_id=${origin}&arrival_id=${destination}&outbound_date=${startDate}&travel_class=ECONOMY&currency=NOK`
+    let url = `https://google-flights2.p.rapidapi.com/api/v1/getPriceGraph?departure_id=${origin}&arrival_id=${destination}&outbound_date=${outboundDate}&start_date=${outboundDate}&travel_class=ECONOMY&currency=NOK`
     if (returnDate) url += `&return_date=${returnDate}`
+    if (endDate) url += `&end_date=${endDate}`
     const res = await fetch(url, {
       headers: {
         'x-rapidapi-host': 'google-flights2.p.rapidapi.com',
@@ -222,40 +248,54 @@ export async function GET(request: Request) {
     SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  const startDate = getStartDate()
-  const returnBase = new Date(startDate)
-  returnBase.setDate(returnBase.getDate() + 7)
-  const returnDate = returnBase.toISOString().split('T')[0]
+  // Determine run type based on UTC hour
+  const { type: runType, runIndex } = getRunConfig()
+  const seasonStart = getSeasonStart()   // Apr 1
+  const seasonEnd = getSeasonEnd()       // Sep 30
+  const summerStart = getSummerStart()   // Jul 1
+
+  // Return date = 7 days after outbound for RT calls
+  const springReturnDate = (() => {
+    const d = new Date(seasonStart); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0]
+  })()
+  const summerReturnDate = (() => {
+    const d = new Date(summerStart); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0]
+  })()
 
   const results = { processed: 0, deals: 0, errors: 0, skipped: 0 }
   const dealsToUpsert: Record<string, unknown>[] = []
 
-  // Split all routes into 3 equal batches by UTC hour
-  const BATCH_COUNT = 3
-  const BATCH_SIZE = Math.ceil(ALL_ROUTES.length / BATCH_COUNT)
-  const utcHour = new Date().getUTCHours()
-  let runIndex: number
-  if (utcHour >= 14) runIndex = 2      // 17:00 UTC = 18:00 Norwegian
-  else if (utcHour >= 8) runIndex = 1  // 11:00 UTC = 12:00 Norwegian
-  else runIndex = 0                    // 05:00 UTC = 06:00 Norwegian
-
-  const routeBatch = ALL_ROUTES.slice(runIndex * BATCH_SIZE, (runIndex + 1) * BATCH_SIZE)
+  // All 886 routes processed in every run — each run does a different call type
+  const routeBatch = ALL_ROUTES
 
   for (const { origin, dest } of routeBatch) {
     try {
-      const owEntries = await fetchPriceGraph(origin, dest, startDate)
-      results.processed++
-      await sleep(200)
+      let owEntries: PriceEntry[] = []
+      let rtEntries: PriceEntry[] = []
 
-      const rtEntries = await fetchPriceGraph(origin, dest, startDate, returnDate)
-      results.processed++
-      await sleep(200)
+      if (runType === 'ow_extended') {
+        // Run 1 (06:00 NO): OW with extended date range Apr-Sep (183 dates)
+        owEntries = await fetchPriceGraph(origin, dest, seasonStart, undefined, seasonEnd)
+        results.processed++
+        await sleep(200)
+      } else if (runType === 'rt_spring') {
+        // Run 2 (12:00 NO): RT Apr-May window (60 dates)
+        rtEntries = await fetchPriceGraph(origin, dest, seasonStart, springReturnDate)
+        results.processed++
+        await sleep(200)
+      } else {
+        // Run 3 (18:00 NO): RT Jul-Aug window (62 dates)
+        rtEntries = await fetchPriceGraph(origin, dest, summerStart, summerReturnDate)
+        results.processed++
+        await sleep(200)
+      }
 
       const ow = analyzeEntries(owEntries)
       const rt = analyzeEntries(rtEntries)
 
-      const owDisc = ow && ow.discount >= 25 ? ow.discount : 0
-      const rtDisc = rt && rt.discount >= 25 ? rt.discount : 0
+      // Deal threshold: ≥35% below average = real deal worth showing
+      const owDisc = ow && ow.discount >= 35 ? ow.discount : 0
+      const rtDisc = rt && rt.discount >= 35 ? rt.discount : 0
 
       if (owDisc === 0 && rtDisc === 0) {
         results.skipped++
@@ -328,14 +368,16 @@ export async function GET(request: Request) {
   return NextResponse.json({
     success: true,
     timestamp: new Date().toISOString(),
-    startDate,
-    returnDate,
+    runType,
+    runIndex: runIndex + 1,
+    seasonStart,
+    seasonEnd,
+    summerStart,
     totalRoutes: ALL_ROUTES.length,
-    runBatch: `${runIndex + 1}/${BATCH_COUNT} (routes ${runIndex * BATCH_SIZE + 1}–${Math.min((runIndex + 1) * BATCH_SIZE, ALL_ROUTES.length)})`,
     apiCallsThisRun: results.processed,
     ...results,
     dealsUpserted: dealsToUpsert.length,
     upsertError,
-    note: '3x daily: 05:00, 11:00, 17:00 UTC = 06:00, 12:00, 18:00 Norwegian time',
+    note: '3x daily: 05:00 UTC=OW Apr-Sep | 11:00 UTC=RT Apr-May | 17:00 UTC=RT Jul-Aug',
   })
 }
