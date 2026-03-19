@@ -19,6 +19,7 @@ body {
   color: #f0f0f0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 a {
@@ -171,18 +172,144 @@ input, select, textarea {
   font-family: 'DM Sans', sans-serif;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
+/* ========== RESPONSIVE ========== */
+
+/* Tablet (max 1024px) */
+@media (max-width: 1024px) {
   .hero-grid {
     grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .grid-3 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .grid-footer {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 24px !important;
+  }
+}
+
+/* Mobile (max 768px) */
+@media (max-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
   }
   .hero-right {
     display: none !important;
   }
-}
-
-@media (max-width: 640px) {
+  .hero-title {
+    font-size: 36px !important;
+    letter-spacing: -1.5px !important;
+  }
+  .hero-subtitle {
+    font-size: 14px !important;
+  }
+  .grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .grid-footer {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
   .nav-links-desktop {
     display: none !important;
+  }
+  .nav-cta-desktop {
+    display: none !important;
+  }
+  .nav-mobile-btn {
+    display: flex !important;
+  }
+  .section-title {
+    font-size: 28px !important;
+    letter-spacing: -1px !important;
+  }
+  .earth-section {
+    height: 400px !important;
+  }
+  .earth-title {
+    font-size: 28px !important;
+  }
+  .pricing-card {
+    padding: 28px !important;
+  }
+  .pricing-price {
+    font-size: 40px !important;
+  }
+  .footer-bottom {
+    flex-direction: column !important;
+    gap: 8px !important;
+    text-align: center !important;
+  }
+  .deal-card-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Small mobile (max 480px) */
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 30px !important;
+    letter-spacing: -1px !important;
+  }
+  .section-title {
+    font-size: 24px !important;
+  }
+  .earth-section {
+    height: 340px !important;
+  }
+  .earth-title {
+    font-size: 24px !important;
+  }
+  .earth-badges {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .pricing-price {
+    font-size: 36px !important;
+  }
+  .stats-number {
+    font-size: 32px !important;
+  }
+}
+
+/* Dashboard sidebar mobile */
+@media (max-width: 900px) {
+  .dashboard-layout {
+    flex-direction: column !important;
+  }
+  .dashboard-sidebar {
+    width: 100% !important;
+    height: auto !important;
+    position: relative !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  }
+  .sidebar-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    gap: 4px !important;
+    padding: 8px !important;
+  }
+  .sidebar-link {
+    white-space: nowrap;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .sidebar-bottom {
+    display: none !important;
+  }
+  .dashboard-main {
+    margin-left: 0 !important;
+    width: 100% !important;
   }
 }
