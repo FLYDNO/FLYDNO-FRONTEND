@@ -176,8 +176,23 @@ Deno.serve(async (req: Request) => {
 
   const isAuthorizedByCron =
     cronSecret && incomingCronSecret && incomingCronSecret === cronSecret;
-  const isAuthorizedBySupabase =
-    authHeader?.startsWith("Bearer ") && authHeader.length > 20;
+
+  // Verify Supabase JWT token by checking with Supabase auth
+  let isAuthorizedBySupabase = false;
+  if (authHeader?.startsWith("Bearer ") && authHeader.length > 40) {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (supabaseUrl && supabaseServiceKey) {
+      try {
+        const verifyClient = createClient(supabaseUrl, supabaseServiceKey);
+        const token = authHeader.replace("Bearer ", "");
+        const { data: { user }, error } = await verifyClient.auth.getUser(token);
+        isAuthorizedBySupabase = !!user && !error;
+      } catch {
+        isAuthorizedBySupabase = false;
+      }
+    }
+  }
 
   if (!isAuthorizedByCron && !isAuthorizedBySupabase) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -275,8 +290,9 @@ Deno.serve(async (req: Request) => {
         continue;
       }
 
-      // Calculate normal price estimate (if the API doesn't provide one,
-      // use a rough 1.6x multiplier to simulate a "normal" fare).
+      // TODO: Replace with real price history data for accurate discounts.
+      // Currently using a fixed 1.6x multiplier which always yields ~38% discount.
+      // Consider storing historical prices and computing discount from actual averages.
       const normalPrice = Math.round(best.price * 1.6);
       const discountPct = Math.round(
         ((normalPrice - best.price) / normalPrice) * 100,

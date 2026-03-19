@@ -357,8 +357,10 @@ async function loadDeals() {
 }
 
 function flagSpan(cc, small) {
+  // Sanitize cc to only allow lowercase letters (prevent XSS via innerHTML)
+  const safeCC = String(cc || '').replace(/[^a-z]/g, '') || 'no';
   const s = small ? 'width:1em;height:0.75em' : 'width:1.3em;height:1em';
-  return '<span class="fi fi-' + cc + ' fis" style="' + s + ';display:inline-block;vertical-align:middle;border-radius:2px;"></span>';
+  return '<span class="fi fi-' + safeCC + ' fis" style="' + s + ';display:inline-block;vertical-align:middle;border-radius:2px;"></span>';
 }
 
 const countryAirports = {

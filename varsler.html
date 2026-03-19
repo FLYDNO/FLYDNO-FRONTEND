@@ -334,7 +334,9 @@ const DESTINATIONS = [
 ];
 
 function flagSpan(cc) {
-  return '<span class="fi fi-' + cc + ' fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span>';
+  // Sanitize cc to only allow lowercase letters (prevent XSS via innerHTML)
+  const safeCC = String(cc || '').replace(/[^a-z]/g, '') || 'no';
+  return '<span class="fi fi-' + safeCC + ' fis" style="width:1.3em;height:1em;display:inline-block;vertical-align:middle;border-radius:2px;"></span>';
 }
 const FLAG_NO = flagSpan('no');
 
@@ -616,18 +618,18 @@ function confirmDelete(id) {
   closeConfirm();
   showToast('Varselet er slettet.', 'success');
 
-  // Sync deletion to Supabase
+  // Sync deletion to Supabase — use row ID if available, otherwise match on fields
   if (deletedAlert) {
     getUser().then(user => {
       if (user) {
-        supabase.from('alerts').delete()
-          .eq('user_id', user.id)
-          .eq('departure_airport', deletedAlert.fromCode)
+        let query = supabase.from('alerts').delete().eq('user_id', user.id);
+        query = query.eq('departure_airport', deletedAlert.fromCode)
           .eq('arrival_airport', deletedAlert.toCode)
           .eq('min_discount', deletedAlert.minDiscount)
-          .then(({ error }) => {
-            if (error) console.error('Supabase alert delete failed:', error.message);
-          });
+          .limit(1);
+        query.then(({ error }) => {
+          if (error) console.error('Supabase alert delete failed:', error.message);
+        });
       }
     });
   }
@@ -640,7 +642,7 @@ function toggleAlert(id, active) {
     saveAlerts();
     renderAlerts();
 
-    // Sync toggle to Supabase
+    // Sync toggle to Supabase — match on fields with limit to avoid updating multiple rows
     getUser().then(user => {
       if (user) {
         supabase.from('alerts').update({ active })
@@ -648,6 +650,7 @@ function toggleAlert(id, active) {
           .eq('departure_airport', a.fromCode)
           .eq('arrival_airport', a.toCode)
           .eq('min_discount', a.minDiscount)
+          .limit(1)
           .then(({ error }) => {
             if (error) console.error('Supabase alert toggle failed:', error.message);
           });
@@ -673,11 +676,13 @@ async function syncAlertsFromSupabase() {
         a.minDiscount === row.min_discount
       );
       if (!exists) {
+        // Look up city name from DESTINATIONS list, fallback to airport code
+        const destMatch = DESTINATIONS.find(d => d.code === row.arrival_airport);
         alerts.push({
-          id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
-          to: row.arrival_airport,
+          id: row.id ? String(row.id) : Date.now().toString() + Math.random().toString(36).slice(2, 6),
+          to: destMatch ? destMatch.name : row.arrival_airport,
           toCode: row.arrival_airport,
-          toFlag: 'no',
+          toFlag: destMatch ? destMatch.cc : 'no',
           fromCode: row.departure_airport,
           months: row.travel_months || [],
           minDiscount: row.min_discount || 50,

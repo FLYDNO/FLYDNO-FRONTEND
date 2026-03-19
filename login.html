@@ -318,7 +318,9 @@ function showLoginError(msg) {
     const activeView = document.querySelector('.view.active .space-y-5');
     if (activeView) activeView.parentElement.insertBefore(errEl, activeView);
   }
-  errEl.innerHTML = '<span class="ms" style="font-size:18px;color:#ef4444;">error</span>' + escapeHtml(msg);
+  // escapeHtml may not be available if supabase-config.js failed to load
+  const safeMsg = typeof escapeHtml === 'function' ? escapeHtml(msg) : String(msg).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  errEl.innerHTML = '<span class="ms" style="font-size:18px;color:#ef4444;">error</span>' + safeMsg;
   errEl.style.display = 'flex';
   setTimeout(() => { if (errEl) errEl.style.display = 'none'; }, 6000);
 }

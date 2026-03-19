@@ -488,7 +488,6 @@ function searchDestinations(q) {
     card.style.display = (!query || text.includes(query)) ? '' : 'none';
   });
   // Also filter quick routes
-  document.querySelectorAll('.dest-card').length === 0; // trigger reflow
   const quickRoutes = document.querySelectorAll('section:last-of-type .divide-y > div');
   quickRoutes.forEach(row => {
     const text = row.textContent.toLowerCase();
