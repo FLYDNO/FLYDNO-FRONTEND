@@ -468,6 +468,14 @@ function openDeal(idx) {
   document.getElementById('modalDates').textContent = d.dates;
   document.getElementById('modalAirline').textContent = d.airline;
   document.getElementById('modalStops').textContent = d.direct ? 'Direktefly' : '1 stopp';
+
+  // Build Google Flights URL
+  const futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + 30);
+  const dateStr = futureDate.toISOString().split('T')[0];
+  const gfUrl = 'https://www.google.com/travel/flights?q=Flights+from+' + encodeURIComponent(d.fromCode) + '+to+' + encodeURIComponent(d.toCode) + '+on+' + dateStr + '&curr=NOK&hl=no';
+  document.getElementById('modalBookBtn').href = gfUrl;
+
   document.getElementById('dealModal').style.display = 'flex';
 }
 </script>
@@ -508,10 +516,13 @@ function openDeal(idx) {
         <p style="font-size:13px;font-weight:700;color:#22c55e;">Tilgjengelig nå</p>
       </div>
     </div>
-    <button onclick="addToAlerts()" style="width:100%;padding:14px;border-radius:12px;background:#ff6b00;color:white;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:10px;transition:background 0.2s;" onmouseover="this.style.background='#e55f00'" onmouseout="this.style.background='#ff6b00'">
+    <a id="modalBookBtn" href="#" target="_blank" style="display:block;width:100%;padding:14px;border-radius:12px;background:#ff6b00;color:white;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:10px;transition:background 0.2s;text-align:center;text-decoration:none;" onmouseover="this.style.background='#e55f00'" onmouseout="this.style.background='#ff6b00'">
+      Se tilbudet på Google Flights
+    </a>
+    <button onclick="addToAlerts()" style="width:100%;padding:10px;border-radius:12px;background:transparent;color:rgba(255,255,255,0.5);font-weight:600;font-size:13px;border:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,107,0,0.3)';this.style.color='#ff6b00'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.5)'">
       Legg til varsel for denne ruten
     </button>
-    <p style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;">Book direkte hos flyselskapet — FlyDeals tar ingen provisjon</p>
+    <p style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;margin-top:8px;">Book direkte hos flyselskapet — FlyDeals tar ingen provisjon</p>
   </div>
 </div>
 
