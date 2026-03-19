@@ -90,37 +90,39 @@ export default function DealsPage() {
         const { data, error } = await supabase
           .from('flights')
           .select('*')
-          .order('created_at', { ascending: false })
-          .limit(50)
+          .order('discount_pct', { ascending: false })
+          .gt('discount_pct', 20)
+          .limit(100)
 
         if (error || !data || data.length === 0) return
 
         const mapped: Deal[] = data.map((f: Record<string, unknown>, i: number) => {
-          const originCode = (f.origin as string) || 'OSL'
-          const destCode = (f.destination as string) || ''
-          const price = Number(f.price) || 0
-          const normalPrice = Number(f.normal_price || f.average_price) || Math.round(price * 1.6)
-          const disc = normalPrice > 0 ? Math.round(((normalPrice - price) / normalPrice) * 100) : 0
+          // Correct column names matching the Supabase flights table schema
+          const originCode = (f.departure_airport as string) || 'OSL'
+          const destCode = (f.arrival_airport as string) || ''
+          const price = Number(f.price_nok) || 0
+          const normalPrice = Number(f.normal_price || f.avg_price) || Math.round(price * 1.6)
+          const disc = Number(f.discount_pct) || (normalPrice > 0 ? Math.round(((normalPrice - price) / normalPrice) * 100) : 0)
           const hasReturn = !!(f.return_date)
 
           return {
             id: (f.id as string) || i,
-            from: airportCity[originCode] || originCode,
+            from: (f.departure_city as string) || airportCity[originCode] || originCode,
             fromCode: originCode,
-            to: (f.destination_city as string) || destCode,
+            to: (f.arrival_city as string) || destCode,
             toCode: destCode,
-            flag: countryToFlag[(f.destination_country as string) || ''] || 'un',
+            flag: (f.country_code as string) || 'un',
             price,
             normal: normalPrice,
             discount: disc > 0 ? disc : 0,
-            date: (f.departure_date as string) || new Date().toISOString().split('T')[0],
+            date: (f.travel_date as string) || new Date().toISOString().split('T')[0],
             returnDate: (f.return_date as string) || null,
             airline: (f.airline as string) || 'Diverse',
-            direct: (f.stops as number) === 0,
+            direct: !!(f.direct),
             seats: Math.floor(Math.random() * 12) + 2,
             type: (hasReturn ? 't/r' : 'enkel') as 'enkel' | 't/r',
           }
-        }).filter((d: Deal) => d.price > 0 && d.discount > 5)
+        }).filter((d: Deal) => d.price > 0 && d.discount > 10)
 
         if (mapped.length > 0) {
           setDeals(mapped)
