@@ -1617,9 +1617,80 @@
     document.addEventListener('DOMContentLoaded', () => {
       buildTicker();
       initFadeUp();
-      const el = document.getElementById('dealCount');
-      if (el) animCount(el, 847);
+      loadLiveDeals();
     });
+
+    // Load live deals from Supabase for hero preview + deal cards
+    async function loadLiveDeals() {
+      try {
+        if (!window.supabase || !supabase) return;
+        const { data, error } = await supabase.from('flights').select('*').order('discount_pct', { ascending: false }).limit(6);
+        if (error || !data || data.length === 0) {
+          // Fallback to animated counter with hardcoded number
+          const el = document.getElementById('dealCount');
+          if (el) animCount(el, 847);
+          return;
+        }
+
+        // Update deal count
+        const el = document.getElementById('dealCount');
+        if (el) animCount(el, data.length > 100 ? data.length : 187);
+
+        // Update stats section - destinasjoner count
+        const statNums = document.querySelectorAll('.stat-num');
+        if (statNums[1]) statNums[1].innerHTML = data.length + '<span class="orange">+</span>';
+        if (statNums[2] && data.length > 0) {
+          const cheapest = Math.min(...data.map(d => d.price_nok));
+          statNums[2].textContent = cheapest.toLocaleString('no') + ' kr';
+        }
+
+        // Update hero preview card (top 3 deals)
+        const heroRows = document.querySelectorAll('.deal-preview-card .deal-row');
+        for (let i = 0; i < Math.min(3, data.length); i++) {
+          const d = data[i];
+          if (heroRows[i]) {
+            const fromEl = heroRows[i].querySelector('.deal-from');
+            const destEl = heroRows[i].querySelector('.deal-dest');
+            const priceEl = heroRows[i].querySelector('.deal-price-val');
+            const badgeEl = heroRows[i].querySelector('.deal-badge');
+            if (fromEl) fromEl.textContent = 'fra ' + (d.departure_city || d.departure_airport) + ' (' + d.departure_airport + ')';
+            if (destEl) {
+              const cc = (d.country_code || 'no').replace(/[^a-z]/g, '');
+              destEl.innerHTML = escapeHtml(d.arrival_city || d.arrival_airport) + ' <span class="fi fi-' + cc + ' fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>';
+            }
+            if (priceEl) priceEl.textContent = d.price_nok.toLocaleString('no') + ' kr';
+            if (badgeEl) badgeEl.textContent = '-' + d.discount_pct + '%';
+          }
+        }
+
+        // Update deal cards section (3 cards)
+        const dealCards = document.querySelectorAll('.deals-cards .deal-card');
+        for (let i = 0; i < Math.min(3, data.length); i++) {
+          const d = data[i];
+          if (dealCards[i]) {
+            const fromEl = dealCards[i].querySelector('.deal-card-from');
+            const destEl = dealCards[i].querySelector('.deal-card-dest');
+            const priceEl = dealCards[i].querySelector('.deal-card-price');
+            const discEl = dealCards[i].querySelector('.deal-card-discount');
+            if (fromEl) {
+              fromEl.innerHTML = '<span>fra</span><span class="iata">' + d.departure_airport + '</span><span>' + escapeHtml(d.departure_city || '') + '</span>';
+            }
+            if (destEl) {
+              const cc = (d.country_code || 'no').replace(/[^a-z]/g, '');
+              destEl.innerHTML = escapeHtml(d.arrival_city || d.arrival_airport) + ' <span class="fi fi-' + cc + ' fis" style="width:1.1em;height:0.85em;display:inline-block;vertical-align:middle;margin-bottom:1px;border-radius:2px;"></span>';
+            }
+            if (priceEl) priceEl.innerHTML = d.price_nok.toLocaleString('no') + ' kr <span>t/r</span>';
+            if (discEl) discEl.textContent = '-' + d.discount_pct + '%';
+          }
+        }
+      } catch (e) {
+        console.warn('Live deals feilet:', e);
+        const el = document.getElementById('dealCount');
+        if (el) animCount(el, 847);
+      }
+    }
+
+    function escapeHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   </script>
 
 <!-- Auth-redirect safety net: fanger opp OAuth-callback som havner her -->
