@@ -44,6 +44,7 @@ const FALLBACK_DEALS: Deal[] = [
   { id: 8, from: 'Torp', fromCode: 'TRF', to: 'Malaga', toCode: 'AGP', flag: 'es', price: 269, normal: 1636, discount: 84, date: '2026-06-08', airline: 'Ryanair', direct: true, seats: 9, bestType: 'oneway', onewayPrice: 269, roundtripPrice: 890 },
 ]
 
+// Sorted by passenger volume (largest first)
 const AIRPORTS = [
   { code: 'Alle', label: 'Alle' },
   { code: 'OSL', label: 'Oslo' },
@@ -56,6 +57,9 @@ const AIRPORTS = [
 
 const MONTHS = [
   { key: 'alle', label: 'Alle mnd' },
+  { key: '01', label: 'Jan' },
+  { key: '02', label: 'Feb' },
+  { key: '03', label: 'Mar' },
   { key: '04', label: 'Apr' },
   { key: '05', label: 'Mai' },
   { key: '06', label: 'Jun' },
@@ -189,20 +193,21 @@ export default function DealsPage() {
     })
 
   /**
-   * Build a Google Flights deep link that pre-fills route, date, and trip type.
-   * OW link opens one-way search, RT link opens round-trip with return date.
-   * The price shown on the deal card matches what Google Flights will show.
+   * Build a Google Flights deep link using the same format as Flajts.se.
+   * Format: q=Flights+to+{DEST}+from+{ORIGIN}+{OUTDATE}[+to+{RETDATE}]
+   * OW = no return date, RT = with return date.
+   * Date format must be YYYYMMDD (no dashes).
    */
   const googleFlightsUrl = (deal: Deal, priceType: 'oneway' | 'roundtrip') => {
-    const depDate = deal.date?.split('T')[0] || ''
-    const retDate = deal.returnDate?.split('T')[0] || ''
+    const depDate = (deal.date?.split('T')[0] || '').replace(/-/g, '')
+    const retDate = (deal.returnDate?.split('T')[0] || '').replace(/-/g, '')
     const from = deal.fromCode
     const to = deal.toCode
-    if (priceType === 'oneway') {
-      return `https://www.google.com/travel/flights?q=Flights+from+${from}+to+${to}+on+${depDate}&curr=NOK&hl=no`
+    const base = `https://www.google.com/travel/flights?hl=nb&curr=NOK&q=Flights+to+${to}+from+${from}+${depDate}`
+    if (priceType === 'roundtrip' && retDate) {
+      return `${base}+to+${retDate}`
     }
-    const retPart = retDate ? `+return+${retDate}` : ''
-    return `https://www.google.com/travel/flights?q=Flights+from+${from}+to+${to}+on+${depDate}${retPart}&curr=NOK&hl=no`
+    return base
   }
 
   return (

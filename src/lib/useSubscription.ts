@@ -45,9 +45,10 @@ export function useSubscription(email: string | undefined) {
           loading: false,
         })
       } catch {
-        // On error, grant access (fail open for better UX during development)
+        // On error, deny access (fail closed for security)
+        // Users can refresh the page to retry
         setSub({
-          hasAccess: true,
+          hasAccess: false,
           isAdmin: false,
           status: 'error',
           message: 'Kunne ikke sjekke status',

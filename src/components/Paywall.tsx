@@ -40,9 +40,9 @@ export default function Paywall({ onStartTrial, loading }: PaywallProps) {
 
           <div style={{ textAlign: 'left', marginBottom: 20 }}>
             {[
-              'Overvåker 187+ ruter fra 7 flyplasser',
-              '7 destinasjoner på tvers av 3+ regioner',
-              'Oppdateres 3× daglig med Google Flights',
+              'Overvåker 886 ruter fra 6 norske flyplasser',
+              '150+ destinasjoner over hele verden',
+              'Oppdateres 3× daglig (06:00, 12:00, 18:00)',
               'Direkte booking via Google Flights',
               'Tilgang til alle aktive deals',
               'Prishistorikk og trendanalyse',

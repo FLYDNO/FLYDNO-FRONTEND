@@ -69,7 +69,7 @@ export async function POST(request: Request) {
         metadata: { supabase_user_id: userId || '' },
       },
       success_url: `${request.headers.get('origin') || 'https://flydeals.no'}/deals?payment=success`,
-      cancel_url: `${request.headers.get('origin') || 'https://flydeals.no'}/innstillinger?payment=cancelled`,
+      cancel_url: `${request.headers.get('origin') || 'https://flydeals.no'}/deals?payment=cancelled`,
       allow_promotion_codes: true,
     })
 
