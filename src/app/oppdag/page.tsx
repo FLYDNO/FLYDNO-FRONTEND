@@ -1,236 +1,104 @@
-'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/useAuth';
+'use client'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/useAuth'
+import Sidebar from '@/components/Sidebar'
 
-const Flag = ({c}: {c: string}) => <span className={`fi fi-${c} fis`} style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',marginBottom:'1px',borderRadius:'2px'}}></span>;
+const DESTINATIONS = [
+  { to: 'Bangkok', toCode: 'BKK', flag: 'th', region: 'Asia', avgPrice: 3200, bestPrice: 2489, discount: 52, popular: true },
+  { to: 'Barcelona', toCode: 'BCN', flag: 'es', region: 'Europa', avgPrice: 1400, bestPrice: 699, discount: 63, popular: true },
+  { to: 'Dubai', toCode: 'DXB', flag: 'ae', region: 'Midtosten', avgPrice: 3800, bestPrice: 1890, discount: 55, popular: true },
+  { to: 'London', toCode: 'LHR', flag: 'gb', region: 'Europa', avgPrice: 900, bestPrice: 449, discount: 63, popular: true },
+  { to: 'New York', toCode: 'JFK', flag: 'us', region: 'Amerika', avgPrice: 6500, bestPrice: 3290, discount: 58, popular: true },
+  { to: 'Roma', toCode: 'FCO', flag: 'it', region: 'Europa', avgPrice: 1200, bestPrice: 589, discount: 64, popular: false },
+  { to: 'Tokyo', toCode: 'NRT', flag: 'jp', region: 'Asia', avgPrice: 8000, bestPrice: 4290, discount: 56, popular: true },
+  { to: 'Alicante', toCode: 'ALC', flag: 'es', region: 'Europa', avgPrice: 1600, bestPrice: 799, discount: 62, popular: false },
+  { to: 'Malaga', toCode: 'AGP', flag: 'es', region: 'Europa', avgPrice: 1100, bestPrice: 549, discount: 61, popular: false },
+  { to: 'Lisboa', toCode: 'LIS', flag: 'pt', region: 'Europa', avgPrice: 1400, bestPrice: 649, discount: 63, popular: false },
+  { to: 'Bali', toCode: 'DPS', flag: 'id', region: 'Asia', avgPrice: 7500, bestPrice: 3890, discount: 56, popular: true },
+  { to: 'Paris', toCode: 'CDG', flag: 'fr', region: 'Europa', avgPrice: 1100, bestPrice: 529, discount: 62, popular: true },
+]
 
-const destinations = [
-  { name: 'Barcelona', fc: 'es', region: 'europa', search: 'barcelona spania', img: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80', badge: 'Toppvalg', discount: '-38%', price: '699 kr', from: 'Fra Trondheim · Direktefly', duration: '3t 10m', month: 'Apr 2026' },
-  { name: 'London', fc: 'gb', region: 'europa', search: 'london storbritannia', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80', badge: null, discount: '-35%', price: '489 kr', from: 'Fra Bergen · Direktefly', duration: '2t 5m', month: 'Mars 2026' },
-  { name: 'Bangkok', fc: 'th', region: 'asia', search: 'bangkok thailand', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80', badge: null, discount: '-47%', price: '2 489 kr', from: 'Fra Oslo · Thai Airways', duration: '11t 20m', month: 'Mar–Apr 2026' },
-  { name: 'Dubai', fc: 'ae', region: 'asia', search: 'dubai emiratene', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80', badge: null, discount: '-33%', price: '1 990 kr', from: 'Fra Oslo · Emirates', duration: '6t 55m', month: 'April 2026' },
-  { name: 'New York', fc: 'us', region: 'amerika', search: 'new york usa', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80', badge: null, discount: '-41%', price: '2 890 kr', from: 'Fra Oslo · SAS', duration: '9t 15m', month: 'Apr–Mai 2026' },
-  { name: 'Tokyo', fc: 'jp', region: 'asia', search: 'tokyo japan', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80', badge: null, discount: '-44%', price: '3 490 kr', from: 'Fra Oslo · ANA', duration: '14t 30m', month: 'Mai–Jun 2026' },
-];
-
-const quickRoutes = [
-  { flag: 'es', route: 'Oslo → Alicante', airline: 'Ryanair · Mars 2026', price: '549 kr' },
-  { flag: 'is', route: 'Tromsø → Reykjavik', airline: 'Icelandair · April 2026', price: '890 kr' },
-  { flag: 'nl', route: 'Stavanger → Amsterdam', airline: 'KLM · Mars 2026', price: '549 kr' },
-  { flag: 'it', route: 'Bergen → Roma', airline: 'SAS · Mars 2026', price: '599 kr' },
-  { flag: 'fr', route: 'Trondheim → Paris', airline: 'Air France · April 2026', price: '649 kr' },
-];
-
-const regions = [
-  { key: 'alle', label: 'Alle' },
-  { key: 'europa', label: '🌍 Europa' },
-  { key: 'asia', label: '🌏 Asia' },
-  { key: 'amerika', label: '🌎 Amerika' },
-  { key: 'afrika', label: '🌍 Afrika' },
-  { key: 'norden', label: '🏔 Norden' },
-];
+const REGIONS = ['Alle', 'Europa', 'Asia', 'Amerika', 'Midtosten']
 
 export default function OppdagPage() {
-  const { user, loading: authLoading, logout, userName, userEmail } = useAuth();
-  const router = useRouter();
-  const [region, setRegion] = useState('alle');
-  const [search, setSearch] = useState('');
+  const { user, loading: authLoading, logout, userName, userEmail } = useAuth()
+  const router = useRouter()
+  const [region, setRegion] = useState('Alle')
+  const [search, setSearch] = useState('')
 
-  useEffect(() => { if (!authLoading && !user) router.push('/login'); }, [authLoading, user, router]);
-  if (authLoading || !user) return <div className="flex h-screen items-center justify-center bg-[#050505]"><p className="text-slate-500 animate-pulse">Laster...</p></div>;
+  useEffect(() => {
+    if (!authLoading && !user) router.push('/login')
+  }, [authLoading, user, router])
 
-  const visible = destinations.filter(d => {
-    const matchRegion = region === 'alle' || d.region === region;
-    const q = search.toLowerCase().trim();
-    const matchSearch = q === '' || d.search.includes(q) || d.region.includes(q);
-    return matchRegion && matchSearch;
-  });
+  if (authLoading || !user) {
+    return <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}><p style={{ color: '#aaa' }}>Laster...</p></div>
+  }
+
+  const filtered = DESTINATIONS
+    .filter(d => region === 'Alle' || d.region === region)
+    .filter(d => !search || d.to.toLowerCase().includes(search.toLowerCase()) || d.toCode.toLowerCase().includes(search.toLowerCase()))
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <style>{`
-        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00; color: #ff6b00; }
-        .nav-link { border-left: 3px solid transparent; }
-        .dest-card:hover .dest-img { transform: scale(1.05); }
-        .dest-card:hover { border-color: rgba(255,107,0,0.3); }
-      `}</style>
+    <div style={{ display: 'flex', height: '100vh', background: '#fafafa', overflow: 'hidden' }}>
+      <Sidebar active="oppdag" userName={userName} userEmail={userEmail} onLogout={logout} />
 
-      {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
-        <div className="p-5 flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0">
-            <span className="ms" style={{fontSize:'18px'}}>flight_takeoff</span>
-          </div>
-          <div>
-            <h1 className="text-base font-bold leading-tight text-white">FlyDeals</h1>
-            <p className="text-[11px] text-slate-500 font-medium">Varsler deg om flydeals</p>
-          </div>
-        </div>
-        <nav className="flex-1 px-3 space-y-0.5 mt-1">
-          <Link href="/deals" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-            <span className="ms" style={{fontSize:'18px'}}>local_offer</span>
-            <span className="text-sm font-medium">Live Deals</span>
-          </Link>
-          <Link href="/varsler" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-            <span className="ms" style={{fontSize:'18px'}}>notifications</span>
-            <span className="text-sm font-medium">Dine Varsler</span>
-          </Link>
-          <Link href="/oppdag" className="nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl">
-            <span className="ms ms-fill" style={{fontSize:'18px'}}>explore</span>
-            <span className="text-sm font-semibold">Oppdag Ruter</span>
-          </Link>
-          <Link href="/historikk" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-            <span className="ms" style={{fontSize:'18px'}}>history</span>
-            <span className="text-sm font-medium">Historikk</span>
-          </Link>
-          <div className="pt-3 mt-2 border-t border-[#1e1e1e] space-y-0.5">
-            <Link href="/innstillinger" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-              <span className="ms" style={{fontSize:'18px'}}>settings</span>
-              <span className="text-sm font-medium">Innstillinger</span>
-            </Link>
-            <Link href="/brukerstotte" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-              <span className="ms" style={{fontSize:'18px'}}>help</span>
-              <span className="text-sm font-medium">Brukerstøtte</span>
-            </Link>
-          </div>
-        </nav>
-        <div className="p-3 mt-auto border-t border-[#1e1e1e]">
-          <div className="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
-            <div className="overflow-hidden flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">{userName}</p>
-              <p className="text-[11px] text-slate-500 truncate">{userEmail}</p>
-            </div>
-            <Link href="/innstillinger" className="text-slate-500 hover:text-[#ff6b00] transition-colors">
-              <span className="ms" style={{fontSize:'16px'}}>settings</span>
-            </Link>
-          </div>
-        </div>
-      </aside>
-
-      <main className="flex-1 overflow-y-auto bg-[#050505]">
-        <div className="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            <span className="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <button className="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
-              <span className="ms" style={{fontSize:'20px'}}>notifications</span>
-              <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
-            </button>
-            <div className="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-            <button onClick={logout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
-              <span className="ms" style={{fontSize:'16px'}}>logout</span>
-              Logg ut
-            </button>
-          </div>
+      <div style={{ flex: 1, overflow: 'auto' }}>
+        <div style={{ background: '#fff', borderBottom: '1px solid #f0f0f0', padding: '18px 28px' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 900, color: '#0a0a0a', letterSpacing: '-0.5px' }}>Oppdag Ruter</h1>
+          <p style={{ fontSize: 13, color: '#aaa', marginTop: 2 }}>Utforsk destinasjoner og se historiske priser</p>
         </div>
 
-        <div className="max-w-5xl mx-auto px-6 py-8 space-y-10">
-          {/* Header + search */}
-          <div>
-            <h1 className="text-3xl font-black tracking-tight mb-1">Oppdag Ruter</h1>
-            <p className="text-slate-500 mb-6">Finn de beste destinasjonene fra norske flyplasser.</p>
-            <div className="relative group">
-              <span className="ms absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#ff6b00] transition-colors" style={{fontSize:'20px'}}>search</span>
-              <input
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full bg-[#111] border border-[#1e1e1e] rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none transition-all text-slate-200 placeholder:text-slate-600 text-sm"
-                placeholder="Søk etter by, land eller flyplass..."
-                type="text"
-              />
-            </div>
+        <div style={{ background: '#fff', borderBottom: '1px solid #f0f0f0', padding: '12px 28px', display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', flex: 1, minWidth: 200, maxWidth: 300 }}>
+            <span className="ms" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: '#bbb' }}>search</span>
+            <input type="text" placeholder="Sok destinasjon..." value={search} onChange={e => setSearch(e.target.value)}
+              style={{ width: '100%', padding: '8px 14px 8px 38px', borderRadius: 100, border: '1.5px solid #e0e0e0', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+              onFocus={e => (e.currentTarget.style.borderColor = '#ff6b00')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#e0e0e0')} />
           </div>
-
-          {/* Region filters */}
-          <div className="flex flex-wrap gap-2">
-            {regions.map(r => (
-              <button
-                key={r.key}
-                onClick={() => setRegion(r.key)}
-                className={`px-4 py-2 rounded-full text-sm transition-all ${region === r.key ? 'font-semibold bg-[#ff6b00] text-white' : 'font-medium bg-[#111] border border-[#1e1e1e] text-slate-400 hover:border-[#ff6b00]/40'}`}
-              >
-                {r.label}
-              </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {REGIONS.map(r => (
+              <button key={r} onClick={() => setRegion(r)} style={{
+                padding: '7px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
+                border: '1.5px solid', borderColor: region === r ? '#ff6b00' : '#e0e0e0',
+                background: region === r ? '#ff6b00' : '#fff', color: region === r ? '#fff' : '#555',
+              }}>{r}</button>
             ))}
           </div>
-
-          {/* Destinations */}
-          <section>
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-xl font-bold">Populære destinasjoner</h3>
-              <Link href="/deals" className="text-[#ff6b00] text-sm font-semibold hover:underline">Se alle deals →</Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {visible.map((d, i) => (
-                <div key={i} className="dest-card bg-[#111] border border-[#1e1e1e] rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer">
-                  <div className="h-44 overflow-hidden relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img className="dest-img w-full h-full object-cover transition-transform duration-500" src={d.img} alt={d.name}/>
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
-                    <div className="absolute top-3 left-3 flex gap-2">
-                      {d.badge && <span className="bg-[#ff6b00] text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full">{d.badge}</span>}
-                      <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full">{d.discount}</span>
-                    </div>
-                    <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-white/10">
-                      <p className="text-[10px] text-slate-400">Fra</p>
-                      <p className="text-[#ff6b00] font-black text-base leading-none">{d.price}</p>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-bold text-base">{d.name} <Flag c={d.fc} /></h4>
-                        <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
-                          <span className="ms" style={{fontSize:'13px'}}>flight</span> {d.from}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 mt-3 text-[11px] text-slate-500">
-                      <span className="flex items-center gap-1"><span className="ms" style={{fontSize:'13px'}}>schedule</span>{d.duration}</span>
-                      <span className="w-1 h-1 bg-[#1e1e1e] rounded-full"></span>
-                      <span className="flex items-center gap-1"><span className="ms" style={{fontSize:'13px'}}>calendar_month</span>{d.month}</span>
-                    </div>
-                    <button className="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-[#ff6b00]/30 text-[#ff6b00] text-xs font-bold hover:bg-[#ff6b00]/10 transition-all">
-                      <span className="ms" style={{fontSize:'14px'}}>notifications</span>Opprett varsel
-                    </button>
-                  </div>
-                </div>
-              ))}
-              {visible.length === 0 && (
-                <div className="col-span-3 py-16 text-center">
-                  <span className="ms" style={{fontSize:'40px', color:'#2e2e2e'}}>flight_off</span>
-                  <p className="text-slate-500 mt-3 text-sm">Ingen destinasjoner funnet</p>
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Quick routes */}
-          <section>
-            <h3 className="text-xl font-bold mb-5">Billige ruter akkurat nå</h3>
-            <div className="bg-[#111] border border-[#1e1e1e] rounded-2xl divide-y divide-[#1e1e1e] overflow-hidden">
-              {quickRoutes.map((r, i) => (
-                <div key={i} className="flex items-center justify-between px-5 py-3.5 hover:bg-[#ff6b00]/5 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <Flag c={r.flag} />
-                    <div>
-                      <p className="text-sm font-semibold">{r.route}</p>
-                      <p className="text-xs text-slate-500">{r.airline}</p>
-                    </div>
-                  </div>
-                  <p className="text-[#ff6b00] font-black text-base">{r.price}</p>
-                </div>
-              ))}
-            </div>
-          </section>
         </div>
-      </main>
+
+        <div style={{ padding: '24px 28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 14 }}>
+            {filtered.map(dest => (
+              <div key={dest.toCode} style={{ background: '#fff', border: '1.5px solid #efefef', borderRadius: 16, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s' }}
+                onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor = 'rgba(255,107,0,0.35)'; el.style.boxShadow = '0 8px 24px rgba(255,107,0,0.08)'; el.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor = '#efefef'; el.style.boxShadow = 'none'; el.style.transform = 'translateY(0)'; }}>
+                <div style={{ height: 80, background: `linear-gradient(135deg, #ff6b00 0%, #ff9500 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                  <span className={`fi fi-${dest.flag}`} style={{ width: '3em', height: '2.25em', display: 'inline-block', borderRadius: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }} />
+                  {dest.popular && (
+                    <span style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(255,255,255,0.9)', color: '#ff6b00', fontSize: 10, fontWeight: 800, padding: '2px 7px', borderRadius: 100 }}>Populaer</span>
+                  )}
+                </div>
+                <div style={{ padding: '14px 16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0a0a0a' }}>{dest.to}</h3>
+                    <span style={{ fontSize: 11, color: '#aaa', background: '#f5f5f5', padding: '2px 7px', borderRadius: 100 }}>{dest.region}</span>
+                  </div>
+                  <p style={{ fontSize: 12, color: '#bbb', marginBottom: 8 }}>Beste pris fra OSL</p>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                    <div>
+                      <p style={{ fontSize: 11, color: '#ccc', textDecoration: 'line-through' }}>{dest.avgPrice.toLocaleString('no')} kr</p>
+                      <p style={{ fontSize: 20, fontWeight: 900, color: '#0a0a0a', letterSpacing: '-0.8px', lineHeight: 1 }}>{dest.bestPrice.toLocaleString('no')} kr</p>
+                    </div>
+                    <span style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0', fontSize: 11, fontWeight: 800, padding: '3px 8px', borderRadius: 100 }}>-{dest.discount}%</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }

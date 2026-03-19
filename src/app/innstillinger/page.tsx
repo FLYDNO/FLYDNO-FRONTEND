@@ -1,227 +1,244 @@
-'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/useAuth';
+'use client'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/useAuth'
+import Sidebar from '@/components/Sidebar'
+
+const AIRPORTS = [
+  { code: 'OSL', name: 'Oslo Gardermoen' },
+  { code: 'BGO', name: 'Bergen Flesland' },
+  { code: 'SVG', name: 'Stavanger Sola' },
+  { code: 'TRD', name: 'Trondheim Vaernes' },
+  { code: 'TOS', name: 'Tromso Langnes' },
+  { code: 'TRF', name: 'Sandefjord Torp' },
+  { code: 'KRS', name: 'Kristiansand Kjevik' },
+]
+
+const STRIPE_PRICE_ID = 'price_1TCCV4BH30TF6uRO4Dshmthq'
 
 export default function InnstillingerPage() {
-  const { user, loading: authLoading, logout, userName, userEmail } = useAuth();
-  const router = useRouter();
-  const [saveState, setSaveState] = useState<'idle'|'saving'|'saved'>('idle');
-  useEffect(() => { if (!authLoading && !user) router.push('/login'); }, [authLoading, user, router]);
-  if (authLoading || !user) return <div className="flex h-screen items-center justify-center bg-[#050505]"><p className="text-slate-500 animate-pulse">Laster...</p></div>;
+  const { user, loading: authLoading, logout, userName, userEmail } = useAuth()
+  const router = useRouter()
+  const [selectedAirports, setSelectedAirports] = useState(['OSL', 'BGO', 'SVG', 'TRD', 'TOS', 'TRF'])
+  const [emailNotif, setEmailNotif] = useState(true)
+  const [minDiscount, setMinDiscount] = useState(30)
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [stripeLoading, setStripeLoading] = useState(false)
+  const [subscriptionStatus] = useState<'trial' | 'active' | 'cancelled' | 'none'>('trial')
+
+  useEffect(() => {
+    if (!authLoading && !user) router.push('/login')
+  }, [authLoading, user, router])
+
+  if (authLoading || !user) {
+    return (
+      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', background: '#fafafa' }}>
+        <p style={{ color: '#aaa', fontSize: 14 }}>Laster...</p>
+      </div>
+    )
+  }
+
+  const toggleAirport = (code: string) => {
+    setSelectedAirports(prev =>
+      prev.includes(code) ? prev.filter(a => a !== code) : [...prev, code]
+    )
+  }
 
   const saveSettings = () => {
-    setSaveState('saving');
+    setSaveState('saving')
     setTimeout(() => {
-      setSaveState('saved');
-      setTimeout(() => setSaveState('idle'), 2500);
-    }, 900);
-  };
+      setSaveState('saved')
+      setTimeout(() => setSaveState('idle'), 2500)
+    }, 800)
+  }
+
+  const handleStripeCheckout = async () => {
+    setStripeLoading(true)
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId: STRIPE_PRICE_ID, email: userEmail }),
+      })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+    } catch {
+      alert('Noe gikk galt. Prøv igjen.')
+    }
+    setStripeLoading(false)
+  }
+
+  const statusBadge = {
+    trial: { label: '7 dager gratis', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+    active: { label: 'Aktiv', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+    cancelled: { label: 'Kansellert', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
+    none: { label: 'Inaktiv', color: '#aaa', bg: '#f5f5f5', border: '#e0e0e0' },
+  }[subscriptionStatus]
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <style>{`
-        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00; color: #ff6b00; }
-        .nav-link { border-left: 3px solid transparent; }
-      `}</style>
+    <div style={{ display: 'flex', height: '100vh', background: '#fafafa', overflow: 'hidden' }}>
+      <Sidebar active="innstillinger" userName={userName} userEmail={userEmail} onLogout={logout} />
 
-      {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
-        <div className="p-5 flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0">
-            <span className="ms" style={{fontSize:'18px'}}>flight_takeoff</span>
-          </div>
-          <div>
-            <h1 className="text-base font-bold leading-tight text-white">FlyDeals</h1>
-            <p className="text-[11px] text-slate-500 font-medium">Varsler deg om flydeals</p>
-          </div>
+      <div style={{ flex: 1, overflow: 'auto' }}>
+        <div style={{ background: '#fff', borderBottom: '1px solid #f0f0f0', padding: '18px 28px' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 900, color: '#0a0a0a', letterSpacing: '-0.5px' }}>Innstillinger</h1>
+          <p style={{ fontSize: 13, color: '#aaa', marginTop: 2 }}>Administrer konto, varsler og abonnement</p>
         </div>
-        <nav className="flex-1 px-3 space-y-0.5 mt-1">
-          <Link href="/deals" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-            <span className="ms" style={{fontSize:'18px'}}>local_offer</span>
-            <span className="text-sm font-medium">Live Deals</span>
-          </Link>
-          <Link href="/varsler" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-            <span className="ms" style={{fontSize:'18px'}}>notifications</span>
-            <span className="text-sm font-medium">Dine Varsler</span>
-          </Link>
-          <Link href="/oppdag" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-            <span className="ms" style={{fontSize:'18px'}}>explore</span>
-            <span className="text-sm font-medium">Oppdag Ruter</span>
-          </Link>
-          <Link href="/historikk" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-            <span className="ms" style={{fontSize:'18px'}}>history</span>
-            <span className="text-sm font-medium">Historikk</span>
-          </Link>
-          <div className="pt-3 mt-2 border-t border-[#1e1e1e] space-y-0.5">
-            <Link href="/innstillinger" className="nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl">
-              <span className="ms ms-fill" style={{fontSize:'18px'}}>settings</span>
-              <span className="text-sm font-semibold">Innstillinger</span>
-            </Link>
-            <Link href="/brukerstotte" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-              <span className="ms" style={{fontSize:'18px'}}>help</span>
-              <span className="text-sm font-medium">Brukerstøtte</span>
-            </Link>
-          </div>
-        </nav>
-        <div className="p-3 mt-auto border-t border-[#1e1e1e]">
-          <div className="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
-            <div className="overflow-hidden flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">{userName}</p>
-              <p className="text-[11px] text-slate-500 truncate">{userEmail}</p>
+
+        <div style={{ padding: '24px 28px', maxWidth: 680, display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+          {/* Abonnement */}
+          <div style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 20, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0a0a0a', marginBottom: 2 }}>Abonnement</h2>
+                <p style={{ fontSize: 13, color: '#aaa' }}>FlyDeals · 149 kr/mnd</p>
+              </div>
+              <span style={{ background: statusBadge.bg, color: statusBadge.color, border: `1px solid ${statusBadge.border}`, fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 100 }}>
+                {statusBadge.label}
+              </span>
             </div>
-            <Link href="/innstillinger" className="text-slate-500 hover:text-[#ff6b00] transition-colors">
-              <span className="ms" style={{fontSize:'16px'}}>settings</span>
-            </Link>
-          </div>
-        </div>
-      </aside>
-
-      <main className="flex-1 overflow-y-auto bg-[#050505]">
-        <div className="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            <span className="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <button className="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
-              <span className="ms" style={{fontSize:'20px'}}>notifications</span>
-              <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
-            </button>
-            <div className="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-            <button onClick={logout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
-              <span className="ms" style={{fontSize:'16px'}}>logout</span>
-              Logg ut
-            </button>
-          </div>
-        </div>
-
-        <div className="max-w-4xl mx-auto p-8">
-          <div className="mb-8">
-            <h2 className="text-3xl font-black tracking-tight text-slate-100">Kontoinnstillinger</h2>
-            <p className="text-slate-400 mt-1">Administrer din personlige informasjon, varslinger og medlemskap.</p>
-          </div>
-
-          <div className="space-y-6">
-            {/* Profile */}
-            <section className="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden">
-              <div className="p-6 border-b border-[#1e1e1e]">
-                <h3 className="text-lg font-bold">Profilinformasjon</h3>
-                <p className="text-sm text-slate-400">Oppdater dine detaljer for en personlig opplevelse.</p>
-              </div>
-              <div className="p-6 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-300">Fullt navn</label>
-                    <input className="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none transition-all text-slate-100" type="text" defaultValue="Marius Jensen"/>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-300">E-postadresse</label>
-                    <input className="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none transition-all text-slate-100" type="email" defaultValue="marius@flydeals.no"/>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-300">Telefonnummer</label>
-                    <input className="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none transition-all text-slate-100" type="tel" defaultValue="+47 900 00 000"/>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-300">Land</label>
-                    <select className="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none transition-all text-slate-100">
-                      <option value="NO">🇳🇴 Norge</option>
-                      <option value="SE">🇸🇪 Sverige</option>
-                      <option value="DK">🇩🇰 Danmark</option>
-                    </select>
+            <div style={{ padding: '20px 24px' }}>
+              {subscriptionStatus === 'trial' && (
+                <div style={{ background: '#fff8f3', border: '1px solid #ffe5cc', borderRadius: 12, padding: '14px 16px', marginBottom: 16, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <span className="ms" style={{ fontSize: 20, color: '#ff6b00', flexShrink: 0 }}>info</span>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#0a0a0a', marginBottom: 2 }}>Du er i proveperioden</p>
+                    <p style={{ fontSize: 13, color: '#555' }}>Proveperioden din utloper om 5 dager. Legg til betalingsinformasjon for a fortsette etter det.</p>
                   </div>
                 </div>
-                <div className="pt-4 flex justify-end">
-                  <button
-                    onClick={saveSettings}
-                    disabled={saveState === 'saving'}
-                    className={`font-bold py-2.5 px-6 rounded-lg transition-colors shadow-lg flex items-center gap-2 text-white ${saveState === 'saved' ? 'bg-green-600' : 'bg-[#ff6b00] hover:bg-[#ff6b00]/90 shadow-[#ff6b00]/20'} ${saveState === 'saving' ? 'opacity-80' : ''}`}
-                  >
-                    <span className="ms" style={{fontSize:'16px'}}>{saveState === 'saving' ? 'hourglass_empty' : saveState === 'saved' ? 'check_circle' : 'save'}</span>
-                    <span>{saveState === 'saving' ? 'Lagrer...' : saveState === 'saved' ? 'Lagret!' : 'Lagre endringer'}</span>
+              )}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+                {[
+                  { icon: 'calendar_today', label: 'Neste faktura', val: subscriptionStatus === 'trial' ? '26. mars 2026' : '19. april 2026' },
+                  { icon: 'payments', label: 'Belop', val: '149 kr/mnd' },
+                  { icon: 'event_available', label: 'Abonnement siden', val: '12. mars 2026' },
+                  { icon: 'local_offer', label: 'Deals funnet', val: '187 deals' },
+                ].map(({ icon, label, val }) => (
+                  <div key={label} style={{ background: '#fafafa', borderRadius: 12, padding: '12px 14px', border: '1px solid #f0f0f0' }}>
+                    <p style={{ fontSize: 11, color: '#bbb', marginBottom: 3, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span className="ms" style={{ fontSize: 13 }}>{icon}</span>{label}
+                    </p>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: '#0a0a0a' }}>{val}</p>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={handleStripeCheckout} disabled={stripeLoading}
+                  style={{ flex: 1, padding: '12px', background: '#ff6b00', color: '#fff', borderRadius: 100, fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: stripeLoading ? 0.7 : 1 }}>
+                  <span className="ms" style={{ fontSize: 18 }}>credit_card</span>
+                  {stripeLoading ? 'Laster...' : subscriptionStatus === 'trial' ? 'Legg til betaling' : 'Administrer abonnement'}
+                </button>
+                {subscriptionStatus === 'active' && (
+                  <button style={{ padding: '12px 20px', background: '#fff', color: '#dc2626', borderRadius: 100, fontSize: 13, fontWeight: 600, border: '1.5px solid #fecaca', cursor: 'pointer' }}>
+                    Si opp
                   </button>
-                </div>
+                )}
               </div>
-            </section>
+            </div>
+          </div>
 
-            {/* Notifications */}
-            <section className="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden">
-              <div className="p-6 border-b border-[#1e1e1e]">
-                <h3 className="text-lg font-bold">Varslingsinnstillinger</h3>
-                <p className="text-sm text-slate-400">Velg hvordan du vil bli varslet om nye tilbud.</p>
+          {/* Flyplasser */}
+          <div style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 20, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #f0f0f0' }}>
+              <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0a0a0a', marginBottom: 2 }}>Dine flyplasser</h2>
+              <p style={{ fontSize: 13, color: '#aaa' }}>Velg hvilke flyplasser du vil ha varsler fra</p>
+            </div>
+            <div style={{ padding: '20px 24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {AIRPORTS.map(({ code, name }) => {
+                  const active = selectedAirports.includes(code)
+                  return (
+                    <div key={code} onClick={() => toggleAirport(code)}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 12, border: `1.5px solid ${active ? 'rgba(255,107,0,0.3)' : '#f0f0f0'}`, background: active ? '#fff8f3' : '#fafafa', cursor: 'pointer', transition: 'all 0.15s' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ width: 36, height: 36, background: active ? '#ff6b00' : '#e8e8e8', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}>
+                          <span className="ms" style={{ fontSize: 18, color: active ? '#fff' : '#aaa' }}>flight_takeoff</span>
+                        </div>
+                        <div>
+                          <p style={{ fontSize: 14, fontWeight: 700, color: '#0a0a0a' }}>{name}</p>
+                          <p style={{ fontSize: 12, color: '#aaa' }}>{code}</p>
+                        </div>
+                      </div>
+                      <div style={{ width: 22, height: 22, borderRadius: '50%', border: `2px solid ${active ? '#ff6b00' : '#e0e0e0'}`, background: active ? '#ff6b00' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>
+                        {active && <span className="ms" style={{ fontSize: 14, color: '#fff' }}>check</span>}
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-              <div className="p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col gap-0.5">
-                    <p className="font-medium">E-postvarsler</p>
-                    <p className="text-xs text-slate-400">Få ukentlige oppsummeringer av de beste flyprisene.</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input defaultChecked className="sr-only peer" type="checkbox"/>
-                    <div className="w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#ff6b00]"></div>
-                  </label>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col gap-0.5">
-                    <p className="font-medium">Markedsføring</p>
-                    <p className="text-xs text-slate-400">Motta informasjon om nye funksjoner og kampanjer.</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input defaultChecked className="sr-only peer" type="checkbox"/>
-                    <div className="w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#ff6b00]"></div>
-                  </label>
-                </div>
-              </div>
-            </section>
+            </div>
+          </div>
 
-            {/* Subscription */}
-            <section className="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden">
-              <div className="p-6 border-b border-[#1e1e1e] flex items-center justify-between">
+          {/* Varslingsinnstillinger */}
+          <div style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 20, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #f0f0f0' }}>
+              <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0a0a0a', marginBottom: 2 }}>Varslingsinnstillinger</h2>
+              <p style={{ fontSize: 13, color: '#aaa' }}>Tilpass nar og hvordan du far varsler</p>
+            </div>
+            <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <h3 className="text-lg font-bold">Abonnementsstatus</h3>
-                  <p className="text-sm text-slate-400">Du har aktivt FlyDeals-abonnement.</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: '#0a0a0a', marginBottom: 2 }}>E-postvarsler</p>
+                  <p style={{ fontSize: 13, color: '#aaa' }}>Fa e-post nar vi finner en deal</p>
                 </div>
-                <span className="px-3 py-1 bg-green-500/15 text-green-400 text-xs font-bold rounded-full border border-green-500/25 uppercase tracking-widest">Aktiv</span>
-              </div>
-              <div className="p-6">
-                <div className="bg-[#0e0e0e] p-6 rounded-xl border border-[#1e1e1e] flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div className="space-y-1">
-                    <p className="text-sm font-bold text-slate-100">Neste fakturering</p>
-                    <p className="text-2xl font-black text-[#ff6b00] tracking-tight">149 kr <span className="text-sm font-normal text-slate-500">/ måned</span></p>
-                    <p className="text-xs text-slate-500">Neste fornyelse: 24. mai 2026 · Ingen binding</p>
-                  </div>
-                  <div className="flex gap-3">
-                    <button className="px-4 py-2 rounded-lg bg-red-500/10 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all">Si opp abonnement</button>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Danger Zone */}
-            <section className="border border-red-500/30 bg-red-500/5 rounded-xl p-6">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-lg font-bold text-red-500">Slett konto</h3>
-                  <p className="text-sm text-slate-400">Dette vil slette alle dine data permanent. Dette kan ikke angres.</p>
-                </div>
-                <button className="px-6 py-2.5 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20 whitespace-nowrap">
-                  Slett min konto
+                <button onClick={() => setEmailNotif(!emailNotif)} style={{
+                  width: 48, height: 26, borderRadius: 100, border: 'none', cursor: 'pointer', transition: 'background 0.2s', position: 'relative',
+                  background: emailNotif ? '#ff6b00' : '#e0e0e0',
+                }}>
+                  <div style={{ width: 20, height: 20, background: '#fff', borderRadius: '50%', position: 'absolute', top: 3, transition: 'left 0.2s', left: emailNotif ? 25 : 3, boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
                 </button>
               </div>
-            </section>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <div>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: '#0a0a0a', marginBottom: 2 }}>Minimum rabatt</p>
+                    <p style={{ fontSize: 13, color: '#aaa' }}>Varsle meg kun om deals med minst {minDiscount}% rabatt</p>
+                  </div>
+                  <span style={{ fontSize: 16, fontWeight: 900, color: '#ff6b00' }}>{minDiscount}%</span>
+                </div>
+                <input type="range" min={20} max={60} step={5} value={minDiscount} onChange={e => setMinDiscount(Number(e.target.value))}
+                  style={{ width: '100%', accentColor: '#ff6b00' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#bbb', marginTop: 4 }}>
+                  <span>20% (flere deals)</span>
+                  <span>60% (bare de beste)</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <footer className="mt-12 text-center text-slate-600 text-xs pb-12">
-            © 2026 FlyDeals. Alle rettigheter reservert.<br/>
-            <a className="hover:text-[#ff6b00] transition-colors" href="#">Vilkår og betingelser</a> •{' '}
-            <a className="hover:text-[#ff6b00] transition-colors" href="#">Personvern</a>
-          </footer>
+          {/* Konto */}
+          <div style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 20, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #f0f0f0' }}>
+              <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0a0a0a', marginBottom: 2 }}>Konto</h2>
+              <p style={{ fontSize: 13, color: '#aaa' }}>Din kontoinformasjon</p>
+            </div>
+            <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#aaa', display: 'block', marginBottom: 6 }}>Navn</label>
+                  <input defaultValue={userName} style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1.5px solid #e0e0e0', fontSize: 14, color: '#0a0a0a', outline: 'none', background: '#fafafa', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#aaa', display: 'block', marginBottom: 6 }}>E-post</label>
+                  <input defaultValue={userEmail} disabled style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1.5px solid #e0e0e0', fontSize: 14, color: '#aaa', outline: 'none', background: '#f5f5f5', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 4 }}>
+                <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', border: '1.5px solid #fecaca', borderRadius: 100, background: '#fff', color: '#dc2626', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                  <span className="ms" style={{ fontSize: 16 }}>logout</span>
+                  Logg ut
+                </button>
+                <button onClick={saveSettings} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 20px', background: saveState === 'saved' ? '#16a34a' : '#ff6b00', color: '#fff', borderRadius: 100, fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer', transition: 'background 0.2s' }}>
+                  <span className="ms" style={{ fontSize: 16 }}>{saveState === 'saved' ? 'check' : saveState === 'saving' ? 'sync' : 'save'}</span>
+                  {saveState === 'saved' ? 'Lagret!' : saveState === 'saving' ? 'Lagrer...' : 'Lagre innstillinger'}
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
-      </main>
+      </div>
     </div>
-  );
+  )
 }

@@ -1,0 +1,8 @@
+<svg width="200" height="48" viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon -->
+  <rect width="48" height="48" rx="12" fill="#ff6b00"/>
+  <path d="M12 30L24 12L36 30" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M17 30L24 19L31 30" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+  <!-- Wordmark -->
+  <text x="60" y="33" font-family="DM Sans, sans-serif" font-weight="800" font-size="24" fill="white" letter-spacing="-0.5">FlyDeals</text>
+</svg>

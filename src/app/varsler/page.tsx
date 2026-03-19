@@ -1,323 +1,149 @@
-'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/useAuth';
+'use client'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/useAuth'
+import Sidebar from '@/components/Sidebar'
 
-const Sidebar = ({ active, userName, userEmail }: { active: string; userName: string; userEmail: string }) => (
-  <aside className="w-64 flex-shrink-0 border-r border-[#1e1e1e] bg-[#050505] flex flex-col">
-    <div className="p-5 flex items-center gap-3">
-      <div className="w-9 h-9 bg-[#ff6b00] rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0">
-        <span className="ms" style={{fontSize:'18px'}}>flight_takeoff</span>
-      </div>
-      <div>
-        <h1 className="text-base font-bold leading-tight text-white">FlyDeals</h1>
-        <p className="text-[11px] text-slate-500 font-medium">Varsler deg om flydeals</p>
-      </div>
-    </div>
-    <nav className="flex-1 px-3 space-y-0.5 mt-1">
-      <Link href="/deals" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-        <span className="ms" style={{fontSize:'18px'}}>local_offer</span>
-        <span className="text-sm font-medium">Live Deals</span>
-      </Link>
-      <Link href="/varsler" className="nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-xl">
-        <span className="ms ms-fill" style={{fontSize:'18px'}}>notifications</span>
-        <span className="text-sm font-semibold">Dine Varsler</span>
-      </Link>
-      <Link href="/oppdag" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-        <span className="ms" style={{fontSize:'18px'}}>explore</span>
-        <span className="text-sm font-medium">Oppdag Ruter</span>
-      </Link>
-      <Link href="/historikk" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-        <span className="ms" style={{fontSize:'18px'}}>history</span>
-        <span className="text-sm font-medium">Historikk</span>
-      </Link>
-      <div className="pt-3 mt-2 border-t border-[#1e1e1e] space-y-0.5">
-        <Link href="/innstillinger" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-          <span className="ms" style={{fontSize:'18px'}}>settings</span>
-          <span className="text-sm font-medium">Innstillinger</span>
-        </Link>
-        <Link href="/brukerstotte" className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-r-xl text-slate-400 hover:text-[#ff6b00] hover:bg-[#ff6b00]/5 transition-colors">
-          <span className="ms" style={{fontSize:'18px'}}>help</span>
-          <span className="text-sm font-medium">Brukerstøtte</span>
-        </Link>
-      </div>
-    </nav>
-    <div className="p-3 mt-auto border-t border-[#1e1e1e]">
-      <div className="bg-[#242424] rounded-xl p-3 border border-[#1e1e1e] flex items-center gap-3">
-        <div className="overflow-hidden flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate">{userName}</p>
-          <p className="text-[11px] text-slate-500 truncate">{userEmail}</p>
-        </div>
-        <Link href="/innstillinger" className="text-slate-500 hover:text-[#ff6b00] transition-colors">
-          <span className="ms" style={{fontSize:'16px'}}>settings</span>
-        </Link>
-      </div>
-    </div>
-  </aside>
-);
+const MOCK_VARSLER = [
+  { id: 1, from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', flag: 'th', price: 2489, normal: 5200, discount: 52, date: '2026-06-15', airline: 'Norwegian', sentAt: '2026-03-19T07:30:00', read: false },
+  { id: 2, from: 'Bergen', fromCode: 'BGO', to: 'Barcelona', toCode: 'BCN', flag: 'es', price: 699, normal: 1890, discount: 63, date: '2026-05-10', airline: 'Ryanair', sentAt: '2026-03-19T06:15:00', read: false },
+  { id: 3, from: 'Stavanger', fromCode: 'SVG', to: 'London', toCode: 'LHR', flag: 'gb', price: 449, normal: 1200, discount: 63, date: '2026-04-22', airline: 'Norwegian', sentAt: '2026-03-18T18:45:00', read: true },
+  { id: 4, from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', flag: 'us', price: 3290, normal: 7800, discount: 58, date: '2026-09-05', airline: 'SAS', sentAt: '2026-03-18T12:00:00', read: true },
+  { id: 5, from: 'Trondheim', fromCode: 'TRD', to: 'Roma', toCode: 'FCO', flag: 'it', price: 589, normal: 1650, discount: 64, date: '2026-05-18', airline: 'Ryanair', sentAt: '2026-03-17T08:30:00', read: true },
+]
+
+function timeAgo(dateStr: string) {
+  const now = new Date()
+  const then = new Date(dateStr)
+  const diff = Math.floor((now.getTime() - then.getTime()) / 1000)
+  if (diff < 3600) return `${Math.floor(diff / 60)} min siden`
+  if (diff < 86400) return `${Math.floor(diff / 3600)} timer siden`
+  return `${Math.floor(diff / 86400)} dager siden`
+}
 
 export default function VarslerPage() {
-  const { user, loading: authLoading, logout, userName, userEmail } = useAuth();
-  const router = useRouter();
-  useEffect(() => { if (!authLoading && !user) router.push('/login'); }, [authLoading, user, router]);
+  const { user, loading: authLoading, logout, userName, userEmail } = useAuth()
+  const router = useRouter()
+  const [varsler, setVarsler] = useState(MOCK_VARSLER)
+  const [filter, setFilter] = useState<'alle' | 'ulest'>('alle')
 
-  const [row1, setRow1] = useState(true);
-  const [row2, setRow2] = useState(true);
-  const [row3, setRow3] = useState(false);
+  useEffect(() => {
+    if (!authLoading && !user) router.push('/login')
+  }, [authLoading, user, router])
 
-  const activeCount = [row1, row2, row3].filter(Boolean).length;
+  if (authLoading || !user) {
+    return (
+      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', background: '#fafafa' }}>
+        <p style={{ color: '#aaa', fontSize: 14 }}>Laster...</p>
+      </div>
+    )
+  }
 
-  if (authLoading || !user) return <div className="flex h-screen items-center justify-center bg-[#050505]"><p className="text-slate-500 animate-pulse">Laster...</p></div>;
+  const filtered = filter === 'ulest' ? varsler.filter(v => !v.read) : varsler
+  const unreadCount = varsler.filter(v => !v.read).length
+
+  const markAllRead = () => setVarsler(prev => prev.map(v => ({ ...v, read: true })))
+  const markRead = (id: number) => setVarsler(prev => prev.map(v => v.id === id ? { ...v, read: true } : v))
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <style>{`
-        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00; color: #ff6b00; }
-        .nav-link { border-left: 3px solid transparent; }
-        input[type="checkbox"].peer:checked ~ .toggle-track { background-color: #ff6b00 !important; }
-      `}</style>
+    <div style={{ display: 'flex', height: '100vh', background: '#fafafa', overflow: 'hidden' }}>
+      <Sidebar active="varsler" userName={userName} userEmail={userEmail} onLogout={logout} />
 
-      <Sidebar active="varsler" userName={userName} userEmail={userEmail} />
-
-      <main className="flex-1 overflow-y-auto bg-[#050505]">
-        <div className="h-14 border-b border-[#1e1e1e] sticky top-0 z-10 bg-[#050505]/90 backdrop-blur flex items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            <span className="text-sm text-slate-400 font-medium">847 deals funnet hittil</span>
+      <div style={{ flex: 1, overflow: 'auto' }}>
+        <div style={{ background: '#fff', borderBottom: '1px solid #f0f0f0', padding: '18px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <h1 style={{ fontSize: 22, fontWeight: 900, color: '#0a0a0a', letterSpacing: '-0.5px', display: 'flex', alignItems: 'center', gap: 10 }}>
+              Dine Varsler
+              {unreadCount > 0 && (
+                <span style={{ background: '#ff6b00', color: '#fff', fontSize: 11, fontWeight: 800, padding: '2px 8px', borderRadius: 100 }}>{unreadCount} nye</span>
+              )}
+            </h1>
+            <p style={{ fontSize: 13, color: '#aaa', marginTop: 2 }}>E-postvarsler sendes til {userEmail}</p>
           </div>
-          <div className="flex items-center gap-1">
-            <button className="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
-              <span className="ms" style={{fontSize:'20px'}}>notifications</span>
-              <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
-            </button>
-            <div className="w-px h-6 bg-[#2e2e2e] mx-1"></div>
-            <button onClick={logout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
-              <span className="ms" style={{fontSize:'16px'}}>logout</span>
-              Logg ut
-            </button>
-          </div>
-        </div>
-
-        <div className="max-w-5xl mx-auto px-8 py-10">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-            <div className="space-y-2">
-              <h2 className="text-white text-4xl font-black tracking-tight">Dine varsler</h2>
-              <p className="text-slate-400 text-base">Administrer dine aktive prisvarsler for flyreiser over hele verden.</p>
-            </div>
-            <button className="flex items-center justify-center gap-2 bg-[#ff6b00] hover:bg-[#ff6b00]/90 text-white px-6 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg">
-              <span className="ms" style={{fontSize:'20px'}}>add</span>
-              <span>Legg til nytt varsel</span>
-            </button>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <div className="bg-[#111] border border-[#1e1e1e] p-4 rounded-xl">
-              <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">Aktive varsler</p>
-              <p className="text-2xl font-bold mt-1">{activeCount}</p>
-            </div>
-            <div className="bg-[#111] border border-[#1e1e1e] p-4 rounded-xl">
-              <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">Treff siste 24t</p>
-              <p className="text-2xl font-bold mt-1 text-green-500">12</p>
-            </div>
-          </div>
-
-          {/* Alert Table */}
-          <div className="bg-[#111] rounded-2xl border border-[#1e1e1e] overflow-hidden shadow-2xl">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-white/5 border-b border-[#1e1e1e]">
-                    <th className="px-6 py-4 text-slate-300 text-sm font-semibold">Rute</th>
-                    <th className="px-6 py-4 text-slate-300 text-sm font-semibold">Makspris</th>
-                    <th className="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Reisemåned</th>
-                    <th className="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Rabattgrense</th>
-                    <th className="px-6 py-4 text-slate-300 text-sm font-semibold text-center">Status</th>
-                    <th className="px-6 py-4 text-slate-300 text-sm font-semibold text-right">Handlinger</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#1e1e1e]">
-                  {/* Row 1 */}
-                  <tr className={`hover:bg-white/5 transition-all duration-300 group ${!row1 ? 'opacity-40' : ''}`}>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[#ff6b00]/10 rounded-lg text-[#ff6b00]"><span className="ms" style={{fontSize:'20px'}}>flight_takeoff</span></div>
-                        <div>
-                          <p className="text-white font-bold">New York <span className="fi fi-us fis" style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',borderRadius:'2px'}}></span> <span className="text-slate-500 font-normal text-xs">(JFK)</span></p>
-                          <p className="text-xs text-slate-500">fra Oslo (OSL)</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5"><p className="text-slate-200 font-medium">5 500 kr</p></td>
-                    <td className="px-6 py-5">
-                      <div className="flex justify-center">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
-                          <span className="ms" style={{fontSize:'13px'}}>calendar_month</span>Jul · Aug
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex justify-center">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#ff6b00]/10 text-[#ff6b00] border border-[#ff6b00]/20">20% rabatt</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex justify-center">
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input checked={row1} onChange={e => setRow1(e.target.checked)} className="sr-only peer" type="checkbox"/>
-                          <div className="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#ff6b00]"></div>
-                        </label>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <button className="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span className="ms" style={{fontSize:'20px'}}>edit</span></button>
-                      <button className="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span className="ms" style={{fontSize:'20px'}}>delete</span></button>
-                    </td>
-                  </tr>
-                  {/* Row 2 */}
-                  <tr className={`hover:bg-white/5 transition-all duration-300 group ${!row2 ? 'opacity-40' : ''}`}>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[#ff6b00]/10 rounded-lg text-[#ff6b00]"><span className="ms" style={{fontSize:'20px'}}>flight_takeoff</span></div>
-                        <div>
-                          <p className="text-white font-bold">London <span className="fi fi-gb fis" style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',borderRadius:'2px'}}></span> <span className="text-slate-500 font-normal text-xs">(LHR)</span></p>
-                          <p className="text-xs text-slate-500">fra Bergen (BGO)</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5"><p className="text-slate-200 font-medium">1 200 kr</p></td>
-                    <td className="px-6 py-5">
-                      <div className="flex justify-center">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-300 border border-white/10">
-                          <span className="ms" style={{fontSize:'13px'}}>calendar_month</span>Sep
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex justify-center">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#ff6b00]/10 text-[#ff6b00] border border-[#ff6b00]/20">15% rabatt</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex justify-center">
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input checked={row2} onChange={e => setRow2(e.target.checked)} className="sr-only peer" type="checkbox"/>
-                          <div className="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#ff6b00]"></div>
-                        </label>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <button className="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span className="ms" style={{fontSize:'20px'}}>edit</span></button>
-                      <button className="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span className="ms" style={{fontSize:'20px'}}>delete</span></button>
-                    </td>
-                  </tr>
-                  {/* Row 3 */}
-                  <tr className={`transition-all duration-300 group ${!row3 ? 'opacity-40' : 'hover:bg-white/5'}`}>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 ${row3 ? 'bg-[#ff6b00]/10 text-[#ff6b00]' : 'bg-white/5 text-slate-500'} rounded-lg`}><span className="ms" style={{fontSize:'20px'}}>flight_takeoff</span></div>
-                        <div>
-                          <p className={`font-bold ${row3 ? 'text-white' : 'text-slate-400'}`}>Dubai <span className="fi fi-ae fis" style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',borderRadius:'2px'}}></span> <span className="text-slate-600 font-normal text-xs">(DXB)</span></p>
-                          <p className="text-xs text-slate-600">fra Stavanger (SVG)</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5"><p className="text-slate-500 font-medium">4 800 kr</p></td>
-                    <td className="px-6 py-5">
-                      <div className="flex justify-center">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-600 border border-white/5">
-                          <span className="ms" style={{fontSize:'13px'}}>calendar_month</span>Des
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex justify-center">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-slate-500 border border-white/5">25% rabatt</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex justify-center">
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input checked={row3} onChange={e => setRow3(e.target.checked)} className="sr-only peer" type="checkbox"/>
-                          <div className="toggle-track w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#ff6b00]"></div>
-                        </label>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <button className="text-slate-600 hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span className="ms" style={{fontSize:'20px'}}>edit</span></button>
-                      <button className="text-slate-600 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"><span className="ms" style={{fontSize:'20px'}}>delete</span></button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Recent Hits */}
-          <div className="mt-12">
-            <h3 className="text-white text-2xl font-bold mb-6">Nylige treff</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Hit Card 1 */}
-              <div className="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden hover:border-[#ff6b00]/50 transition-all cursor-pointer">
-                <div className="h-32 w-full relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt="New York City skyline" className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80"/>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
-                  <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Tilgjengelig nå</div>
-                </div>
-                <div className="p-4">
-                  <div className="flex justify-between items-start mb-1">
-                    <div>
-                      <h4 className="font-bold text-white">New York <span className="fi fi-us fis" style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',borderRadius:'2px'}}></span></h4>
-                      <p className="text-xs text-slate-500">fra Oslo (OSL → JFK)</p>
-                    </div>
-                    <p className="text-[#ff6b00] font-black">4 290 kr</p>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-400 mb-4 mt-2">
-                    <span className="ms" style={{fontSize:'16px'}}>calendar_month</span>
-                    <span>12. Okt - 19. Okt</span>
-                  </div>
-                  <button className="w-full py-2 bg-[#2a2a2a] hover:bg-[#ff6b00] text-white text-sm font-bold rounded-lg transition-colors">Se tilbud</button>
-                </div>
-              </div>
-              {/* Hit Card 2 */}
-              <div className="bg-[#111] border border-[#1e1e1e] rounded-xl overflow-hidden hover:border-[#ff6b00]/50 transition-all cursor-pointer">
-                <div className="h-32 w-full relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt="London Big Ben" className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80"/>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent"></div>
-                  <div className="absolute top-2 right-2 bg-slate-700 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Utgått</div>
-                </div>
-                <div className="p-4 opacity-75">
-                  <div className="flex justify-between items-start mb-1">
-                    <div>
-                      <h4 className="font-bold text-white">London <span className="fi fi-gb fis" style={{width:'1.1em',height:'0.85em',display:'inline-block',verticalAlign:'middle',borderRadius:'2px'}}></span></h4>
-                      <p className="text-xs text-slate-500">fra Bergen (BGO → LHR)</p>
-                    </div>
-                    <p className="text-slate-400 font-black">980 kr</p>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-400 mb-4 mt-2">
-                    <span className="ms" style={{fontSize:'16px'}}>calendar_month</span>
-                    <span>05. Nov - 08. Nov</span>
-                  </div>
-                  <button className="w-full py-2 bg-[#2a2a2a] text-slate-500 text-sm font-bold rounded-lg cursor-not-allowed">Ikke tilgjengelig</button>
-                </div>
-              </div>
-              {/* Add New */}
-              <div className="border-2 border-dashed border-[#1e1e1e] rounded-xl flex flex-col items-center justify-center p-6 hover:bg-white/5 transition-colors cursor-pointer group">
-                <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#1e1e1e] flex items-center justify-center text-slate-500 group-hover:border-[#ff6b00] group-hover:text-[#ff6b00] mb-3">
-                  <span className="ms" style={{fontSize:'20px'}}>add</span>
-                </div>
-                <p className="text-slate-400 font-medium group-hover:text-slate-200">Opprett nytt søk</p>
-              </div>
-            </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {(['alle', 'ulest'] as const).map(f => (
+              <button key={f} onClick={() => setFilter(f)} style={{
+                padding: '7px 16px', borderRadius: 100, fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
+                border: '1.5px solid', borderColor: filter === f ? '#ff6b00' : '#e0e0e0',
+                background: filter === f ? '#ff6b00' : '#fff',
+                color: filter === f ? '#fff' : '#555',
+              }}>
+                {f === 'alle' ? 'Alle' : 'Uleste'}
+              </button>
+            ))}
+            {unreadCount > 0 && (
+              <button onClick={markAllRead} style={{ padding: '7px 16px', borderRadius: 100, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: '1.5px solid #e0e0e0', background: '#fff', color: '#555' }}>
+                Merk alle lest
+              </button>
+            )}
           </div>
         </div>
-      </main>
+
+        <div style={{ padding: '24px 28px', maxWidth: 720 }}>
+          {filtered.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 24px', color: '#aaa' }}>
+              <span className="ms" style={{ fontSize: 48, display: 'block', marginBottom: 12 }}>notifications_none</span>
+              <p style={{ fontSize: 16, fontWeight: 600, color: '#555', marginBottom: 6 }}>Ingen {filter === 'ulest' ? 'uleste ' : ''}varsler</p>
+              <p style={{ fontSize: 14 }}>Vi varsler deg når vi finner en deal fra dine flyplasser.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {filtered.map(varsel => (
+                <div key={varsel.id} onClick={() => markRead(varsel.id)}
+                  style={{
+                    background: '#fff', border: `1.5px solid ${varsel.read ? '#f0f0f0' : 'rgba(255,107,0,0.25)'}`,
+                    borderRadius: 16, padding: '18px 20px', cursor: 'pointer', transition: 'all 0.15s',
+                    boxShadow: varsel.read ? 'none' : '0 4px 16px rgba(255,107,0,0.06)',
+                  }}
+                  onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor = 'rgba(255,107,0,0.4)'; }}
+                  onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor = varsel.read ? '#f0f0f0' : 'rgba(255,107,0,0.25)'; }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flex: 1 }}>
+                      {!varsel.read && (
+                        <div style={{ width: 8, height: 8, background: '#ff6b00', borderRadius: '50%', flexShrink: 0, marginTop: 6 }} />
+                      )}
+                      {varsel.read && <div style={{ width: 8, flexShrink: 0 }} />}
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                          <p style={{ fontSize: 15, fontWeight: 800, color: '#0a0a0a' }}>{varsel.from} → {varsel.to}</p>
+                          <span style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0', fontSize: 11, fontWeight: 800, padding: '2px 7px', borderRadius: 100 }}>-{varsel.discount}%</span>
+                        </div>
+                        <p style={{ fontSize: 13, color: '#aaa', marginBottom: 8 }}>{varsel.fromCode} → {varsel.toCode} · {varsel.airline} · {new Date(varsel.date).toLocaleDateString('no', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div>
+                            <span style={{ fontSize: 22, fontWeight: 900, color: '#0a0a0a', letterSpacing: '-0.8px' }}>{varsel.price.toLocaleString('no')} kr</span>
+                            <span style={{ fontSize: 12, color: '#bbb', textDecoration: 'line-through', marginLeft: 8 }}>{varsel.normal.toLocaleString('no')} kr</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <p style={{ fontSize: 11, color: '#bbb', marginBottom: 8 }}>{timeAgo(varsel.sentAt)}</p>
+                      <a href={`https://www.google.com/travel/flights?q=Flights+from+${varsel.fromCode}+to+${varsel.toCode}`}
+                        target="_blank" rel="noopener noreferrer"
+                        onClick={e => e.stopPropagation()}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '6px 12px', background: '#ff6b00', color: '#fff', borderRadius: 100, fontSize: 12, fontWeight: 700, textDecoration: 'none' }}>
+                        <span className="ms" style={{ fontSize: 14 }}>flight_takeoff</span>
+                        Book nå
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div style={{ marginTop: 32, background: '#fff', border: '1.5px solid #f0f0f0', borderRadius: 16, padding: '20px 24px' }}>
+            <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0a0a0a', marginBottom: 4 }}>Varslingsinnstillinger</h3>
+            <p style={{ fontSize: 13, color: '#aaa', marginBottom: 16 }}>Administrer hvilke flyplasser du vil ha varsler fra</p>
+            <a href="/innstillinger" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', border: '1.5px solid #e0e0e0', borderRadius: 100, fontSize: 13, fontWeight: 600, color: '#555', textDecoration: 'none' }}>
+              <span className="ms" style={{ fontSize: 16 }}>settings</span>
+              Gå til innstillinger
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }

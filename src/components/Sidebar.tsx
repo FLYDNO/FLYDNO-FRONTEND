@@ -1,78 +1,95 @@
 'use client'
 import Link from 'next/link'
 
-const navItems = [
+interface SidebarProps {
+  active: string
+  userName: string
+  userEmail: string
+  onLogout: () => void
+}
+
+const NAV = [
   { href: '/deals', icon: 'local_offer', label: 'Live Deals', key: 'deals' },
   { href: '/varsler', icon: 'notifications', label: 'Dine Varsler', key: 'varsler' },
   { href: '/oppdag', icon: 'explore', label: 'Oppdag Ruter', key: 'oppdag' },
   { href: '/historikk', icon: 'history', label: 'Historikk', key: 'historikk' },
 ]
-
-const bottomItems = [
+const NAV_BOTTOM = [
   { href: '/innstillinger', icon: 'settings', label: 'Innstillinger', key: 'innstillinger' },
-  { href: '/brukerstotte', icon: 'help', label: 'Brukerstøtte', key: 'brukerstotte' },
+  { href: '/brukerstotte', icon: 'help', label: 'Brukerstotte', key: 'brukerstotte' },
 ]
 
-export default function Sidebar({ active }: { active: string }) {
+export default function Sidebar({ active, userName, userEmail, onLogout }: SidebarProps) {
   return (
-    <>
-      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-      <style>{`
-        .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; white-space: nowrap; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .nav-link { border-left: 3px solid transparent; transition: all 0.2s; }
-        .nav-link:hover { background: rgba(255,107,0,0.05); color: #ff6b00; }
-        .nav-active { background: rgba(255,107,0,0.1); border-left: 3px solid #ff6b00 !important; color: #ff6b00; }
-      `}</style>
-      <aside style={{ width: '256px', flexShrink: 0, borderRight: '1px solid #1e1e1e', background: '#050505', display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0 }}>
-        {/* Logo */}
-        <div style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '36px', height: '36px', background: '#ff6b00', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0, boxShadow: '0 4px 12px rgba(255,107,0,0.2)' }}>
-            <span className="ms" style={{ fontSize: '18px' }}>flight_takeoff</span>
+    <aside style={{
+      width: 240, flexShrink: 0, background: '#0a0a0a',
+      display: 'flex', flexDirection: 'column', height: '100vh',
+      position: 'sticky', top: 0, borderRight: '1px solid rgba(255,255,255,0.07)',
+    }}>
+      <div style={{ padding: '18px 16px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
+          <div style={{ width: 34, height: 34, background: '#ff6b00', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span className="ms" style={{ fontSize: 18, color: '#fff' }}>flight_takeoff</span>
           </div>
           <div>
-            <h1 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>FlyDeals</h1>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Varsler deg om flydeals</p>
+            <p style={{ fontSize: 15, fontWeight: 900, color: '#fff', letterSpacing: '-0.3px', lineHeight: 1.2 }}>FlyDeals</p>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontWeight: 500 }}>Varsler deg om flydeals</p>
           </div>
-        </div>
+        </Link>
+      </div>
 
-        {/* Nav */}
-        <nav style={{ flex: 1, padding: '4px 12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          {navItems.map((item) => (
-            <Link key={item.key} href={item.href} className={`nav-link ${active === item.key ? 'nav-active' : ''}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '0 12px 12px 0', textDecoration: 'none', color: active === item.key ? '#ff6b00' : 'rgba(255,255,255,0.4)' }}>
-              <span className={`ms${active === item.key ? ' ms-fill' : ''}`} style={{ fontSize: '18px' }}>{item.icon}</span>
-              <span style={{ fontSize: '13px', fontWeight: active === item.key ? 700 : 500 }}>{item.label}</span>
+      <nav style={{ flex: 1, padding: '10px 8px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {NAV.map(({ href, icon, label, key }) => {
+          const isActive = active === key
+          return (
+            <Link key={key} href={href} style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '9px 12px', borderRadius: 10,
+              borderLeft: isActive ? '3px solid #ff6b00' : '3px solid transparent',
+              background: isActive ? 'rgba(255,107,0,0.1)' : 'transparent',
+              color: isActive ? '#ff6b00' : 'rgba(255,255,255,0.5)',
+              textDecoration: 'none', fontSize: 13, fontWeight: isActive ? 700 : 500,
+            }}>
+              <span className={`ms${isActive ? ' ms-fill' : ''}`} style={{ fontSize: 18 }}>{icon}</span>
+              {label}
             </Link>
-          ))}
+          )
+        })}
 
-          <div style={{ borderTop: '1px solid #1e1e1e', marginTop: '12px', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            {bottomItems.map((item) => (
-              <Link key={item.key} href={item.href} className={`nav-link ${active === item.key ? 'nav-active' : ''}`}
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '0 12px 12px 0', textDecoration: 'none', color: active === item.key ? '#ff6b00' : 'rgba(255,255,255,0.4)' }}>
-                <span className={`ms${active === item.key ? ' ms-fill' : ''}`} style={{ fontSize: '18px' }}>{item.icon}</span>
-                <span style={{ fontSize: '13px', fontWeight: active === item.key ? 700 : 500 }}>{item.label}</span>
-              </Link>
-            ))}
-          </div>
-        </nav>
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '6px 0' }} />
 
-        {/* User */}
-        <div style={{ padding: '12px', borderTop: '1px solid #1e1e1e' }}>
-          <div style={{ background: '#111', borderRadius: '12px', padding: '12px', border: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <span className="ms" style={{ fontSize: '18px', color: 'rgba(255,255,255,0.4)' }}>person</span>
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: '13px', fontWeight: 600, color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Marius Jensen</p>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>marius@flydeals.no</p>
-            </div>
-            <Link href="/innstillinger" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none', flexShrink: 0 }}>
-              <span className="ms" style={{ fontSize: '16px' }}>settings</span>
+        {NAV_BOTTOM.map(({ href, icon, label, key }) => {
+          const isActive = active === key
+          return (
+            <Link key={key} href={href} style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '9px 12px', borderRadius: 10,
+              borderLeft: isActive ? '3px solid #ff6b00' : '3px solid transparent',
+              background: isActive ? 'rgba(255,107,0,0.1)' : 'transparent',
+              color: isActive ? '#ff6b00' : 'rgba(255,255,255,0.5)',
+              textDecoration: 'none', fontSize: 13, fontWeight: isActive ? 700 : 500,
+            }}>
+              <span className={`ms${isActive ? ' ms-fill' : ''}`} style={{ fontSize: 18 }}>{icon}</span>
+              {label}
             </Link>
+          )
+        })}
+      </nav>
+
+      <div style={{ padding: '10px 8px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 30, height: 30, background: '#ff6b00', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>{(userName || 'U')[0].toUpperCase()}</span>
           </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userName}</p>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userEmail}</p>
+          </div>
+          <button onClick={onLogout} title="Logg ut" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', padding: 2 }}>
+            <span className="ms" style={{ fontSize: 17 }}>logout</span>
+          </button>
         </div>
-      </aside>
-    </>
+      </div>
+    </aside>
   )
 }
