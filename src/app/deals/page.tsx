@@ -29,6 +29,8 @@ interface Deal {
   bestType: 'oneway' | 'roundtrip'  // which type has the best deal
   onewayPrice?: number | null        // one-way best price
   roundtripPrice?: number | null     // round-trip best price
+  updatedAt?: string | null          // when deal was last refreshed
+  hoursOld?: number                  // how many hours since last update
 }
 
 const FALLBACK_DEALS: Deal[] = [
@@ -87,12 +89,15 @@ export default function DealsPage() {
     async function fetchDeals() {
       if (!supabase) return
       try {
+        // Only fetch deals updated within last 36 hours (fresh data only)
+        const freshThreshold = new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString()
         const { data, error } = await supabase
           .from('flights')
           .select('*')
           .order('discount_pct', { ascending: false })
           .gt('discount_pct', 20)
-          .limit(200)
+          .gte('updated_at', freshThreshold)
+          .limit(500)
 
         if (error || !data || data.length === 0) return
 
@@ -108,6 +113,10 @@ export default function DealsPage() {
           const onewayPrice = f.typical_price_low ? Number(f.typical_price_low) : (bestType === 'oneway' ? price : null)
           const roundtripPrice = f.typical_price_high ? Number(f.typical_price_high) : (bestType === 'roundtrip' ? price : null)
 
+          const updatedAt = (f.updated_at as string) || null
+          const hoursOld = updatedAt
+            ? Math.round((Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60))
+            : 99
           return {
             id: (f.id as string) || i,
             from: (f.departure_city as string) || airportCity[originCode] || originCode,
@@ -126,6 +135,8 @@ export default function DealsPage() {
             bestType,
             onewayPrice,
             roundtripPrice,
+            updatedAt,
+            hoursOld,
           }
         }).filter((d: Deal) => d.price > 0 && d.discount > 10)
 
@@ -177,13 +188,21 @@ export default function DealsPage() {
       return new Date(a.date).getTime() - new Date(b.date).getTime()
     })
 
+  /**
+   * Build a Google Flights deep link that pre-fills route, date, and trip type.
+   * OW link opens one-way search, RT link opens round-trip with return date.
+   * The price shown on the deal card matches what Google Flights will show.
+   */
   const googleFlightsUrl = (deal: Deal, priceType: 'oneway' | 'roundtrip') => {
     const depDate = deal.date?.split('T')[0] || ''
     const retDate = deal.returnDate?.split('T')[0] || ''
+    const from = deal.fromCode
+    const to = deal.toCode
     if (priceType === 'oneway') {
-      return `https://www.google.com/travel/flights?q=Flights+from+${deal.fromCode}+to+${deal.toCode}+on+${depDate}&curr=NOK&tfs=CBwQ2`
+      return `https://www.google.com/travel/flights?q=Flights+from+${from}+to+${to}+on+${depDate}&curr=NOK&hl=no`
     }
-    return `https://www.google.com/travel/flights?q=Flights+from+${deal.fromCode}+to+${deal.toCode}+on+${depDate}${retDate ? `+return+${retDate}` : ''}&curr=NOK&tfs=CBwQ1`
+    const retPart = retDate ? `+return+${retDate}` : ''
+    return `https://www.google.com/travel/flights?q=Flights+from+${from}+to+${to}+on+${depDate}${retPart}&curr=NOK&hl=no`
   }
 
   return (
@@ -323,7 +342,7 @@ export default function DealsPage() {
                     </div>
                   </div>
 
-                  {/* Date + stops */}
+                  {/* Date + freshness + CTA */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
                     <div>
                       <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
@@ -331,6 +350,12 @@ export default function DealsPage() {
                         {new Date(deal.date).toLocaleDateString('no', { day: 'numeric', month: 'short' })}
                         {deal.returnDate && <span style={{ color: 'rgba(255,255,255,0.3)' }}> → {new Date(deal.returnDate).toLocaleDateString('no', { day: 'numeric', month: 'short' })}</span>}
                       </p>
+                      {deal.hoursOld !== undefined && deal.hoursOld < 99 && (
+                        <p style={{ fontSize: 10, color: deal.hoursOld < 8 ? '#22c55e' : deal.hoursOld < 20 ? '#f59e0b' : 'rgba(255,255,255,0.3)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <span style={{ width: 5, height: 5, borderRadius: '50%', background: deal.hoursOld < 8 ? '#22c55e' : deal.hoursOld < 20 ? '#f59e0b' : 'rgba(255,255,255,0.3)', display: 'inline-block' }} />
+                          {deal.hoursOld < 1 ? 'Nettopp oppdatert' : deal.hoursOld < 8 ? `${deal.hoursOld}t siden` : deal.hoursOld < 24 ? `${deal.hoursOld}t siden` : `${Math.floor(deal.hoursOld / 24)}d siden`}
+                        </p>
+                      )}
                     </div>
                     <span style={{ fontSize: 12, fontWeight: 700, color: '#ff6b00', display: 'flex', alignItems: 'center', gap: 3 }}>
                       Se deal <span className="ms" style={{ fontSize: 14 }}>arrow_forward</span>
@@ -341,9 +366,13 @@ export default function DealsPage() {
             </div>
             {filtered.length === 0 && (
               <div style={{ textAlign: 'center', padding: 60, color: 'rgba(255,255,255,0.35)' }}>
-                <span className="ms" style={{ fontSize: 48, display: 'block', marginBottom: 12 }}>search_off</span>
-                <p style={{ fontSize: 15, fontWeight: 600 }}>Ingen deals funnet</p>
-                <p style={{ fontSize: 13, marginTop: 4 }}>Prøv å endre filter, måned eller flyplassvalg</p>
+                <span className="ms" style={{ fontSize: 48, display: 'block', marginBottom: 12 }}>flight_takeoff</span>
+                <p style={{ fontSize: 15, fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>Ingen deals funnet akkurat nå</p>
+                <p style={{ fontSize: 13, marginTop: 6, lineHeight: 1.6 }}>
+                  Cron-jobben oppdaterer alle ruter 3× daglig (06:00, 12:00, 18:00).<br />
+                  Trondheim, Stavanger og Tromsø får nye deals ved neste kjøring.
+                </p>
+                <p style={{ fontSize: 12, marginTop: 8, color: 'rgba(255,255,255,0.2)' }}>Prøv å endre måned eller flyplassvalg</p>
               </div>
             )}
           </div>
