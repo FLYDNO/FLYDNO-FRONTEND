@@ -2,7 +2,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/useAuth'
+import { useSubscription } from '@/lib/useSubscription'
 import Sidebar from '@/components/Sidebar'
+import Paywall from '@/components/Paywall'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -44,7 +46,19 @@ const FALLBACK_DEALS: Deal[] = [
 
 const AIRPORTS = ['Alle', 'OSL', 'BGO', 'SVG', 'TRD', 'TOS', 'TRF']
 
-// Map country codes to flag codes
+const MONTHS = [
+  { key: 'alle', label: 'Alle mnd' },
+  { key: '04', label: 'Apr' },
+  { key: '05', label: 'Mai' },
+  { key: '06', label: 'Jun' },
+  { key: '07', label: 'Jul' },
+  { key: '08', label: 'Aug' },
+  { key: '09', label: 'Sep' },
+  { key: '10', label: 'Okt' },
+  { key: '11', label: 'Nov' },
+  { key: '12', label: 'Des' },
+]
+
 const countryToFlag: Record<string, string> = {
   'TH': 'th', 'AE': 'ae', 'ES': 'es', 'GB': 'gb', 'IT': 'it', 'US': 'us',
   'JP': 'jp', 'PT': 'pt', 'ID': 'id', 'FR': 'fr', 'DE': 'de', 'GR': 'gr',
@@ -52,7 +66,6 @@ const countryToFlag: Record<string, string> = {
   'NL': 'nl', 'BE': 'be', 'AT': 'at', 'CH': 'ch', 'PL': 'pl', 'CZ': 'cz',
 }
 
-// Airport code to city name
 const airportCity: Record<string, string> = {
   'OSL': 'Oslo', 'BGO': 'Bergen', 'SVG': 'Stavanger', 'TRD': 'Trondheim',
   'TOS': 'Tromsø', 'TRF': 'Torp', 'KRS': 'Kristiansand',
@@ -60,15 +73,16 @@ const airportCity: Record<string, string> = {
 
 export default function DealsPage() {
   const { user, loading: authLoading, logout, userName, userEmail } = useAuth()
+  const { hasAccess, loading: subLoading, startCheckout } = useSubscription(userEmail || undefined)
   const router = useRouter()
   const [selectedAirport, setSelectedAirport] = useState('Alle')
+  const [selectedMonth, setSelectedMonth] = useState('alle')
   const [sortBy, setSortBy] = useState<'discount' | 'price' | 'date'>('discount')
   const [tripType, setTripType] = useState<'alle' | 'tur_retur' | 'enkel'>('alle')
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
   const [deals, setDeals] = useState<Deal[]>(FALLBACK_DEALS)
   const [isLive, setIsLive] = useState(false)
 
-  // Fetch real deals from Supabase
   useEffect(() => {
     async function fetchDeals() {
       if (!supabase) return
@@ -134,8 +148,18 @@ export default function DealsPage() {
     )
   }
 
+  // Paywall: show if user has no access and subscription check is done
+  if (!subLoading && !hasAccess) {
+    return <Paywall onStartTrial={startCheckout} />
+  }
+
   const filtered = deals
     .filter(d => selectedAirport === 'Alle' || d.fromCode === selectedAirport)
+    .filter(d => {
+      if (selectedMonth === 'alle') return true
+      const month = d.date?.split('-')[1] || d.date?.split('T')[0]?.split('-')[1]
+      return month === selectedMonth
+    })
     .filter(d => {
       if (tripType === 'tur_retur') return d.type === 't/r'
       if (tripType === 'enkel') return d.type === 'enkel'
@@ -150,34 +174,46 @@ export default function DealsPage() {
   const googleFlightsUrl = (deal: Deal) => {
     const depDate = deal.date?.split('T')[0] || ''
     const retDate = deal.returnDate?.split('T')[0] || ''
-    const tripParam = deal.type === 't/r' && retDate ? '1' : '2' // 1=round trip, 2=one way
+    const tripParam = deal.type === 't/r' && retDate ? '1' : '2'
     return `https://www.google.com/travel/flights?q=Flights+from+${deal.fromCode}+to+${deal.toCode}+on+${depDate}${retDate ? `+return+${retDate}` : ''}&curr=NOK&tfs=CBwQ${tripParam}`
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#050505' }}>
-      <Sidebar active="deals" userName={userName} userEmail={userEmail} onLogout={logout} />
+    <>
+      <div style={{ display: 'flex', minHeight: '100dvh', background: '#050505' }}>
+        <Sidebar active="deals" userName={userName} userEmail={userEmail} onLogout={logout} />
 
-      <div style={{ flex: 1, overflow: 'auto', paddingBottom: 80 }}>
-        {/* Header */}
-        <div style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '18px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <div>
-            <h1 style={{ fontSize: 22, fontWeight: 900, color: '#f0f0f0', letterSpacing: '-0.5px' }}>Live Deals</h1>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 7, height: 7, background: isLive ? '#22c55e' : '#f59e0b', borderRadius: '50%', display: 'inline-block' }} />
-              {filtered.length} aktive deals akkurat nå · {isLive ? 'Live data' : 'Eksempeldata'} · Oppdateres 3× daglig
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {/* Main content - key fix: use 100dvh and proper overflow for mobile */}
+        <main style={{ flex: 1, minWidth: 0, paddingBottom: 90 }}>
+
+          {/* Header */}
+          <div style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '16px 16px 12px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
+              <div>
+                <h1 style={{ fontSize: 20, fontWeight: 900, color: '#f0f0f0', letterSpacing: '-0.5px' }}>Live Deals</h1>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 7, height: 7, background: isLive ? '#22c55e' : '#f59e0b', borderRadius: '50%', display: 'inline-block' }} />
+                  {filtered.length} deals · {isLive ? 'Live' : 'Eksempel'} · 3× daglig
+                </p>
+              </div>
+              <select value={sortBy} onChange={e => setSortBy(e.target.value as 'discount' | 'price' | 'date')}
+                style={{ padding: '7px 12px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: '#1a1a1a', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.7)', outline: 'none', cursor: 'pointer' }}>
+                <option value="discount">Størst rabatt</option>
+                <option value="price">Lavest pris</option>
+                <option value="date">Tidligst dato</option>
+              </select>
+            </div>
+
             {/* Trip type toggle */}
-            <div style={{ display: 'flex', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
               {[
                 { key: 'alle' as const, label: 'Alle' },
                 { key: 'tur_retur' as const, label: 'Tur/Retur' },
                 { key: 'enkel' as const, label: 'Enveis' },
               ].map(t => (
                 <button key={t.key} onClick={() => setTripType(t.key)} style={{
-                  padding: '7px 14px', fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
+                  padding: '6px 14px', fontSize: 12, fontWeight: 600, borderRadius: 100, cursor: 'pointer',
+                  border: tripType === t.key ? '1px solid #ff6b00' : '1px solid rgba(255,255,255,0.12)',
                   background: tripType === t.key ? '#ff6b00' : 'transparent',
                   color: tripType === t.key ? '#fff' : 'rgba(255,255,255,0.5)',
                   transition: 'all 0.15s',
@@ -186,101 +222,118 @@ export default function DealsPage() {
                 </button>
               ))}
             </div>
-            <select value={sortBy} onChange={e => setSortBy(e.target.value as 'discount' | 'price' | 'date')}
-              style={{ padding: '8px 14px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', background: '#1a1a1a', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', outline: 'none', cursor: 'pointer' }}>
-              <option value="discount">Størst rabatt</option>
-              <option value="price">Lavest pris</option>
-              <option value="date">Tidligst dato</option>
-            </select>
+
+            {/* Airport filter - scrollable */}
+            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 4 }}>
+              {AIRPORTS.map(code => (
+                <button key={code} onClick={() => setSelectedAirport(code)} style={{
+                  padding: '5px 12px', borderRadius: 100, fontSize: 12, fontWeight: 600,
+                  border: '1px solid', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'all 0.15s',
+                  borderColor: selectedAirport === code ? '#ff6b00' : 'rgba(255,255,255,0.12)',
+                  background: selectedAirport === code ? 'rgba(255,107,0,0.15)' : 'transparent',
+                  color: selectedAirport === code ? '#ff6b00' : 'rgba(255,255,255,0.45)',
+                  flexShrink: 0,
+                }}>
+                  {code}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Airport filter - scrollable on mobile */}
-        <div style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '10px 20px', display: 'flex', gap: 8, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-          {AIRPORTS.map(code => (
-            <button key={code} onClick={() => setSelectedAirport(code)} style={{
-              padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
-              border: '1px solid', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'all 0.15s',
-              borderColor: selectedAirport === code ? '#ff6b00' : 'rgba(255,255,255,0.12)',
-              background: selectedAirport === code ? '#ff6b00' : 'transparent',
-              color: selectedAirport === code ? '#fff' : 'rgba(255,255,255,0.5)',
-              flexShrink: 0,
-            }}>
-              {code}
-            </button>
-          ))}
-        </div>
-
-        {/* Deal cards - responsive grid */}
-        <div style={{ padding: '20px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
-            {filtered.map(deal => (
-              <div key={deal.id} onClick={() => setSelectedDeal(deal)}
-                style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '18px 20px', cursor: 'pointer', transition: 'all 0.2s' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div>
-                    <p style={{ fontSize: 15, fontWeight: 800, color: '#f0f0f0', lineHeight: 1.2 }}>
-                      {deal.from} → {deal.to}
-                      {deal.flag !== 'un' && <img src={`https://flagcdn.com/16x12/${deal.flag}.png`} alt="" style={{ display: 'inline', verticalAlign: 'middle', borderRadius: 2, marginLeft: 6 }} />}
-                    </p>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
-                      {deal.fromCode} → {deal.toCode} · {deal.airline}
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                    <span style={{ background: deal.type === 't/r' ? 'rgba(255,107,0,0.1)' : 'rgba(59,130,246,0.1)', color: deal.type === 't/r' ? '#ff6b00' : '#3b82f6', border: `1px solid ${deal.type === 't/r' ? 'rgba(255,107,0,0.25)' : 'rgba(59,130,246,0.25)'}`, fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 100 }}>
-                      {deal.type === 't/r' ? 'T/R' : 'Enveis'}
-                    </span>
-                    {deal.discount > 0 && (
-                      <span style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.25)', fontSize: 10, fontWeight: 800, padding: '2px 7px', borderRadius: 100 }}>-{deal.discount}%</span>
-                    )}
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <div>
-                    {deal.normal > deal.price && (
-                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>{deal.normal.toLocaleString('no')} kr</p>
-                    )}
-                    <p style={{ fontSize: 28, fontWeight: 900, color: '#f0f0f0', letterSpacing: '-1.2px', lineHeight: 1 }}>
-                      {deal.price.toLocaleString('no')} <span style={{ fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>kr</span>
-                    </p>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{new Date(deal.date).toLocaleDateString('no', { day: 'numeric', month: 'short' })}</p>
-                    {deal.returnDate && <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>Retur: {new Date(deal.returnDate).toLocaleDateString('no', { day: 'numeric', month: 'short' })}</p>}
-                    <p style={{ fontSize: 11, color: '#ff6b00', fontWeight: 700, marginTop: 2 }}>{deal.direct ? 'Direktefly' : '1 stopp'}</p>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
-                    <span className="ms" style={{ fontSize: 13, verticalAlign: 'middle', marginRight: 3 }}>event_seat</span>
-                    {deal.seats} seter igjen
-                  </span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#ff6b00', display: 'flex', alignItems: 'center', gap: 3 }}>
-                    Se deal <span className="ms" style={{ fontSize: 14 }}>arrow_forward</span>
-                  </span>
-                </div>
-              </div>
+          {/* MONTH FILTER - scrollable row */}
+          <div style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '8px 16px', display: 'flex', gap: 6, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            {MONTHS.map(m => (
+              <button key={m.key} onClick={() => setSelectedMonth(m.key)} style={{
+                padding: '5px 12px', borderRadius: 100, fontSize: 11, fontWeight: 600,
+                whiteSpace: 'nowrap', cursor: 'pointer', transition: 'all 0.15s', flexShrink: 0,
+                border: selectedMonth === m.key ? '1px solid rgba(255,107,0,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                background: selectedMonth === m.key ? 'rgba(255,107,0,0.12)' : 'rgba(255,255,255,0.04)',
+                color: selectedMonth === m.key ? '#ff6b00' : 'rgba(255,255,255,0.4)',
+              }}>
+                <span className="ms" style={{ fontSize: 12, verticalAlign: 'middle', marginRight: 3 }}>calendar_month</span>
+                {m.label}
+              </button>
             ))}
           </div>
-          {filtered.length === 0 && (
-            <div style={{ textAlign: 'center', padding: 60, color: 'rgba(255,255,255,0.35)' }}>
-              <span className="ms" style={{ fontSize: 48, display: 'block', marginBottom: 12 }}>search_off</span>
-              <p style={{ fontSize: 15, fontWeight: 600 }}>Ingen deals funnet</p>
-              <p style={{ fontSize: 13, marginTop: 4 }}>Prøv å endre filter eller flyplassvalg</p>
+
+          {/* Deal cards */}
+          <div style={{ padding: '16px' }}>
+            <div className="deal-card-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
+              {filtered.map(deal => (
+                <div key={deal.id} onClick={() => setSelectedDeal(deal)}
+                  style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 18px', cursor: 'pointer', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,107,0,0.3)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <p style={{ fontSize: 15, fontWeight: 800, color: '#f0f0f0', lineHeight: 1.2 }}>
+                        {deal.from} → {deal.to}
+                        {deal.flag !== 'un' && <img src={`https://flagcdn.com/16x12/${deal.flag}.png`} alt="" style={{ display: 'inline', verticalAlign: 'middle', borderRadius: 2, marginLeft: 6 }} />}
+                      </p>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                        {deal.fromCode} → {deal.toCode} · {deal.airline}
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', gap: 4, flexShrink: 0, marginLeft: 8 }}>
+                      <span style={{
+                        background: deal.type === 't/r' ? 'rgba(255,107,0,0.1)' : 'rgba(59,130,246,0.1)',
+                        color: deal.type === 't/r' ? '#ff6b00' : '#3b82f6',
+                        border: `1px solid ${deal.type === 't/r' ? 'rgba(255,107,0,0.25)' : 'rgba(59,130,246,0.25)'}`,
+                        fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 100
+                      }}>
+                        {deal.type === 't/r' ? 'T/R' : 'Enveis'}
+                      </span>
+                      {deal.discount > 0 && (
+                        <span style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.25)', fontSize: 10, fontWeight: 800, padding: '2px 7px', borderRadius: 100 }}>-{deal.discount}%</span>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
+                    <div>
+                      {deal.normal > deal.price && (
+                        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>{deal.normal.toLocaleString('no')} kr</p>
+                      )}
+                      <p style={{ fontSize: 28, fontWeight: 900, color: '#f0f0f0', letterSpacing: '-1.2px', lineHeight: 1 }}>
+                        {deal.price.toLocaleString('no')} <span style={{ fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>kr</span>
+                      </p>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{new Date(deal.date).toLocaleDateString('no', { day: 'numeric', month: 'short' })}</p>
+                      {deal.returnDate && <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>Retur: {new Date(deal.returnDate).toLocaleDateString('no', { day: 'numeric', month: 'short' })}</p>}
+                      <p style={{ fontSize: 11, color: '#ff6b00', fontWeight: 700, marginTop: 2 }}>{deal.direct ? 'Direktefly' : '1 stopp'}</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+                      <span className="ms" style={{ fontSize: 13, verticalAlign: 'middle', marginRight: 3 }}>event_seat</span>
+                      {deal.seats} seter igjen
+                    </span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#ff6b00', display: 'flex', alignItems: 'center', gap: 3 }}>
+                      Se deal <span className="ms" style={{ fontSize: 14 }}>arrow_forward</span>
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+            {filtered.length === 0 && (
+              <div style={{ textAlign: 'center', padding: 60, color: 'rgba(255,255,255,0.35)' }}>
+                <span className="ms" style={{ fontSize: 48, display: 'block', marginBottom: 12 }}>search_off</span>
+                <p style={{ fontSize: 15, fontWeight: 600 }}>Ingen deals funnet</p>
+                <p style={{ fontSize: 13, marginTop: 4 }}>Prøv å endre filter, måned eller flyplassvalg</p>
+              </div>
+            )}
+          </div>
+        </main>
       </div>
 
       {/* Deal modal */}
       {selectedDeal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
           onClick={() => setSelectedDeal(null)}>
-          <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: '28px', maxWidth: 460, width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.5)', maxHeight: '90vh', overflowY: 'auto' }}
+          <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: '24px', maxWidth: 460, width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.5)', maxHeight: '85vh', overflowY: 'auto' }}
             onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-              <div>
+              <div style={{ minWidth: 0, flex: 1 }}>
                 <h2 style={{ fontSize: 20, fontWeight: 900, color: '#f0f0f0', letterSpacing: '-0.5px' }}>
                   {selectedDeal.from} → {selectedDeal.to}
                   {selectedDeal.flag !== 'un' && <img src={`https://flagcdn.com/20x15/${selectedDeal.flag}.png`} alt="" style={{ display: 'inline', verticalAlign: 'middle', borderRadius: 2, marginLeft: 8 }} />}
@@ -296,13 +349,13 @@ export default function DealsPage() {
                 <span className="ms" style={{ fontSize: 18, color: 'rgba(255,255,255,0.5)' }}>close</span>
               </button>
             </div>
-            <div style={{ background: '#242424', borderRadius: 16, padding: 20, marginBottom: 20, border: '1px solid rgba(255,255,255,0.07)' }}>
+            <div style={{ background: '#242424', borderRadius: 16, padding: 18, marginBottom: 20, border: '1px solid rgba(255,255,255,0.07)' }}>
               <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div>
                   {selectedDeal.normal > selectedDeal.price && (
                     <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>{selectedDeal.normal.toLocaleString('no')} kr normalt</p>
                   )}
-                  <p style={{ fontSize: 36, fontWeight: 900, color: '#f0f0f0', letterSpacing: '-2px', lineHeight: 1 }}>
+                  <p style={{ fontSize: 34, fontWeight: 900, color: '#f0f0f0', letterSpacing: '-2px', lineHeight: 1 }}>
                     {selectedDeal.price.toLocaleString('no')} <span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>kr</span>
                   </p>
                 </div>
@@ -310,7 +363,7 @@ export default function DealsPage() {
                   <span style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.25)', fontSize: 16, fontWeight: 900, padding: '6px 14px', borderRadius: 100 }}>-{selectedDeal.discount}%</span>
                 )}
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 {[
                   { icon: 'calendar_today', label: 'Utreise', val: new Date(selectedDeal.date).toLocaleDateString('no', { day: 'numeric', month: 'long', year: 'numeric' }) },
                   { icon: 'event', label: 'Retur', val: selectedDeal.returnDate ? new Date(selectedDeal.returnDate).toLocaleDateString('no', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Enveis' },
@@ -318,10 +371,10 @@ export default function DealsPage() {
                   { icon: 'flight', label: 'Type', val: selectedDeal.direct ? 'Direktefly' : '1 mellomlanding' },
                 ].map(({ icon, label, val }) => (
                   <div key={label} style={{ background: '#1a1a1a', borderRadius: 10, padding: '10px 12px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 3, display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <span className="ms" style={{ fontSize: 13 }}>{icon}</span>{label}
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginBottom: 3, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span className="ms" style={{ fontSize: 12 }}>{icon}</span>{label}
                     </p>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: '#f0f0f0' }}>{val}</p>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: '#f0f0f0' }}>{val}</p>
                   </div>
                 ))}
               </div>
@@ -337,6 +390,6 @@ export default function DealsPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }
