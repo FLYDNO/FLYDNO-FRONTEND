@@ -165,11 +165,12 @@
           <span class="ms" style="font-size:22px">menu</span>
         </button>
         <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse hidden md:block"></span>
-        <span class="text-sm text-slate-400 font-medium hidden md:block">847 deals funnet hittil</span>
+        <span class="text-sm text-slate-400 font-medium hidden md:block">Dine Varsler</span>
       </div>
       <div class="flex items-center gap-1">
-        <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
+        <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
           <span class="ms" style="font-size:20px">notifications</span>
+          <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-[#ff6b00] rounded-full"></span>
         </button>
         <div class="w-px h-6 bg-[#2e2e2e] mx-1"></div>
         <button onclick="logout()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1e1e1e] text-sm font-medium text-slate-400 hover:bg-[#111] hover:text-slate-200 transition-colors">
@@ -391,7 +392,7 @@ function renderAlerts() {
             <span class="ms text-xl">flight_takeoff</span>
           </div>
           <div>
-            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold">${a.toFlag.startsWith('<') ? a.toFlag : flagSpan(a.toFlag)} ${escapeHtml(a.to)} <span class="text-slate-500 font-normal text-xs">(${escapeHtml(a.toCode)})</span></p>
+            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold">${flagSpan(escapeHtml(a.toFlag.replace(/<[^>]*>/g, '') || 'no'))} ${escapeHtml(a.to)} <span class="text-slate-500 font-normal text-xs">(${escapeHtml(a.toCode)})</span></p>
             <p class="text-xs text-slate-500">fra ${FLAG_NO} ${escapeHtml(AIRPORT_NAMES[a.fromCode] || a.fromCode)} (${escapeHtml(a.fromCode)})</p>
           </div>
         </div>
@@ -433,7 +434,7 @@ function renderAlerts() {
             <span class="ms text-xl">flight_takeoff</span>
           </div>
           <div>
-            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold text-sm">${a.toFlag.startsWith('<') ? a.toFlag : flagSpan(a.toFlag)} ${escapeHtml(a.to)} <span class="text-slate-500 font-normal text-xs">(${escapeHtml(a.toCode)})</span></p>
+            <p class="${a.active ? 'text-white' : 'text-slate-400'} font-bold text-sm">${flagSpan(escapeHtml(a.toFlag.replace(/<[^>]*>/g, '') || 'no'))} ${escapeHtml(a.to)} <span class="text-slate-500 font-normal text-xs">(${escapeHtml(a.toCode)})</span></p>
             <p class="text-xs text-slate-500">fra ${FLAG_NO} ${escapeHtml(AIRPORT_NAMES[a.fromCode] || a.fromCode)} (${escapeHtml(a.fromCode)})</p>
           </div>
         </div>
@@ -623,6 +624,7 @@ function confirmDelete(id) {
           .eq('user_id', user.id)
           .eq('departure_airport', deletedAlert.fromCode)
           .eq('arrival_airport', deletedAlert.toCode)
+          .eq('min_discount', deletedAlert.minDiscount)
           .then(({ error }) => {
             if (error) console.error('Supabase alert delete failed:', error.message);
           });
@@ -645,6 +647,7 @@ function toggleAlert(id, active) {
           .eq('user_id', user.id)
           .eq('departure_airport', a.fromCode)
           .eq('arrival_airport', a.toCode)
+          .eq('min_discount', a.minDiscount)
           .then(({ error }) => {
             if (error) console.error('Supabase alert toggle failed:', error.message);
           });

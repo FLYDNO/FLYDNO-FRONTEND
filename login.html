@@ -68,7 +68,7 @@
         <div class="flex flex-col gap-1.5">
           <div class="flex justify-between items-center">
             <label class="text-sm font-medium text-slate-300">Passord</label>
-            <a href="#" class="text-xs font-semibold text-primary hover:opacity-80">Glemt passord?</a>
+            <a href="#" onclick="handleForgotPassword(); return false;" class="text-xs font-semibold text-primary hover:opacity-80">Glemt passord?</a>
           </div>
           <div class="relative">
             <span class="ms absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:20px">lock</span>
@@ -159,7 +159,7 @@
           <label class="text-sm font-medium text-slate-300">Passord</label>
           <div class="relative">
             <span class="ms absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:20px">lock</span>
-            <input type="password" placeholder="Minst 8 tegn" id="regPwd"
+            <input type="password" placeholder="Minst 6 tegn" id="regPwd"
               class="w-full bg-[#2e2e2e] border border-[#444444] rounded-xl py-3.5 pl-11 pr-12 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"/>
             <button type="button" onclick="togglePwd('regPwd','eyeReg')" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
               <span class="ms" id="eyeReg" style="font-size:20px">visibility</span>
@@ -247,7 +247,7 @@ async function handleRegister() {
   const preferred_airports = ['OSL', 'BGO', 'TRD', 'SVG', 'TOS', 'TRF'];
 
   if (!name || !email || !password) { showLoginError('Vennligst fyll inn alle feltene.'); return; }
-  if (password.length < 8) { showLoginError('Passordet må være minst 8 tegn.'); return; }
+  if (password.length < 6) { showLoginError('Passordet må være minst 6 tegn.'); return; }
 
   const btn = document.getElementById('regBtn');
   btn.disabled = true;
@@ -327,6 +327,40 @@ function switchView(id) {
   if (errEl) errEl.style.display = 'none';
   window.scrollTo(0, 0);
 }
+async function handleForgotPassword() {
+  if (!ensureSupabase()) return;
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) { showLoginError('Skriv inn e-posten din først, så sender vi en tilbakestillingslenke.'); return; }
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/innstillinger.html'
+    });
+    if (error) throw error;
+    showLoginError('Vi har sendt en e-post med lenke for å tilbakestille passordet ditt.');
+    // Reuse error display but style it as info
+    const errEl = document.getElementById('loginError');
+    if (errEl) {
+      errEl.style.background = 'rgba(34,197,94,0.1)';
+      errEl.style.borderColor = 'rgba(34,197,94,0.3)';
+      errEl.style.color = '#22c55e';
+      errEl.querySelector('.ms').style.color = '#22c55e';
+      errEl.querySelector('.ms').textContent = 'check_circle';
+    }
+  } catch (err) {
+    showLoginError(translateAuthError(err.message));
+  }
+}
+
+// Enter key support for login and register forms
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    const loginView = document.getElementById('loginView');
+    const registerView = document.getElementById('registerView');
+    if (loginView.classList.contains('active')) handleLogin();
+    else if (registerView.classList.contains('active')) handleRegister();
+  }
+});
+
 function togglePwd(inputId, iconId) {
   const input = document.getElementById(inputId);
   const icon = document.getElementById(iconId);

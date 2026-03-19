@@ -497,7 +497,17 @@ function openDeal(idx) {
 <script>
 function addToAlerts() {
   document.getElementById('dealModal').style.display = 'none';
-  window.location.href = 'varsler.html';
+  const route = document.getElementById('modalRoute').textContent;
+  const parts = route.match(/(.+?)\s*\((\w+)\)\s*→\s*(.+?)\s*\((\w+)\)/);
+  if (parts) {
+    const toName = parts[3].trim();
+    const toCode = parts[4];
+    const flagEl = document.getElementById('modalFlag').querySelector('.fi');
+    const cc = flagEl ? flagEl.className.match(/fi-(\w+)/)?.[1] || '' : '';
+    window.location.href = 'varsler.html?to=' + encodeURIComponent(toName) + '&code=' + encodeURIComponent(toCode) + '&flag=' + encodeURIComponent(cc);
+  } else {
+    window.location.href = 'varsler.html';
+  }
 }
 </script>
 </body>

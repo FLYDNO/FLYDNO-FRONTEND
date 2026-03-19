@@ -59,12 +59,7 @@ async function handleCallback() {
   // Check if user has active subscription (subscription_active boolean, set by stripe-webhook)
   const hasSubscription = profile && profile.subscription_active === true;
 
-  if (!hasSubscription) {
-    // Mark that this user needs subscription — deals.html will show paywall banner
-    sessionStorage.setItem('flydeals_needs_sub', '1');
-  }
-
-  // Always go to deals — subscription check happens there via banner
+  // Always go to deals — subscription check happens there via paywall banner
   window.location.href = 'deals.html';
 }
 

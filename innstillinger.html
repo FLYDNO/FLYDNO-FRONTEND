@@ -159,7 +159,7 @@
           <span class="ms" style="font-size:22px">menu</span>
         </button>
         <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse hidden md:block"></span>
-        <span class="text-sm text-slate-400 font-medium hidden md:block">847 deals funnet hittil</span>
+        <span class="text-sm text-slate-400 font-medium hidden md:block">Kontoinnstillinger</span>
       </div>
       <div class="flex items-center gap-1">
         <button onclick="window.location.href='varsler.html'" class="relative p-2 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-[#111] transition-colors">
@@ -176,7 +176,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase-config.js"></script>
-<script>requireAuth();</script>
 <div class="max-w-4xl mx-auto px-4 md:px-8 py-8">
       <div class="mb-8">
         <h2 class="text-xl md:text-3xl font-black tracking-tight text-slate-100">Kontoinnstillinger</h2>
@@ -199,7 +198,7 @@
               </div>
               <div class="space-y-2">
                 <label class="text-sm font-medium text-slate-300">E-postadresse</label>
-                <input id="profileEmail" class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-100" type="email" value=""/>
+                <input id="profileEmail" class="w-full bg-[#0e0e0e] border border-[#1e1e1e] rounded-lg px-4 py-2.5 outline-none transition-all text-slate-500 cursor-not-allowed" type="email" value="" readonly title="E-post kan ikke endres her. Kontakt brukerstøtte."/>
               </div>
               <div class="space-y-2">
                 <label class="text-sm font-medium text-slate-300">Telefonnummer</label>
@@ -476,7 +475,7 @@ async function loadSubscriptionStatus(profile) {
         badge.className = 'px-3 py-1 bg-slate-500/15 text-slate-400 text-xs font-bold rounded-full border border-slate-500/25 uppercase tracking-widest';
         desc.textContent = 'Du har ikke et aktivt abonnement.';
         renewal.textContent = '';
-        actions.innerHTML = '<a href="login.html" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all">Aktiver abonnement</a>';
+        actions.innerHTML = '<a href="deals.html" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all">Aktiver abonnement</a>';
       }
       return;
     }
@@ -508,7 +507,7 @@ async function loadSubscriptionStatus(profile) {
         badge.className = 'px-3 py-1 bg-red-500/15 text-red-400 text-xs font-bold rounded-full border border-red-500/25 uppercase tracking-widest';
         desc.textContent = 'Abonnementet ditt er ikke aktivt.';
         renewal.textContent = '';
-        actions.innerHTML = '<a href="login.html" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all">Reaktiver abonnement</a>';
+        actions.innerHTML = '<a href="deals.html" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all">Reaktiver abonnement</a>';
       }
     } else {
       badge.textContent = 'Inaktiv';
