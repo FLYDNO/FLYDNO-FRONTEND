@@ -42,7 +42,15 @@ const FALLBACK_DEALS: Deal[] = [
   { id: 8, from: 'Torp', fromCode: 'TRF', to: 'Malaga', toCode: 'AGP', flag: 'es', price: 269, normal: 1636, discount: 84, date: '2026-06-08', airline: 'Ryanair', direct: true, seats: 9, bestType: 'oneway', onewayPrice: 269, roundtripPrice: 890 },
 ]
 
-const AIRPORTS = ['Alle', 'OSL', 'BGO', 'SVG', 'TRD', 'TOS', 'TRF']
+const AIRPORTS = [
+  { code: 'Alle', label: 'Alle' },
+  { code: 'OSL', label: 'Oslo' },
+  { code: 'BGO', label: 'Bergen' },
+  { code: 'SVG', label: 'Stavanger' },
+  { code: 'TRD', label: 'Trondheim' },
+  { code: 'TOS', label: 'Tromsø' },
+  { code: 'TRF', label: 'Torp' },
+]
 
 const MONTHS = [
   { key: 'alle', label: 'Alle mnd' },
@@ -224,7 +232,7 @@ export default function DealsPage() {
 
             {/* Airport filter */}
             <div style={{ display: 'flex', gap: 8, overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 4 }}>
-              {AIRPORTS.map(code => (
+              {AIRPORTS.map(({ code, label }) => (
                 <button key={code} onClick={() => setSelectedAirport(code)} style={{
                   padding: '5px 12px', borderRadius: 100, fontSize: 12, fontWeight: 600,
                   border: '1px solid', whiteSpace: 'nowrap', cursor: 'pointer', transition: 'all 0.15s',
@@ -233,7 +241,8 @@ export default function DealsPage() {
                   color: selectedAirport === code ? '#ff6b00' : 'rgba(255,255,255,0.45)',
                   flexShrink: 0,
                 }}>
-                  {code}
+                  {label}
+                  {code !== 'Alle' && <span style={{ fontSize: 10, opacity: 0.6, marginLeft: 3 }}>({code})</span>}
                 </button>
               ))}
             </div>
