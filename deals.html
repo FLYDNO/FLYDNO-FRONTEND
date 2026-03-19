@@ -471,19 +471,14 @@ function openDeal(idx) {
   document.getElementById('modalAirline').textContent = d.airline;
   document.getElementById('modalStops').textContent = d.direct ? 'Direktefly' : '1 stopp';
 
-  // Build Google Flights URL using the actual travel date from the deal
-  // Use the travel_date stored in the deal, or fallback to dates_text parsing
-  let dateStr = '';
-  if (d.travelDate) {
-    dateStr = d.travelDate;
-  } else {
-    // Fallback: 30 days ahead
+  // Build Google Flights URL — use the format that actually works
+  // First screenshot showed this working: /travel/flights?q=Flights+from+OSL+to+ATH+on+2026-04-18&curr=NOK&hl=no
+  let dateStr = d.travelDate || '';
+  if (!dateStr) {
     const fd = new Date(); fd.setDate(fd.getDate() + 30);
     dateStr = fd.toISOString().split('T')[0];
   }
-  // type=2 = one-way search to match our one-way prices
-  const gfUrl = 'https://www.google.com/travel/flights/search?tfs=CBwQAhooEgoyMDI2LTA0LTE4agwIAhIIL20vMDVsMnFyDAgCEggvbS8wNnpkbA&tfu=EgYIBRABGAA&hl=no&gl=no&curr=NOK#search;f=' + encodeURIComponent(d.fromCode) + ';t=' + encodeURIComponent(d.toCode) + ';d=' + dateStr + ';tt=o;px=1;c=economy';
-  document.getElementById('modalBookBtn').href = 'https://www.google.com/travel/flights?q=Flights+from+' + encodeURIComponent(d.fromCode) + '+to+' + encodeURIComponent(d.toCode) + '+departing+' + dateStr + '+one+way&curr=NOK&hl=no';
+  document.getElementById('modalBookBtn').href = 'https://www.google.com/travel/flights?q=Flights+from+' + d.fromCode + '+to+' + d.toCode + '+on+' + dateStr + '&curr=NOK&hl=no';
 
   document.getElementById('dealModal').style.display = 'flex';
 }
