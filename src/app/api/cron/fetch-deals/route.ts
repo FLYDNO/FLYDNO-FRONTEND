@@ -280,7 +280,7 @@ export async function GET(request: Request) {
     const { error } = await supabase
       .from('flights')
       .upsert(dealsToUpsert, {
-        onConflict: 'departure_airport,arrival_airport,travel_date',
+        onConflict: 'departure_airport,arrival_airport',
         ignoreDuplicates: false,
       })
 
