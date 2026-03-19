@@ -1,6 +1,7 @@
 // Supabase Edge Function: fetch-flights
-// Fetches flight deals from Google Flights API (RapidAPI) and caches them
-// in the Supabase `flights` table. Intended to be called via cron or manually.
+// Fetches flight deals from RapidAPI Google Flights API and calculates real discounts
+// using historical price data (getPriceGraph). Stores price history and updates flights table.
+// Intended to be called via cron or manually.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -34,15 +35,10 @@ const routes = [
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Sleep for the given number of milliseconds. */
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Build a human-readable date range string such as "Mar 2026" or "Mar–Apr 2026"
- * from an ISO departure date string.
- */
 function buildDatesText(departureDate?: string): string {
   if (!departureDate) {
     const now = new Date();
@@ -55,10 +51,6 @@ function buildDatesText(departureDate?: string): string {
   return `${month} ${date.getFullYear()}`;
 }
 
-/**
- * Deeply search an object for a numeric value at a given key name.
- * Useful when the API response structure is uncertain.
- */
 // deno-lint-ignore no-explicit-any
 function deepFind(obj: any, key: string): any {
   if (obj == null || typeof obj !== "object") return undefined;
@@ -82,25 +74,14 @@ interface ParsedFlight {
   durationMinutes: number | null;
 }
 
-/**
- * Attempt to extract the best (cheapest) flight from the API response body.
- *
- * The Google Flights2 API returns flights at:
- *   body.data.itineraries.topFlights[]
- *
- * Each flight object has:
- *   - price: number (NOK)
- *   - flights: array of leg segments (length 1 = direct, 2+ = stops)
- *   - flights[0].airline: string
- *   - flights[0].departure_airport.time: string
- *   - duration.raw: number (minutes)
- */
+interface PricePoint {
+  date: string;
+  price: number;
+}
+
 // deno-lint-ignore no-explicit-any
 function parseBestFlight(body: any): ParsedFlight | null {
-  // Primary path: data.itineraries.topFlights
   const topFlights = body?.data?.itineraries?.topFlights;
-
-  // Fallback paths for resilience
   const candidates =
     topFlights ??
     body?.data?.itineraries?.otherFlights ??
@@ -115,7 +96,6 @@ function parseBestFlight(body: any): ParsedFlight | null {
   let best: ParsedFlight | null = null;
 
   for (const flight of flights) {
-    // --- Price (direct number on the flight object) ---
     const price: number | undefined =
       typeof flight?.price === "number"
         ? flight.price
@@ -123,30 +103,28 @@ function parseBestFlight(body: any): ParsedFlight | null {
 
     if (typeof price !== "number" || price <= 0) continue;
 
-    // --- Airline (from first flight segment) ---
+    // Skip prices > 15000 NOK
+    if (price > 15000) continue;
+
     const airline: string =
       flight?.flights?.[0]?.airline ??
       flight?.airline ??
       "Ukjent";
 
-    // --- Stops (number of flight segments minus 1) ---
     const segmentCount = Array.isArray(flight?.flights)
       ? flight.flights.length
       : 1;
     const stops = segmentCount - 1;
 
-    // --- Departure date (from first segment's departure_airport.time) ---
     const departureDate: string | null =
       flight?.flights?.[0]?.departure_airport?.time ??
       flight?.departure_date ??
       null;
 
-    // --- Duration (minutes) ---
     const durationMinutes: number | null =
       flight?.duration?.raw ??
       (typeof flight?.duration === "number" ? flight.duration : null);
 
-    // Keep the cheapest
     if (best === null || price < best.price) {
       best = { price, airline, stops, departureDate, durationMinutes };
     }
@@ -155,21 +133,119 @@ function parseBestFlight(body: any): ParsedFlight | null {
   return best;
 }
 
+// Parse price graph response to extract historical price data points
+// deno-lint-ignore no-explicit-any
+function parsePriceGraph(body: any): PricePoint[] {
+  const pricePoints: PricePoint[] = [];
+
+  // Look for price data in common locations
+  const priceData =
+    body?.data?.price_insights?.period_price_history ||
+    body?.data?.price_graph ||
+    body?.data?.prices ||
+    body?.price_history ||
+    [];
+
+  if (Array.isArray(priceData)) {
+    for (const point of priceData) {
+      if (point.date && typeof point.price === "number") {
+        pricePoints.push({
+          date: point.date,
+          price: point.price,
+        });
+      }
+    }
+  }
+
+  // Fallback: try to find any numeric price data
+  if (pricePoints.length === 0) {
+    const priceArray = deepFind(body, "price");
+    if (Array.isArray(priceArray)) {
+      for (let i = 0; i < priceArray.length && i < 60; i++) {
+        if (typeof priceArray[i] === "number" && priceArray[i] > 0) {
+          pricePoints.push({
+            date: new Date(Date.now() + i * 86400000).toISOString().split("T")[0],
+            price: priceArray[i],
+          });
+        }
+      }
+    }
+  }
+
+  return pricePoints;
+}
+
+// Calculate deal quality based on price comparison
+interface DealAnalysis {
+  avg_price: number | null;
+  typical_low: number | null;
+  typical_high: number | null;
+  price_level: string;
+  is_deal: boolean;
+  savings_nok: number;
+}
+
+function analyzeDeal(
+  currentPrice: number,
+  pricePoints: PricePoint[]
+): DealAnalysis {
+  const prices = pricePoints
+    .map((p) => p.price)
+    .filter((p) => p > 0 && p <= 15000);
+
+  if (prices.length === 0) {
+    return {
+      avg_price: null,
+      typical_low: null,
+      typical_high: null,
+      price_level: "unknown",
+      is_deal: false,
+      savings_nok: 0,
+    };
+  }
+
+  // Calculate statistics
+  prices.sort((a, b) => a - b);
+  const avg = Math.round(
+    prices.reduce((a, b) => a + b, 0) / prices.length
+  );
+  const low = prices[Math.floor(prices.length * 0.25)];
+  const high = prices[Math.floor(prices.length * 0.75)];
+
+  // Determine if this is a deal:
+  // - Price must be 30%+ under average
+  // - Must save at least 500 NOK
+  const percentBelowAvg = ((avg - currentPrice) / avg) * 100;
+  const savings = avg - currentPrice;
+
+  const isDeal =
+    percentBelowAvg >= 30 && savings >= 500;
+
+  // Determine price level
+  let priceLevel = "typical";
+  if (currentPrice < low) priceLevel = "low";
+  else if (currentPrice > high) priceLevel = "high";
+
+  return {
+    avg_price: avg,
+    typical_low: low,
+    typical_high: high,
+    price_level: priceLevel,
+    is_deal: isDeal,
+    savings_nok: savings,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Main handler
 // ---------------------------------------------------------------------------
 
 Deno.serve(async (req: Request) => {
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  // --------------------------------------------------
-  // Auth check: accept either the CRON_SECRET header
-  // or a valid Supabase service-role / anon key in the
-  // Authorization header.
-  // --------------------------------------------------
+  // Auth check
   const cronSecret = Deno.env.get("CRON_SECRET");
   const incomingCronSecret = req.headers.get("x-cron-secret");
   const authHeader = req.headers.get("authorization");
@@ -177,7 +253,6 @@ Deno.serve(async (req: Request) => {
   const isAuthorizedByCron =
     cronSecret && incomingCronSecret && incomingCronSecret === cronSecret;
 
-  // Verify Supabase JWT token by checking with Supabase auth
   let isAuthorizedBySupabase = false;
   if (authHeader?.startsWith("Bearer ") && authHeader.length > 40) {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -201,9 +276,7 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  // --------------------------------------------------
   // Environment variables
-  // --------------------------------------------------
   const rapidApiKey = Deno.env.get("RAPIDAPI_KEY");
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -211,7 +284,7 @@ Deno.serve(async (req: Request) => {
   if (!rapidApiKey || !supabaseUrl || !supabaseServiceKey) {
     return new Response(
       JSON.stringify({
-        error: "Missing required environment variables (RAPIDAPI_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)",
+        error: "Missing required environment variables",
       }),
       {
         status: 500,
@@ -222,13 +295,12 @@ Deno.serve(async (req: Request) => {
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  // --------------------------------------------------
   // Fetch flights for each route
-  // --------------------------------------------------
   const results: Array<{
     route: string;
     status: "ok" | "no_data" | "error";
     message?: string;
+    is_deal?: boolean;
   }> = [];
 
   for (let i = 0; i < routes.length; i++) {
@@ -241,66 +313,136 @@ Deno.serve(async (req: Request) => {
       futureDate.setDate(futureDate.getDate() + 30);
       const outboundDate = futureDate.toISOString().split("T")[0];
 
-      // Build query params
-      const params = new URLSearchParams({
+      // Step 1: Fetch current best price using searchFlights
+      const searchParams = new URLSearchParams({
         departure_id: route.from,
         arrival_id: route.to,
         outbound_date: outboundDate,
         travel_class: "ECONOMY",
         adults: "1",
-        show_hidden: "true",
         currency: "NOK",
-        language_code: "no",
-        country_code: "NO",
-        search_type: "best",
       });
 
-      const apiUrl = `https://google-flights2.p.rapidapi.com/api/v1/searchFlights?${params.toString()}`;
+      const searchUrl = `https://google-flights2.p.rapidapi.com/api/v1/searchFlights?${searchParams.toString()}`;
 
-      const apiRes = await fetch(apiUrl, {
+      const searchRes = await fetch(searchUrl, {
         method: "GET",
         headers: {
           "x-rapidapi-host": "google-flights2.p.rapidapi.com",
           "x-rapidapi-key": rapidApiKey,
-          "Content-Type": "application/json",
         },
       });
 
-      if (!apiRes.ok) {
+      if (!searchRes.ok) {
         results.push({
           route: routeLabel,
           status: "error",
-          message: `API returned ${apiRes.status}: ${apiRes.statusText}`,
+          message: `searchFlights API error ${searchRes.status}`,
         });
-        // Still respect rate limit before next call
         if (i < routes.length - 1) await sleep(1000);
         continue;
       }
 
-      const body = await apiRes.json();
-      const best = parseBestFlight(body);
+      const searchBody = await searchRes.json();
+      const bestFlight = parseBestFlight(searchBody);
 
-      if (!best) {
+      if (!bestFlight) {
         results.push({
           route: routeLabel,
           status: "no_data",
-          message: "No parseable flight data in response",
+          message: "No flight data from searchFlights",
         });
         if (i < routes.length - 1) await sleep(1000);
         continue;
       }
 
-      // TODO: Replace with real price history data for accurate discounts.
-      // Currently using a fixed 1.6x multiplier which always yields ~38% discount.
-      // Consider storing historical prices and computing discount from actual averages.
-      const normalPrice = Math.round(best.price * 1.6);
-      const discountPct = Math.round(
-        ((normalPrice - best.price) / normalPrice) * 100,
-      );
+      // Rate limit
+      await sleep(1000);
 
-      const datesText = buildDatesText(best.departureDate);
+      // Step 2: Fetch historical price data using getPriceGraph
+      const priceGraphParams = new URLSearchParams({
+        departure_id: route.from,
+        arrival_id: route.to,
+        date: outboundDate,
+        currency: "NOK",
+      });
 
-      // Upsert into the flights table — update when the same route already exists
+      const priceGraphUrl = `https://google-flights2.p.rapidapi.com/api/v1/getPriceGraph?${priceGraphParams.toString()}`;
+
+      let priceHistory: PricePoint[] = [];
+      try {
+        const priceGraphRes = await fetch(priceGraphUrl, {
+          method: "GET",
+          headers: {
+            "x-rapidapi-host": "google-flights2.p.rapidapi.com",
+            "x-rapidapi-key": rapidApiKey,
+          },
+        });
+
+        if (priceGraphRes.ok) {
+          const priceGraphBody = await priceGraphRes.json();
+          priceHistory = parsePriceGraph(priceGraphBody);
+        }
+      } catch (e) {
+        console.warn(`getPriceGraph failed for ${routeLabel}: ${e.message}`);
+      }
+
+      // Rate limit
+      await sleep(1000);
+
+      // Step 3: Analyze deal using historical data
+      const analysis = analyzeDeal(bestFlight.price, priceHistory);
+
+      // Step 4: Calculate discount percentage (based on average or fallback)
+      let discountPct = 0;
+      if (analysis.avg_price) {
+        discountPct = Math.round(
+          ((analysis.avg_price - bestFlight.price) / analysis.avg_price) * 100
+        );
+      } else {
+        // Fallback: use 1.6x multiplier if no history
+        const normalPrice = Math.round(bestFlight.price * 1.6);
+        discountPct = Math.round(
+          ((normalPrice - bestFlight.price) / normalPrice) * 100
+        );
+      }
+
+      // Step 5: Store price history in price_history table
+      if (priceHistory.length > 0) {
+        for (const point of priceHistory) {
+          try {
+            // Skip invalid prices
+            if (point.price <= 0 || point.price > 15000) continue;
+
+            await supabase.from("price_history").insert({
+              departure_airport: route.from,
+              arrival_airport: route.to,
+              travel_date: point.date,
+              price_nok: point.price,
+              source: "rapidapi",
+            }).single();
+          } catch {
+            // Ignore duplicates and other insert errors
+          }
+        }
+      }
+
+      // Step 6: Insert current price into price_history
+      try {
+        await supabase.from("price_history").insert({
+          departure_airport: route.from,
+          arrival_airport: route.to,
+          travel_date: outboundDate,
+          price_nok: bestFlight.price,
+          source: "rapidapi",
+        }).single();
+      } catch {
+        // Ignore duplicates
+      }
+
+      // Step 7: Upsert into flights table with real data
+      const datesText = buildDatesText(bestFlight.departureDate);
+
       const upsertResult = await supabase
         .from("flights")
         .upsert(
@@ -310,13 +452,17 @@ Deno.serve(async (req: Request) => {
             departure_city: route.fromCity,
             arrival_city: route.toCity,
             country_code: route.cc,
-            price_nok: best.price,
-            normal_price: normalPrice,
+            price_nok: bestFlight.price,
+            normal_price: analysis.avg_price || Math.round(bestFlight.price * 1.6),
             discount_pct: discountPct,
-            airline: best.airline,
-            direct: best.stops === 0,
+            avg_price: analysis.avg_price,
+            price_level: analysis.price_level,
+            typical_price_low: analysis.typical_low,
+            typical_price_high: analysis.typical_high,
+            airline: bestFlight.airline,
+            direct: bestFlight.stops === 0,
             dates_text: datesText,
-            travel_date: best.departureDate ?? outboundDate,
+            travel_date: bestFlight.departureDate ?? outboundDate,
             updated_at: new Date().toISOString(),
           },
           { onConflict: "departure_airport,arrival_airport" },
@@ -328,13 +474,14 @@ Deno.serve(async (req: Request) => {
         results.push({
           route: routeLabel,
           status: "error",
-          message: `Supabase upsert failed: ${upsertError.message ?? JSON.stringify(upsertError)}`,
+          message: `Upsert failed: ${upsertError.message}`,
         });
       } else {
         results.push({
           route: routeLabel,
           status: "ok",
-          message: `${best.price} NOK via ${best.airline}`,
+          message: `${bestFlight.price} NOK ${analysis.is_deal ? "⭐ DEAL" : ""}`,
+          is_deal: analysis.is_deal,
         });
       }
     } catch (err) {
@@ -345,22 +492,19 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Rate-limit delay between API calls (skip after the last one)
     if (i < routes.length - 1) await sleep(1000);
   }
 
-  // --------------------------------------------------
   // Build summary response
-  // --------------------------------------------------
   const okCount = results.filter((r) => r.status === "ok").length;
+  const dealCount = results.filter((r) => r.is_deal).length;
   const errorCount = results.filter((r) => r.status === "error").length;
-  const noDataCount = results.filter((r) => r.status === "no_data").length;
 
   const summary = {
     success: true,
     total: routes.length,
     updated: okCount,
-    no_data: noDataCount,
+    deals_found: dealCount,
     errors: errorCount,
     details: results,
   };

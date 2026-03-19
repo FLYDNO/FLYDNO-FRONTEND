@@ -333,12 +333,16 @@ async function loadDeals() {
         toCode: row.arrival_airport || '???',
         cc: row.country_code || 'no',
         price: row.price_nok || 0,
-        orig: row.normal_price || 0,
+        orig: row.avg_price || row.normal_price || 0,
         discount: row.discount_pct || 0,
         dates: row.dates_text || '',
         airline: row.airline || 'Ukjent',
         direct: row.direct ?? false,
-        origin: row.departure_airport || '???'
+        origin: row.departure_airport || '???',
+        priceLevel: row.price_level || 'typical',
+        avgPrice: row.avg_price,
+        typicalLow: row.typical_price_low,
+        typicalHigh: row.typical_price_high
       }));
     } else {
       console.warn('Ingen deals fra Supabase, bruker fallback-data');
@@ -420,7 +424,15 @@ function renderDeals() {
     grid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-slate-500">Ingen deals funnet for dette filteret.</p></div>';
     return;
   }
-  grid.innerHTML = filtered.map((d, i) => `
+  grid.innerHTML = filtered.map((d, i) => {
+    let priceLevelBadge = '';
+    if (d.priceLevel === 'low') {
+      priceLevelBadge = '<span class="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Lavt pris</span>';
+    } else if (d.priceLevel === 'high') {
+      priceLevelBadge = '<span class="inline-flex items-center px-1.5 md:px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-bold bg-orange-500/10 text-orange-400 border border-orange-500/20">Høyt pris</span>';
+    }
+
+    return `
     <div onclick="openDeal(${deals.indexOf(d)})" class="deal-card bg-[#111] border border-[#1e1e1e] rounded-xl p-2.5 md:p-3.5 transition-all duration-200 cursor-pointer">
       <div class="flex items-start justify-between mb-1.5 md:mb-2">
         <div>
@@ -435,12 +447,14 @@ function renderDeals() {
       </div>
       <p class="text-base md:text-xl font-black text-[#ff6b00] leading-none">${d.price.toLocaleString('no')} kr</p>
       <p class="text-[10px] md:text-[11px] text-slate-600 mt-0.5 line-through">${d.orig.toLocaleString('no')} kr</p>
+      ${priceLevelBadge}
       <div class="hidden md:flex items-center gap-1.5 mt-2 pt-2 border-t border-[#1e1e1e] text-[11px] text-slate-500">
         <span class="ms" style="font-size:13px">airlines</span>
         <span>${escapeHtml(d.airline)} · ${d.direct ? 'Direktefly' : '1 stopp'}</span>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function openDeal(idx) {
