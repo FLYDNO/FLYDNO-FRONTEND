@@ -193,21 +193,24 @@ export default function DealsPage() {
     })
 
   /**
-   * Build a Google Flights deep link using the same format as Flajts.se.
-   * Format: q=Flights+to+{DEST}+from+{ORIGIN}+{OUTDATE}[+to+{RETDATE}]
-   * OW = no return date, RT = with return date.
-   * Date format must be YYYYMMDD (no dashes).
+   * Build a Google Flights deep link.
+   * OW: uses 'One+way+flights' keyword which forces Google Flights into one-way mode.
+   * RT: uses 'Flights+to+...+to+{RETDATE}' which opens round-trip with return date.
+   * Date format: YYYYMMDD (no dashes) as required by Google Flights.
+   * Verified: 'One way flights to ALC from SVG 20260411' correctly opens Én vei in Google Flights.
    */
   const googleFlightsUrl = (deal: Deal, priceType: 'oneway' | 'roundtrip') => {
     const depDate = (deal.date?.split('T')[0] || '').replace(/-/g, '')
     const retDate = (deal.returnDate?.split('T')[0] || '').replace(/-/g, '')
     const from = deal.fromCode
     const to = deal.toCode
-    const base = `https://www.google.com/travel/flights?hl=nb&curr=NOK&q=Flights+to+${to}+from+${from}+${depDate}`
-    if (priceType === 'roundtrip' && retDate) {
-      return `${base}+to+${retDate}`
+    if (priceType === 'oneway') {
+      // 'One+way+flights' keyword forces Google Flights into one-way mode
+      return `https://www.google.com/travel/flights?hl=nb&curr=NOK&q=One+way+flights+to+${to}+from+${from}+${depDate}`
     }
-    return base
+    // Round-trip: include return date
+    const retPart = retDate ? `+to+${retDate}` : ''
+    return `https://www.google.com/travel/flights?hl=nb&curr=NOK&q=Flights+to+${to}+from+${from}+${depDate}${retPart}`
   }
 
   return (
