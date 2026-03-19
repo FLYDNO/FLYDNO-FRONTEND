@@ -1,611 +1,548 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
-const LIVE_DEALS = [
-  { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', flag: 'th', price: 2489, normal: 5200, discount: 52, date: 'Jun 2026', airline: 'Norwegian', direct: false },
-  { from: 'Bergen', fromCode: 'BGO', to: 'Barcelona', toCode: 'BCN', flag: 'es', price: 699, normal: 1890, discount: 63, date: 'Mai 2026', airline: 'Ryanair', direct: true },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Dubai', toCode: 'DXB', flag: 'ae', price: 1890, normal: 4200, discount: 55, date: 'Okt 2026', airline: 'Emirates', direct: true },
-  { from: 'Stavanger', fromCode: 'SVG', to: 'London', toCode: 'LHR', flag: 'gb', price: 449, normal: 1200, discount: 63, date: 'Apr 2026', airline: 'Norwegian', direct: true },
-  { from: 'Trondheim', fromCode: 'TRD', to: 'Roma', toCode: 'FCO', flag: 'it', price: 589, normal: 1650, discount: 64, date: 'Mai 2026', airline: 'Ryanair', direct: false },
-  { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', flag: 'us', price: 3290, normal: 7800, discount: 58, date: 'Sep 2026', airline: 'SAS', direct: true },
-  { from: 'Tromsø', fromCode: 'TOS', to: 'Alicante', toCode: 'ALC', flag: 'es', price: 799, normal: 2100, discount: 62, date: 'Jul 2026', airline: 'Norwegian', direct: false },
-  { from: 'Torp', fromCode: 'TRF', to: 'Malaga', toCode: 'AGP', flag: 'es', price: 549, normal: 1400, discount: 61, date: 'Jun 2026', airline: 'Ryanair', direct: true },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Tokyo', toCode: 'NRT', flag: 'jp', price: 4290, normal: 9800, discount: 56, date: 'Nov 2026', airline: 'Finnair', direct: false },
-  { from: 'Bergen', fromCode: 'BGO', to: 'Lisboa', toCode: 'LIS', flag: 'pt', price: 649, normal: 1750, discount: 63, date: 'Jun 2026', airline: 'Ryanair', direct: false },
-  { from: 'Oslo', fromCode: 'OSL', to: 'Bali', toCode: 'DPS', flag: 'id', price: 3890, normal: 8900, discount: 56, date: 'Aug 2026', airline: 'KLM', direct: false },
-  { from: 'Stavanger', fromCode: 'SVG', to: 'Paris', toCode: 'CDG', flag: 'fr', price: 529, normal: 1400, discount: 62, date: 'Mai 2026', airline: 'Norwegian', direct: true },
+const DEALS = [
+  { from: 'Oslo', fromCode: 'OSL', to: 'Firenze', toCode: 'FCO', flag: 'it', price: 849, discount: 38, type: 't/r' },
+  { from: 'Bergen', fromCode: 'BGO', to: 'Barcelona', toCode: 'BCN', flag: 'es', price: 520, discount: 44, type: 't/r' },
+  { from: 'Stavanger', fromCode: 'SVG', to: 'London', toCode: 'LHR', flag: 'gb', price: 3190, discount: 31, type: 't/r' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'Bangkok', toCode: 'BKK', flag: 'th', price: 2489, discount: 47, type: 't/r' },
+  { from: 'Trondheim', fromCode: 'TRD', to: 'Roma', toCode: 'FCO', flag: 'it', price: 589, discount: 64, type: 't/r' },
+  { from: 'Oslo', fromCode: 'OSL', to: 'New York', toCode: 'JFK', flag: 'us', price: 3290, discount: 58, type: 't/r' },
 ];
 
-const AIRPORTS = [
-  { code: 'OSL', name: 'Oslo' },
-  { code: 'BGO', name: 'Bergen' },
-  { code: 'SVG', name: 'Stavanger' },
-  { code: 'TRD', name: 'Trondheim' },
-  { code: 'TOS', name: 'Tromsø' },
-  { code: 'TRF', name: 'Torp' },
-  { code: 'KRS', name: 'Kristiansand' },
+const DESTS = [
+  { flag: 'es', name: 'Barcelona' }, { flag: 'gb', name: 'London' }, { flag: 'th', name: 'Bangkok' },
+  { flag: 'us', name: 'New York' }, { flag: 'jp', name: 'Tokyo' }, { flag: 'it', name: 'Roma' },
+  { flag: 'ae', name: 'Dubai' }, { flag: 'fr', name: 'Paris' }, { flag: 'de', name: 'Berlin' },
+  { flag: 'gr', name: 'Aten' }, { flag: 'pt', name: 'Lisboa' }, { flag: 'id', name: 'Bali' },
+  { flag: 'sg', name: 'Singapore' }, { flag: 'ma', name: 'Marrakech' }, { flag: 'tr', name: 'Istanbul' },
+  { flag: 'mx', name: 'Mexico City' }, { flag: 'br', name: 'São Paulo' }, { flag: 'au', name: 'Sydney' },
+  { flag: 'in', name: 'Mumbai' }, { flag: 'za', name: 'Cape Town' }, { flag: 'ca', name: 'Toronto' },
+  { flag: 'nz', name: 'Auckland' }, { flag: 'ar', name: 'Buenos Aires' }, { flag: 'cn', name: 'Shanghai' },
 ];
 
 const FAQS = [
-  { q: 'Hvilke flyplasser overvåker dere?', a: 'Vi overvåker Oslo (OSL), Bergen (BGO), Stavanger (SVG), Trondheim (TRD), Tromsø (TOS), Torp (TRF) og Kristiansand (KRS) — 7 norske flyplasser totalt. Dette er 5 flyplasser mer enn konkurrentene våre.' },
-  { q: 'Hva er en "deal"?', a: 'En deal er en pris som er 30% eller mer under det historiske gjennomsnittet for den ruten, og som sparer deg minst 500 kr. Vi viser alltid normalpris og rabatt slik at du kan se nøyaktig hva du sparer.' },
-  { q: 'Må jeg bestille gjennom dere?', a: 'Nei — du booker direkte hos flyselskapet via Google Flights. Vi tar ingen provisjon og har ingen skjulte kostnader. Vi er kun et varslingsverktøy.' },
-  { q: 'Kan jeg si opp når som helst?', a: 'Ja, du kan si opp abonnementet til enhver tid via innstillinger. Ingen bindingstid, ingen spørsmål stilt.' },
-  { q: 'Hva skjer etter prøveperioden?', a: 'Etter 7 dager gratis trekkes 149 kr/mnd automatisk. Du kan si opp når som helst før det uten kostnad.' },
-  { q: 'Hvor ofte sjekker dere prisene?', a: 'Vi sjekker prisene 3 ganger daglig — morgen, middag og kveld — slik at du alltid har de ferskeste dealene.' },
+  { q: 'Hvilke flyplasser overvåker dere?', a: 'Vi overvåker per dags dato Oslo (OSL), Bergen (BGO), Stavanger (SVG), Trondheim (TRD), Tromsø (TOS) og Sandefjord/Torp (TRF).' },
+  { q: 'Hvor mye kan jeg forvente å spare?', a: 'Det varierer per rute og sesong. Vi varsler kun når prisen er vesentlig lavere enn det vi normalt ser for den ruten. Mange brukere sparer tusenvis av kroner per reise.' },
+  { q: 'Må jeg bestille gjennom dere?', a: 'Nei – du booker direkte hos flyselskapet via Google Flights. Vi er kun et varslingsverktøy, ikke en bestillingstjeneste.' },
+  { q: 'Kan jeg si opp når som helst?', a: 'Ja, du kan si opp abonnementet til enhver tid via dine innstillinger. Ingen spørsmål stilt, ingen skjulte gebyrer.' },
 ];
-
-function DealCard({ deal }: { deal: typeof LIVE_DEALS[0] }) {
-  return (
-    <div style={{
-      background: '#fff',
-      border: '1.5px solid #efefef',
-      borderRadius: 16,
-      padding: '16px 18px',
-      transition: 'border-color 0.2s, box-shadow 0.2s, transform 0.2s',
-      cursor: 'pointer',
-    }}
-      onMouseEnter={e => {
-        const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = 'rgba(255,107,0,0.35)';
-        el.style.boxShadow = '0 8px 32px rgba(255,107,0,0.08)';
-        el.style.transform = 'translateY(-2px)';
-      }}
-      onMouseLeave={e => {
-        const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = '#efefef';
-        el.style.boxShadow = 'none';
-        el.style.transform = 'translateY(0)';
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span className={`fi fi-${deal.flag}`} style={{ width: '1.4em', height: '1.05em', display: 'inline-block', borderRadius: 3, flexShrink: 0 }} />
-          <div>
-            <p style={{ fontSize: 14, fontWeight: 800, color: '#0a0a0a', lineHeight: 1.2 }}>{deal.from} → {deal.to}</p>
-            <p style={{ fontSize: 11, color: '#aaa', marginTop: 1 }}>{deal.fromCode} → {deal.toCode}</p>
-          </div>
-        </div>
-        <span style={{
-          background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0',
-          fontSize: 11, fontWeight: 800, padding: '3px 8px', borderRadius: 100,
-        }}>
-          -{deal.discount}%
-        </span>
-      </div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-        <div>
-          <p style={{ fontSize: 11, color: '#bbb', textDecoration: 'line-through' }}>{deal.normal.toLocaleString('no')} kr</p>
-          <p style={{ fontSize: 24, fontWeight: 900, color: '#0a0a0a', letterSpacing: '-1px', lineHeight: 1.1 }}>
-            {deal.price.toLocaleString('no')} <span style={{ fontSize: 13, fontWeight: 400, color: '#aaa' }}>kr</span>
-          </p>
-        </div>
-        <div style={{ textAlign: 'right' }}>
-          <p style={{ fontSize: 11, color: '#aaa' }}>{deal.date}</p>
-          <p style={{ fontSize: 11, color: '#ff6b00', fontWeight: 700, marginTop: 2 }}>
-            {deal.direct ? '✈ Direktefly' : '↔ 1 stopp'}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ borderBottom: '1px solid #f0f0f0' }}>
+    <div style={{ borderBottom: '1px solid rgba(255,255,255,0.09)' }}>
       <button
         onClick={() => setOpen(!open)}
         style={{
           width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '18px 0', textAlign: 'left', gap: 16, background: 'none', border: 'none', cursor: 'pointer',
+          padding: '22px 0', background: 'none', border: 'none', color: open ? '#ff6b00' : '#f0f0f0',
+          fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: 'pointer', textAlign: 'left', gap: 16,
+          transition: 'color 0.2s',
         }}
       >
-        <span style={{ fontSize: 15, fontWeight: 700, color: '#0a0a0a' }}>{q}</span>
-        <span className="ms" style={{
-          fontSize: 22, color: '#aaa', flexShrink: 0,
-          transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'none',
-        }}>expand_more</span>
+        {q}
+        <span className="ms" style={{ fontSize: 18, color: 'rgba(255,255,255,0.4)', transform: open ? 'rotate(45deg)' : 'none', transition: 'transform 0.3s', flexShrink: 0 }}>add</span>
       </button>
-      {open && (
-        <p style={{ paddingBottom: 18, fontSize: 14, color: '#555', lineHeight: 1.7 }}>{a}</p>
-      )}
+      <div style={{ maxHeight: open ? 200 : 0, overflow: 'hidden', transition: 'max-height 0.3s ease', paddingBottom: open ? 20 : 0 }}>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.8 }}>{a}</p>
+      </div>
     </div>
   );
 }
 
 export default function HomePage() {
-  const [selectedAirports, setSelectedAirports] = useState(['OSL', 'BGO', 'SVG', 'TRD', 'TOS', 'TRF']);
-  const [dealCount, setDealCount] = useState(0);
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dealCount] = useState(847);
+  const [scrolled, setScrolled] = useState(false);
+  const tickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const target = 187;
-    let current = 0;
-    const timer = setInterval(() => {
-      current = Math.min(current + 5, target);
-      setDealCount(current);
-      if (current >= target) clearInterval(timer);
-    }, 20);
-    return () => clearInterval(timer);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const toggleAirport = (code: string) => {
-    setSelectedAirports(prev =>
-      prev.includes(code) ? prev.filter(a => a !== code) : [...prev, code]
+  // Fade-up on scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.1 }
     );
-  };
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) setSubmitted(true);
-  };
-
-  const filteredDeals = LIVE_DEALS.filter(d => selectedAirports.includes(d.fromCode));
+  const tickerItems = [...DESTS, ...DESTS];
 
   return (
-    <>
-      <style>{`
-        @keyframes pulse-live {
-          0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(22,163,74,0.5); }
-          50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(22,163,74,0); }
-        }
-        @keyframes ticker {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .live-dot { animation: pulse-live 2s infinite; }
-        .ticker-track { display: flex; width: max-content; animation: ticker 35s linear infinite; }
-        .ticker-track:hover { animation-play-state: paused; }
-        .fade-up { animation: fadeUp 0.6s cubic-bezier(.22,1,.36,1) both; }
-        .fade-up-1 { animation-delay: 0.05s; }
-        .fade-up-2 { animation-delay: 0.12s; }
-        .fade-up-3 { animation-delay: 0.2s; }
-        .fade-up-4 { animation-delay: 0.28s; }
-        .airport-chip {
-          padding: 7px 15px; border-radius: 100px; font-size: 13px; font-weight: 600;
-          border: 1.5px solid #e0e0e0; background: #fff; color: #555; cursor: pointer;
-          transition: all 0.15s; white-space: nowrap;
-        }
-        .airport-chip:hover { border-color: #ff6b00; color: #ff6b00; }
-        .airport-chip.active { background: #ff6b00; border-color: #ff6b00; color: #fff; }
-        .cta-btn {
-          display: inline-flex; align-items: center; gap: 7px;
-          padding: 14px 28px; background: #ff6b00; color: #fff;
-          border-radius: 100px; font-size: 15px; font-weight: 700;
-          border: none; cursor: pointer; transition: background 0.15s, transform 0.1s;
-          text-decoration: none;
-        }
-        .cta-btn:hover { background: #e55f00; transform: translateY(-1px); }
-        .cta-btn:active { transform: translateY(0); }
-        .cta-btn-sm {
-          display: inline-flex; align-items: center; gap: 6px;
-          padding: 11px 22px; background: #ff6b00; color: #fff;
-          border-radius: 100px; font-size: 14px; font-weight: 700;
-          border: none; cursor: pointer; transition: background 0.15s;
-          text-decoration: none;
-        }
-        .cta-btn-sm:hover { background: #e55f00; }
-        .ghost-btn {
-          display: inline-flex; align-items: center; gap: 6px;
-          padding: 11px 20px; background: transparent; color: #555;
-          border-radius: 100px; font-size: 14px; font-weight: 600;
-          border: 1.5px solid #e0e0e0; cursor: pointer; transition: all 0.15s;
-          text-decoration: none;
-        }
-        .ghost-btn:hover { border-color: #ff6b00; color: #ff6b00; }
-        .step-icon {
-          width: 52px; height: 52px; background: #fff3eb; border-radius: 14px;
-          display: flex; align-items: center; justify-content: center;
-          color: #ff6b00; margin: 0 auto 16px; flex-shrink: 0;
-        }
-        .section-tag {
-          font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
-          text-transform: uppercase; color: #ff6b00;
-        }
-        @media (max-width: 900px) {
-          .hero-grid { grid-template-columns: 1fr !important; }
-          .hero-right { display: none !important; }
-          .stats-grid { grid-template-columns: repeat(2,1fr) !important; }
-          .steps-grid { grid-template-columns: repeat(2,1fr) !important; }
-          .deals-grid { grid-template-columns: repeat(2,1fr) !important; }
-          .compare-grid { grid-template-columns: 1fr !important; }
-          .footer-grid { grid-template-columns: 1fr 1fr !important; }
-        }
-        @media (max-width: 600px) {
-          .hero-title { font-size: 38px !important; letter-spacing: -1.5px !important; }
-          .stats-grid { grid-template-columns: repeat(2,1fr) !important; }
-          .steps-grid { grid-template-columns: 1fr !important; }
-          .deals-grid { grid-template-columns: 1fr !important; }
-          .footer-grid { grid-template-columns: 1fr !important; }
-          .hide-sm { display: none !important; }
-        }
-      `}</style>
+    <div style={{ background: '#050505', color: '#f0f0f0', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif" }}>
 
-      {/* ── NAVBAR ── */}
+      {/* NAVBAR */}
       <nav style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        background: 'rgba(255,255,255,0.93)', backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid #f0f0f0',
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        background: scrolled ? 'rgba(5,5,5,0.95)' : 'rgba(5,5,5,0.92)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        transition: 'background 0.3s',
       }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px', height: 62, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
-            <div style={{ width: 34, height: 34, background: '#ff6b00', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <span className="ms" style={{ fontSize: 19, color: '#fff' }}>flight_takeoff</span>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16, fontWeight: 800, color: '#fff', textDecoration: 'none' }}>
+            <div style={{ width: 28, height: 28, background: '#ff6b00', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span className="ms" style={{ fontSize: 16, color: '#fff' }}>flight_takeoff</span>
             </div>
-            <span style={{ fontSize: 18, fontWeight: 900, color: '#0a0a0a', letterSpacing: '-0.4px' }}>FlyDeals</span>
+            FlyDeals
           </Link>
-
-          <div className="hide-sm" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-            {[['#hvordan', 'Slik fungerer det'], ['#deals', 'Live deals'], ['#pris', 'Pris'], ['#faq', 'FAQ']].map(([href, label]) => (
-              <a key={href} href={href} style={{ fontSize: 14, fontWeight: 500, color: '#555', textDecoration: 'none', transition: 'color 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#ff6b00')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#555')}>
-                {label}
-              </a>
-            ))}
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Link href="/login" className="ghost-btn hide-sm">Logg inn</Link>
-            <Link href="/login" className="cta-btn-sm">Prøv gratis</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 24, fontSize: 13 }}>
+            <Link href="/deals" style={{ color: 'rgba(255,255,255,0.6)', fontWeight: 500, transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
+              Deals
+            </Link>
+            <a href="#how" style={{ color: 'rgba(255,255,255,0.6)', fontWeight: 500, transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
+              Hvordan det fungerer
+            </a>
+            <Link href="/login" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Logg inn</Link>
+            <Link href="/login" style={{
+              padding: '8px 18px', background: '#ff6b00', color: '#fff', borderRadius: 100,
+              fontSize: 13, fontWeight: 700, transition: 'background 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#e55f00')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#ff6b00')}>
+              Prøv gratis
+            </Link>
           </div>
         </div>
       </nav>
 
-      {/* ── LIVE TICKER ── */}
-      <div style={{ background: '#fff8f3', borderBottom: '1px solid #ffe5cc', padding: '8px 0', overflow: 'hidden' }}>
-        <div className="ticker-track">
-          {[...LIVE_DEALS, ...LIVE_DEALS].map((d, i) => (
-            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 24px', fontSize: 13, fontWeight: 600, color: '#555', whiteSpace: 'nowrap' }}>
-              <span className={`fi fi-${d.flag}`} style={{ width: '1.1em', height: '0.85em', borderRadius: 2, display: 'inline-block' }} />
-              {d.from} → {d.to}
-              <span style={{ color: '#ff6b00', fontWeight: 800 }}>{d.price.toLocaleString('no')} kr</span>
-              <span style={{ background: '#f0fdf4', color: '#16a34a', fontSize: 10, fontWeight: 800, padding: '1px 6px', borderRadius: 100 }}>-{d.discount}%</span>
-              <span style={{ color: '#e0e0e0', margin: '0 2px' }}>·</span>
+      {/* HERO */}
+      <section style={{ padding: '120px 0 80px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'radial-gradient(ellipse 80% 60% at 70% 40%, rgba(255,107,0,0.08) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+            {/* Left */}
+            <div>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 12px',
+                background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)',
+                borderRadius: 100, fontSize: 12, fontWeight: 600, color: '#22c55e', marginBottom: 24,
+              }}>
+                <span style={{ width: 6, height: 6, background: '#22c55e', borderRadius: '50%', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+                {dealCount}+ deals funnet
+              </div>
+              <h1 style={{ fontSize: 58, fontWeight: 900, lineHeight: 1.03, letterSpacing: '-2.5px', marginBottom: 20 }}>
+                Billige flyreiser.<br />
+                <span style={{ color: '#ff6b00' }}>Funnet for deg.</span>
+              </h1>
+              <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.65)', lineHeight: 1.7, marginBottom: 32, maxWidth: 440 }}>
+                Vi overvåker kontinuerlig billettsystemene ved de største nordiske flyplassene for å finne de største prisavslagene for deg. Spar tusenvis på din neste drømmereise.
+              </p>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                <Link href="/login" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6, padding: '13px 26px',
+                  background: '#ff6b00', color: '#fff', borderRadius: 100, fontSize: 14, fontWeight: 700,
+                  transition: 'all 0.2s', textDecoration: 'none',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#e55f00'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#ff6b00'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                  Prøv gratis i dag
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M3 7h8M8 4l3 3-3 3" /></svg>
+                </Link>
+                <a href="#how" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6, padding: '13px 22px',
+                  background: 'transparent', color: 'rgba(255,255,255,0.8)', borderRadius: 100,
+                  fontSize: 14, fontWeight: 500, border: '1px solid rgba(255,255,255,0.12)', transition: 'all 0.2s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.color = '#fff'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}>
+                  Se hvordan det fungerer
+                </a>
+              </div>
+              <div style={{ display: 'flex', gap: 18, marginTop: 22, flexWrap: 'wrap' }}>
+                {['7 dager gratis', 'Ingen binding', 'Fri til å stoppe'].map(t => (
+                  <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>
+                    <svg width="13" height="13" fill="none" stroke="#ff6b00" strokeWidth="2.5" strokeLinecap="round"><path d="M2 6.5l3.5 3.5 5.5-6" /></svg>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Right – Deal preview card */}
+            <div>
+              <div style={{ background: '#242424', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 16, padding: 20 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.45)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 5, height: 5, background: '#22c55e', borderRadius: '50%', animation: 'pulse 2s infinite', display: 'inline-block' }} />
+                  Siste deals
+                </div>
+                {[
+                  { from: 'fra Oslo (OSL)', dest: 'New York', flag: 'us', price: '2 890 kr', unit: 't/r', disc: '-41%' },
+                  { from: 'fra Bergen (BGO)', dest: 'London', flag: 'gb', price: '489 kr', unit: 'enkel', disc: '-52%' },
+                  { from: 'fra Oslo (OSL)', dest: 'Bangkok', flag: 'th', price: '2 489 kr', unit: 't/r', disc: '-47%' },
+                ].map((d, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 0', borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.07)' : 'none' }}>
+                    <div>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 2 }}>{d.from}</div>
+                      <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: '-0.3px' }}>
+                        {d.dest} <img src={`https://flagcdn.com/16x12/${d.flag}.png`} alt="" style={{ display: 'inline', verticalAlign: 'middle', borderRadius: 2, marginBottom: 1 }} />
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 17, fontWeight: 900, color: '#ff6b00', letterSpacing: '-0.5px' }}>{d.price}</div>
+                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>{d.unit}</div>
+                      <div style={{ display: 'inline-block', padding: '2px 7px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 4, fontSize: 10, fontWeight: 700, color: '#22c55e', marginTop: 3 }}>{d.disc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 12, padding: '12px 16px', background: 'rgba(255,107,0,0.07)', border: '1px solid rgba(255,107,0,0.15)', borderRadius: 10, fontSize: 11, color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span className="ms" style={{ fontSize: 16, color: '#ff6b00' }}>public</span>
+                Overvåker 237+ destinasjoner fra 6 norske flyplasser
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* DESTINATION TICKER */}
+      <div style={{ overflow: 'hidden', padding: '15px 0', borderTop: '1px solid rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.08)', background: '#0a0a0a', position: 'relative' }}>
+        <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: 80, background: 'linear-gradient(to right, #0a0a0a, transparent)', zIndex: 2, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: 80, background: 'linear-gradient(to left, #0a0a0a, transparent)', zIndex: 2, pointerEvents: 'none' }} />
+        <div style={{ display: 'flex', gap: 10, width: 'max-content', animation: 'ticker 42s linear infinite' }}>
+          {tickerItems.map((d, i) => (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 100, fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.55)', border: '1px solid transparent', whiteSpace: 'nowrap' }}>
+              <img src={`https://flagcdn.com/16x12/${d.flag}.png`} alt="" style={{ borderRadius: 2 }} />
+              {d.name}
             </span>
           ))}
         </div>
       </div>
 
-      <main>
-        {/* ── HERO ── */}
-        <section style={{ padding: '72px 24px 80px', background: 'linear-gradient(160deg, #fff 0%, #fff8f3 100%)' }}>
-          <div className="hero-grid" style={{ maxWidth: 1160, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
-
-            {/* Left */}
+      {/* STATS */}
+      <section style={{ padding: '60px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32, textAlign: 'center' }}>
             <div>
-              <div className="fade-up" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 13px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 100, fontSize: 12, fontWeight: 700, color: '#16a34a', marginBottom: 22 }}>
-                <span className="live-dot" style={{ width: 7, height: 7, background: '#16a34a', borderRadius: '50%', display: 'inline-block' }} />
-                {dealCount} aktive deals akkurat nå
-              </div>
-
-              <h1 className="fade-up fade-up-1 hero-title" style={{ fontSize: 58, fontWeight: 900, lineHeight: 1.02, letterSpacing: '-2.5px', marginBottom: 20, color: '#0a0a0a' }}>
-                Spar opptil 90%<br />
-                på <span style={{ color: '#ff6b00' }}>flybilletter</span>
-              </h1>
-
-              <p className="fade-up fade-up-2" style={{ fontSize: 17, color: '#555', lineHeight: 1.75, marginBottom: 32, maxWidth: 460 }}>
-                Vi overvåker flypriser fra 7 norske flyplasser og varsler deg direkte på e-post når vi finner en ekte deal. Du slipper å lete selv.
-              </p>
-
-              <div className="fade-up fade-up-2" style={{ marginBottom: 28 }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#999', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10 }}>Velg dine flyplasser:</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {AIRPORTS.map(({ code, name }) => (
-                    <button key={code} onClick={() => toggleAirport(code)} className={`airport-chip ${selectedAirports.includes(code) ? 'active' : ''}`}>
-                      {name} ({code})
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="fade-up fade-up-3" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', marginBottom: 20 }}>
-                <Link href="/login" className="cta-btn">
-                  Start 7 dager gratis
-                  <span className="ms" style={{ fontSize: 20 }}>arrow_forward</span>
-                </Link>
-                <span style={{ fontSize: 13, color: '#aaa' }}>Deretter 149 kr/mnd</span>
-              </div>
-
-              <div className="fade-up fade-up-4" style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-                {[
-                  { icon: 'verified', label: 'Ingen provisjon' },
-                  { icon: 'lock', label: 'Sikker betaling' },
-                  { icon: 'cancel', label: 'Si opp når som helst' },
-                ].map(({ icon, label }) => (
-                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#aaa' }}>
-                    <span className="ms" style={{ fontSize: 15, color: '#16a34a' }}>{icon}</span>
-                    {label}
-                  </div>
-                ))}
-              </div>
+              <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: '-2px' }}>6<span style={{ color: '#ff6b00' }}>+</span></div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.8px', marginTop: 4, fontWeight: 600 }}>Norske flyplasser</div>
             </div>
-
-            {/* Right – live deal cards */}
-            <div className="hero-right" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <span className="live-dot" style={{ width: 8, height: 8, background: '#16a34a', borderRadius: '50%', display: 'inline-block' }} />
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#555' }}>Aktive deals akkurat nå</span>
-                <span style={{ marginLeft: 'auto', fontSize: 12, color: '#aaa' }}>Oppdateres 3× daglig</span>
-              </div>
-              {(filteredDeals.length > 0 ? filteredDeals : LIVE_DEALS).slice(0, 5).map((deal, i) => (
-                <DealCard key={i} deal={deal} />
-              ))}
-              <Link href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '12px', background: '#fafafa', border: '1.5px dashed #e0e0e0', borderRadius: 14, fontSize: 13, fontWeight: 600, color: '#aaa', textDecoration: 'none', transition: 'all 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#ff6b00'; e.currentTarget.style.color = '#ff6b00'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#e0e0e0'; e.currentTarget.style.color = '#aaa'; }}>
-                <span className="ms" style={{ fontSize: 18 }}>add</span>
-                Se alle {LIVE_DEALS.length}+ deals
-              </Link>
+            <div>
+              <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: '-2px' }}>237<span style={{ color: '#ff6b00' }}>+</span></div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.8px', marginTop: 4, fontWeight: 600 }}>Destinasjoner</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: '-2px', color: '#ff6b00' }}>389 kr</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.8px', marginTop: 4, fontWeight: 600 }}>Laveste pris nå</div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── STATS ── */}
-        <section style={{ background: '#fff', borderTop: '1px solid #f0f0f0', borderBottom: '1px solid #f0f0f0', padding: '44px 24px' }}>
-          <div className="stats-grid" style={{ maxWidth: 1160, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24 }}>
-            {[
-              { num: '7', label: 'Norske flyplasser', sub: 'OSL, BGO, SVG, TRD, TOS, TRF, KRS' },
-              { num: '187+', label: 'Ruter overvåket', sub: 'Til hele verden' },
-              { num: '3×', label: 'Daglig oppdatering', sub: 'Morgen, middag og kveld' },
-              { num: '149 kr', label: 'Per måned', sub: '7 dager gratis prøveperiode' },
-            ].map(({ num, label, sub }) => (
-              <div key={label} style={{ background: '#fafafa', border: '1px solid #f0f0f0', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
-                <p style={{ fontSize: 34, fontWeight: 900, color: '#ff6b00', letterSpacing: '-1.5px', lineHeight: 1 }}>{num}</p>
-                <p style={{ fontSize: 14, fontWeight: 700, color: '#0a0a0a', marginTop: 8 }}>{label}</p>
-                <p style={{ fontSize: 12, color: '#aaa', marginTop: 4 }}>{sub}</p>
+      {/* EARTH SECTION */}
+      <section style={{ position: 'relative', height: 620, overflow: 'hidden', margin: 0 }}>
+        <Image src="/earth.jpg" alt="Jordklode" fill style={{ objectFit: 'cover' }} priority />
+        {/* Fades */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, #050505 0%, transparent 18%, transparent 82%, #050505 100%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(5,5,5,0.6) 0%, transparent 18%, transparent 82%, rgba(5,5,5,0.6) 100%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(5,5,5,0.18) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        {/* Content */}
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center', maxWidth: 620, padding: '0 24px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,107,0,0.15)', border: '1px solid rgba(255,107,0,0.35)', borderRadius: 100, padding: '6px 16px', fontSize: 12, fontWeight: 600, color: '#ff6b00', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 20 }}>
+              <span style={{ width: 6, height: 6, background: '#ff6b00', borderRadius: '50%', display: 'inline-block' }} />
+              Global dekning
+            </div>
+            <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 44, fontWeight: 700, color: '#fff', letterSpacing: '-1.5px', lineHeight: 1.1, margin: '0 0 16px' }}>
+              Vi finner deals over<br />hele verden
+            </h2>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 17, color: 'rgba(255,255,255,0.65)', margin: '0 0 32px' }}>
+              Fra Skandinavia til 237+ destinasjoner
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+              {[
+                { icon: null, text: 'Overvåker kontinuerlig', dot: true },
+                { icon: null, text: '6 norske flyplasser', emoji: '✅' },
+                { icon: null, text: '237+ destinasjoner', emoji: '🌍' },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(5,5,5,0.82)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 100, padding: '10px 18px', fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)' }}>
+                  {item.dot && <span style={{ width: 7, height: 7, background: '#22c55e', borderRadius: '50%', boxShadow: '0 0 8px #22c55e', display: 'inline-block' }} />}
+                  {item.emoji && <span>{item.emoji}</span>}
+                  {item.text}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* LIVE DEALS */}
+      <section style={{ padding: '70px 0', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 11, fontWeight: 700, color: '#ff6b00', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>
+            <span style={{ width: 5, height: 5, background: '#ff6b00', borderRadius: '50%' }} />
+            Siste funn
+          </div>
+          <h2 style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-1px', marginBottom: 40 }}>Aktuelle reisedeals akkurat nå</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+            {DEALS.slice(0, 3).map((deal, i) => (
+              <div key={i} className="fade-up deal-card-dark" style={{ background: '#242424', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 14, padding: 20, transition: 'border-color 0.25s, transform 0.25s, box-shadow 0.25s, background 0.25s', cursor: 'pointer' }}
+                onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(255,107,0,0.35)'; el.style.transform = 'translateY(-5px)'; el.style.boxShadow = '0 16px 40px rgba(0,0,0,0.3)'; el.style.background = '#2c2c2c'; }}
+                onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(255,255,255,0.10)'; el.style.transform = 'translateY(0)'; el.style.boxShadow = 'none'; el.style.background = '#242424'; }}>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 8, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>fra</span>
+                  <span style={{ background: 'rgba(255,255,255,0.10)', padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}>{deal.fromCode}</span>
+                  <span>{deal.from} Lufthavn</span>
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.5px', marginBottom: 12 }}>
+                  {deal.to} <img src={`https://flagcdn.com/16x12/${deal.flag}.png`} alt="" style={{ display: 'inline', verticalAlign: 'middle', borderRadius: 2 }} />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ fontSize: 28, fontWeight: 900, color: '#ff6b00', letterSpacing: '-1px' }}>
+                      {deal.price.toLocaleString('no')} kr <span style={{ fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>{deal.type}</span>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#22c55e', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 6, padding: '4px 10px' }}>
+                    -{deal.discount}%
+                  </div>
+                </div>
+                <Link href="/deals" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)', width: '100%', transition: 'color 0.2s' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#ff6b00')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+                  Se reisemuligheter
+                  <span className="ms" style={{ fontSize: 14 }}>arrow_forward</span>
+                </Link>
               </div>
             ))}
           </div>
-        </section>
-
-        {/* ── HOW IT WORKS ── */}
-        <section id="hvordan" style={{ padding: '88px 24px' }}>
-          <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: 56 }}>
-              <p className="section-tag" style={{ marginBottom: 12 }}>Slik fungerer det</p>
-              <h2 style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-1.5px', color: '#0a0a0a', marginBottom: 12 }}>Fra prisovervåking til drømmereise</h2>
-              <p style={{ fontSize: 16, color: '#555', maxWidth: 480, margin: '0 auto' }}>Enkelt, automatisk og uten at du trenger å gjøre noe</p>
-            </div>
-            <div className="steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 28 }}>
-              {[
-                { icon: 'manage_search', step: '01', title: 'Vi overvåker', desc: 'Algoritmene sjekker flypriser 3× daglig fra 7 norske flyplasser til 187+ destinasjoner.' },
-                { icon: 'trending_down', step: '02', title: 'Vi finner en deal', desc: 'En pris som er 30%+ under normalt og sparer deg minst 500 kr er en ekte deal.' },
-                { icon: 'mark_email_read', step: '03', title: 'Du får varsel', desc: 'Vi sender deg en e-post med dealen og en direktelenke til Google Flights.' },
-                { icon: 'flight_takeoff', step: '04', title: 'Du booker', desc: 'Klikk lenken og book direkte hos flyselskapet. Ingen mellomledd.' },
-              ].map(({ icon, step, title, desc }) => (
-                <div key={step} style={{ textAlign: 'center' }}>
-                  <div className="step-icon">
-                    <span className="ms" style={{ fontSize: 26 }}>{icon}</span>
-                  </div>
-                  <p style={{ fontSize: 11, fontWeight: 800, color: '#ff6b00', letterSpacing: '0.1em', marginBottom: 8 }}>STEG {step}</p>
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0a0a0a', marginBottom: 8 }}>{title}</h3>
-                  <p style={{ fontSize: 14, color: '#666', lineHeight: 1.65 }}>{desc}</p>
-                </div>
-              ))}
-            </div>
+          <div style={{ textAlign: 'center', marginTop: 28 }}>
+            <Link href="/deals" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '13px 22px', background: 'transparent', color: 'rgba(255,255,255,0.8)', borderRadius: 100, fontSize: 14, fontWeight: 500, border: '1px solid rgba(255,255,255,0.12)', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.color = '#fff'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}>
+              Se alle deals →
+            </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── ALL DEALS ── */}
-        <section id="deals" style={{ background: '#fafafa', borderTop: '1px solid #f0f0f0', padding: '80px 24px' }}>
-          <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 32, flexWrap: 'wrap', gap: 16 }}>
-              <div>
-                <p className="section-tag" style={{ marginBottom: 8 }}>Live deals</p>
-                <h2 style={{ fontSize: 34, fontWeight: 900, letterSpacing: '-1.2px', color: '#0a0a0a' }}>Aktuelle flydeals akkurat nå</h2>
+      {/* HOW IT WORKS */}
+      <section id="how" style={{ padding: '90px 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7, fontSize: 11, fontWeight: 700, color: '#ff6b00', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>
+              <span style={{ width: 5, height: 5, background: '#ff6b00', borderRadius: '50%' }} />
+              Slik fungerer det
+            </div>
+            <h2 style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 12 }}>Tre steg til billigere reiser</h2>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>Vi gjør jobben. Du får feriene.</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 44 }}>
+            {[
+              { step: 'Steg 01', icon: 'schedule', title: 'Vi overvåker prisene', desc: 'Algoritmene våre sjekker flypriser kontinuerlig og bygger opp et bilde av hva som er normalt – og hva som er tilbud.', mini: null },
+              { step: 'Steg 02', icon: 'mail', title: 'Du får et varsel', desc: 'Når vi finner en pris som er vesentlig lavere enn normalt, sender vi deg et varsel direkte på e-post.', mini: true },
+              { step: 'Steg 03', icon: 'check_circle', title: 'Du booker og sparer', desc: 'Book direkte hos flyselskapet til den lave prisen. Ingen mellomledd, ingen ekstra kostnader.', mini: null },
+            ].map((card, i) => (
+              <div key={i} className="fade-up" style={{ background: '#242424', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 14, padding: 28, transition: 'border-color 0.25s, transform 0.25s, background 0.25s' }}
+                onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(255,255,255,0.18)'; el.style.transform = 'translateY(-4px)'; el.style.background = '#2c2c2c'; }}
+                onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(255,255,255,0.10)'; el.style.transform = 'translateY(0)'; el.style.background = '#242424'; }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#ff6b00', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14 }}>{card.step}</div>
+                <div style={{ width: 40, height: 40, background: 'rgba(255,107,0,0.1)', border: '1px solid rgba(255,107,0,0.15)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ff6b00', marginBottom: 16 }}>
+                  <span className="ms" style={{ fontSize: 18 }}>{card.icon}</span>
+                </div>
+                <h3 style={{ fontSize: 17, fontWeight: 800, letterSpacing: '-0.4px', marginBottom: 10 }}>{card.title}</h3>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>{card.desc}</p>
+                {card.mini && (
+                  <div style={{ marginTop: 16, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 8, padding: 12 }}>
+                    {[{ r: 'OSL → Bangkok', p: '2 489 kr' }, { r: 'BGO → London', p: '489 kr' }].map((row, j) => (
+                      <div key={j} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0', fontSize: 12, borderBottom: j === 0 ? '1px solid rgba(255,255,255,0.07)' : 'none' }}>
+                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>{row.r}</span>
+                        <span style={{ fontWeight: 800, color: '#ff6b00' }}>{row.p}</span>
+                      </div>
+                    ))}
+                    <div style={{ paddingTop: 8 }}>
+                      <span style={{ padding: '2px 6px', background: 'rgba(34,197,94,0.1)', borderRadius: 3, fontSize: 10, fontWeight: 700, color: '#22c55e' }}>-47% under snitt</span>
+                    </div>
+                  </div>
+                )}
               </div>
-              <Link href="/login" style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 14, fontWeight: 700, color: '#ff6b00', textDecoration: 'none' }}>
-                Se alle deals <span className="ms" style={{ fontSize: 18 }}>arrow_forward</span>
-              </Link>
-            </div>
-            <div className="deals-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14 }}>
-              {LIVE_DEALS.map((deal, i) => (
-                <DealCard key={i} deal={deal} />
-              ))}
-            </div>
-            <div style={{ textAlign: 'center', marginTop: 44 }}>
-              <p style={{ fontSize: 14, color: '#aaa', marginBottom: 18 }}>Disse er kun et utvalg. Abonnenter ser alle deals fra sine valgte flyplasser.</p>
-              <Link href="/login" className="cta-btn">
-                Start 7 dager gratis
-                <span className="ms" style={{ fontSize: 20 }}>arrow_forward</span>
-              </Link>
-            </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── COMPETITOR COMPARE ── */}
-        <section style={{ padding: '80px 24px' }}>
-          <div style={{ maxWidth: 900, margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: 48 }}>
-              <p className="section-tag" style={{ marginBottom: 12 }}>Hvorfor FlyDeals?</p>
-              <h2 style={{ fontSize: 36, fontWeight: 900, letterSpacing: '-1.2px', color: '#0a0a0a' }}>Mer enn konkurrentene</h2>
-            </div>
-            <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.04)' }}>
-              {/* Header */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', background: '#fafafa', borderBottom: '1px solid #e8e8e8' }}>
-                <div style={{ padding: '14px 24px', fontSize: 12, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Funksjon</div>
-                <div style={{ padding: '14px 24px', borderLeft: '1px solid #e8e8e8', display: 'flex', alignItems: 'center', gap: 7 }}>
-                  <div style={{ width: 22, height: 22, background: '#ff6b00', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span className="ms" style={{ fontSize: 13, color: '#fff' }}>flight_takeoff</span>
-                  </div>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: '#ff6b00' }}>FlyDeals</span>
+      {/* FEATURES */}
+      <section style={{ padding: '90px 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto' }}>
+            <h2 style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 44 }}>Alt du trenger for<br />billigere flyreiser</h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+            {[
+              { icon: 'price_check', title: 'Transparent prising', desc: 'Vi viser alltid prisen mot det historiske snittet, slik at du kan se nøyaktig hvor mye du sparer.' },
+              { icon: 'autorenew', title: 'Automatisk overvåking', desc: 'Prisene sjekkes automatisk slik at du aldri trenger å gjøre det manuelt.' },
+              { icon: 'open_in_new', title: 'Direkte booking', desc: 'Vi sender deg direkte til flyselskapet. Ingen mellomledd eller ekstra kostnader.' },
+              { icon: 'public', title: 'Nordisk dekning', desc: 'Vi overvåker de største flyplassene i Norden for å finne de beste prisene.' },
+              { icon: 'dashboard', title: 'Enkel oversikt', desc: 'På ditt dashboard er det enkelt å finne den neste flyvningen til en nesten umulig pris.' },
+              { icon: 'savings', title: 'Spar tid og penger', desc: 'Vi gjør prisovervåkingen, du nyter reisen til en brøkdel av ordinærprisen.' },
+            ].map((feat, i) => (
+              <div key={i} className="fade-up" style={{ background: '#242424', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 14, padding: 24, transition: 'border-color 0.25s, transform 0.25s, background 0.25s' }}
+                onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(255,255,255,0.18)'; el.style.transform = 'translateY(-4px)'; el.style.background = '#2c2c2c'; }}
+                onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(255,255,255,0.10)'; el.style.transform = 'translateY(0)'; el.style.background = '#242424'; }}>
+                <div style={{ width: 36, height: 36, background: 'rgba(255,107,0,0.1)', border: '1px solid rgba(255,107,0,0.12)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ff6b00', marginBottom: 14 }}>
+                  <span className="ms" style={{ fontSize: 17 }}>{feat.icon}</span>
                 </div>
-                <div style={{ padding: '14px 24px', borderLeft: '1px solid #e8e8e8', fontSize: 14, fontWeight: 700, color: '#555' }}>Flajts.se</div>
+                <h3 style={{ fontSize: 14, fontWeight: 800, marginBottom: 7, letterSpacing: '-0.3px' }}>{feat.title}</h3>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>{feat.desc}</p>
               </div>
-              {[
-                ['Norske flyplasser', '7 flyplasser', '2 flyplasser (OSL+TRF)'],
-                ['Språk', 'Norsk', 'Kun svensk'],
-                ['Pris', '149 kr/mnd', '499 SEK/år (~55 kr/mnd)'],
-                ['Prøveperiode', '7 dager gratis', 'Ingen'],
-                ['Deal-deteksjon', '30%+ under snitt', 'Ukjent algoritme'],
-                ['Direktefly-filter', 'Ja', 'Ja'],
-              ].map(([feat, us, them], i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', borderBottom: i < 5 ? '1px solid #f5f5f5' : 'none' }}>
-                  <div style={{ padding: '13px 24px', fontSize: 14, color: '#555' }}>{feat}</div>
-                  <div style={{ padding: '13px 24px', borderLeft: '1px solid #f5f5f5', fontSize: 14, fontWeight: 600, color: '#0a0a0a', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span className="ms" style={{ fontSize: 17, color: '#16a34a' }}>check_circle</span>
-                    {us}
-                  </div>
-                  <div style={{ padding: '13px 24px', borderLeft: '1px solid #f5f5f5', fontSize: 14, color: '#777', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span className="ms" style={{ fontSize: 17, color: '#aaa' }}>remove</span>
-                    {them}
-                  </div>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── PRICING ── */}
-        <section id="pris" style={{ background: '#fafafa', borderTop: '1px solid #f0f0f0', padding: '80px 24px' }}>
-          <div style={{ maxWidth: 480, margin: '0 auto', textAlign: 'center' }}>
-            <p className="section-tag" style={{ marginBottom: 12 }}>Prising</p>
-            <h2 style={{ fontSize: 36, fontWeight: 900, letterSpacing: '-1.2px', color: '#0a0a0a', marginBottom: 8 }}>Én enkel plan</h2>
-            <p style={{ fontSize: 16, color: '#555', marginBottom: 40 }}>Én enkelt booking kan spare mer enn hele årsavgiften.</p>
-
-            <div style={{ background: '#fff', border: '2px solid #ff6b00', borderRadius: 24, padding: '40px 36px', boxShadow: '0 12px 48px rgba(255,107,0,0.12)' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 100, padding: '5px 14px', fontSize: 12, fontWeight: 700, color: '#16a34a', marginBottom: 22 }}>
-                <span className="live-dot" style={{ width: 6, height: 6, background: '#16a34a', borderRadius: '50%', display: 'inline-block' }} />
+      {/* PRICING */}
+      <section id="pricing" style={{ padding: '90px 0', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <h2 style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 12 }}>Invester i billigere reiser</h2>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>Spar inn hele årsmedlemskapet på din første bestilling.</p>
+          </div>
+          <div style={{ maxWidth: 460, margin: '44px auto 0' }}>
+            <div style={{ background: '#242424', border: '1px solid rgba(255,107,0,0.25)', borderRadius: 20, padding: 44 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: '#22c55e', fontSize: 12, fontWeight: 700, padding: '5px 14px', borderRadius: 100, marginBottom: 22 }}>
+                <span style={{ width: 6, height: 6, background: '#22c55e', borderRadius: '50%' }} />
                 7 dager gratis prøveperiode
               </div>
-
-              <div style={{ marginBottom: 6 }}>
-                <span style={{ fontSize: 60, fontWeight: 900, color: '#ff6b00', letterSpacing: '-2.5px', lineHeight: 1 }}>149</span>
-                <span style={{ fontSize: 20, color: '#aaa', fontWeight: 500 }}> kr/mnd</span>
+              <div style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-2.5px', marginBottom: 4 }}>
+                149 kr <span style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.4)', letterSpacing: 0 }}>/ mnd</span>
               </div>
-              <p style={{ fontSize: 13, color: '#aaa', marginBottom: 32 }}>Si opp når som helst · Ingen binding</p>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 32, textAlign: 'left' }}>
-                {[
-                  'Overvåking av 187+ ruter fra 7 flyplasser',
-                  'E-postvarsler ved nye deals',
-                  'Direktelenke til Google Flights',
-                  'Velg dine foretrukne flyplasser',
-                  'Tilgang til alle aktive deals',
-                  'Prishistorikk og rabattberegning',
-                ].map(f => (
-                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: '#0a0a0a' }}>
-                    <span className="ms" style={{ fontSize: 18, color: '#16a34a', flexShrink: 0 }}>check_circle</span>
-                    {f}
-                  </div>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', marginBottom: 28 }}>Full tilgang til alt – ingen skjulte kostnader</p>
+              <ul style={{ listStyle: 'none', marginBottom: 28 }}>
+                {['Alle deals – ingen begrensninger', 'Sanntids e-postvarsler', '6+ norske flyplasser overvåket', 'Ingen bindingstid'].map((item, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', fontSize: 14, color: 'rgba(255,255,255,0.75)', borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.08)' : 'none' }}>
+                    <svg width="14" height="14" fill="none" stroke="#ff6b00" strokeWidth="2.5" strokeLinecap="round"><path d="M2 7l4 4 6-6" /></svg>
+                    {item}
+                  </li>
                 ))}
-              </div>
-
-              <Link href="/login" className="cta-btn" style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '15px 28px', fontSize: 15 }}>
+              </ul>
+              <Link href="/login" style={{ display: 'block', width: '100%', padding: 15, borderRadius: 100, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, textAlign: 'center', background: '#ff6b00', color: '#fff', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#e55f00'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#ff6b00'; e.currentTarget.style.transform = 'translateY(0)'; }}>
                 Start gratis prøveperiode
               </Link>
-              <p style={{ fontSize: 12, color: '#bbb', marginTop: 12 }}>Ingen kredittkort kreves for å starte</p>
+              <p style={{ marginTop: 12, fontSize: 11, color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>Avbrytes enkelt via innstillinger – ingen spørsmål stilt</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── FAQ ── */}
-        <section id="faq" style={{ padding: '80px 24px' }}>
-          <div style={{ maxWidth: 680, margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: 48 }}>
-              <p className="section-tag" style={{ marginBottom: 12 }}>Ofte stilte spørsmål</p>
-              <h2 style={{ fontSize: 36, fontWeight: 900, letterSpacing: '-1.2px', color: '#0a0a0a' }}>Har du spørsmål?</h2>
+      {/* FAQ */}
+      <section id="om" style={{ padding: '90px 0', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7, fontSize: 11, fontWeight: 700, color: '#ff6b00', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16 }}>
+              <span style={{ width: 5, height: 5, background: '#ff6b00', borderRadius: '50%' }} />
+              Spørsmål & svar
             </div>
-            <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 20, padding: '4px 28px' }}>
-              {FAQS.map((faq, i) => <FaqItem key={i} {...faq} />)}
-            </div>
+            <h2 style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 40 }}>Ofte stilte spørsmål</h2>
           </div>
-        </section>
-
-        {/* ── FINAL CTA ── */}
-        <section style={{ background: '#0a0a0a', padding: '88px 24px' }}>
-          <div style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
-            <div style={{ width: 60, height: 60, background: '#ff6b00', borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px' }}>
-              <span className="ms" style={{ fontSize: 30, color: '#fff' }}>flight_takeoff</span>
-            </div>
-            <h2 style={{ fontSize: 42, fontWeight: 900, letterSpacing: '-1.8px', color: '#fff', marginBottom: 16, lineHeight: 1.05 }}>
-              Klar til å finne din<br />neste drømmereise?
-            </h2>
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', marginBottom: 40, lineHeight: 1.7 }}>
-              Start 7 dager gratis. Ingen kredittkort nødvendig.
-            </p>
-
-            {!submitted ? (
-              <form onSubmit={handleSignup} style={{ display: 'flex', gap: 10, maxWidth: 420, margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="din@epost.no"
-                  required
-                  style={{
-                    flex: 1, minWidth: 200, padding: '13px 20px', borderRadius: 100,
-                    border: '1.5px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)',
-                    color: '#fff', fontSize: 14, outline: 'none',
-                  }}
-                  onFocus={e => (e.currentTarget.style.borderColor = '#ff6b00')}
-                  onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)')}
-                />
-                <button type="submit" className="cta-btn" style={{ padding: '13px 24px', fontSize: 14 }}>
-                  Kom i gang
-                </button>
-              </form>
-            ) : (
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(22,163,74,0.12)', border: '1px solid rgba(22,163,74,0.25)', borderRadius: 100, padding: '12px 24px', color: '#4ade80', fontWeight: 600, fontSize: 14 }}>
-                <span className="ms" style={{ fontSize: 20 }}>check_circle</span>
-                Sjekk e-posten din for å fortsette!
-              </div>
-            )}
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 16 }}>Deretter 149 kr/mnd · Si opp når som helst</p>
+          <div style={{ maxWidth: 700, margin: '0 auto' }}>
+            {FAQS.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ background: '#0a0a0a', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '48px 24px 32px' }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-          <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 40 }}>
+      {/* FOOTER */}
+      <footer style={{ padding: '60px 0 36px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                <div style={{ width: 30, height: 30, background: '#ff6b00', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span className="ms" style={{ fontSize: 16, color: '#fff' }}>flight_takeoff</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <div style={{ width: 28, height: 28, background: '#ff6b00', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span className="ms" style={{ fontSize: 14, color: '#fff' }}>flight_takeoff</span>
                 </div>
-                <span style={{ fontSize: 16, fontWeight: 900, color: '#fff' }}>FlyDeals</span>
+                <span style={{ fontSize: 15, fontWeight: 800 }}>FlyDeals</span>
               </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', lineHeight: 1.7, maxWidth: 240 }}>
-                Automatisk prisovervåking av flyreiser fra norske flyplasser. Vi finner dealene, du nyter reisen.
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, maxWidth: 240 }}>
+                Automatisk prisovervåking av flyreiser fra de største nordiske flyplassene for å finne drømmereisen for billigere pris.
               </p>
             </div>
-            {[
-              { title: 'Produkt', links: [['Live deals', '/deals'], ['Oppdag ruter', '/oppdag'], ['Dine varsler', '/varsler'], ['FAQ', '/brukerstotte']] },
-              { title: 'Konto', links: [['Logg inn', '/login'], ['Registrer deg', '/login'], ['Innstillinger', '/innstillinger']] },
-              { title: 'Selskap', links: [['Personvern', '/personvern'], ['Vilkår', '/vilkar'], ['Brukerstøtte', '/brukerstotte']] },
-            ].map(({ title, links }) => (
-              <div key={title}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>{title}</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                  {links.map(([label, href]) => (
-                    <Link key={label} href={href} style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                      onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}>
-                      {label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
+            <div>
+              <h4 style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 14 }}>Produkt</h4>
+              {[['Live deals', '/deals'], ['Oppdag ruter', '/oppdag'], ['Dine varsler', '/varsler'], ['FAQ', '#om']].map(([label, href]) => (
+                <Link key={label} href={href} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 9, transition: 'color 0.2s' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.9)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}>
+                  {label}
+                </Link>
+              ))}
+            </div>
+            <div>
+              <h4 style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 14 }}>Selskap</h4>
+              {[['Personvern', '/personvern'], ['Vilkår', '/vilkar'], ['Hjelp', '/brukerstotte']].map(([label, href]) => (
+                <Link key={label} href={href} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 9, transition: 'color 0.2s' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.9)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}>
+                  {label}
+                </Link>
+              ))}
+            </div>
+            <div>
+              <h4 style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 14 }}>Følg oss</h4>
+              {[['Twitter / X', '#'], ['Instagram', '#']].map(([label, href]) => (
+                <a key={label} href={href} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 9, transition: 'color 0.2s' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.9)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}>
+                  {label}
+                </a>
+              ))}
+            </div>
           </div>
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>© 2026 FlyDeals. Alle rettigheter reservert.</p>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>Sikker betaling via Stripe</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.08)', fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
+            <span>© 2026 FlyDeals. Alle rettigheter reservert.</span>
           </div>
         </div>
       </footer>
-    </>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+          50% { opacity: 0.8; box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+        }
+        @keyframes ticker {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        .fade-up {
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+        .fade-up.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        .ms {
+          font-family: 'Material Symbols Outlined';
+          font-weight: normal;
+          font-style: normal;
+          line-height: 1;
+          display: inline-block;
+          white-space: nowrap;
+          direction: ltr;
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+          vertical-align: middle;
+        }
+        @media (max-width: 900px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </div>
   );
 }
