@@ -656,8 +656,48 @@ function toggleAlert(id, active) {
   }
 }
 
+// Sync alerts from Supabase on page load
+async function syncAlertsFromSupabase() {
+  try {
+    const user = await getUser();
+    if (!user || !supabase) return;
+    const { data, error } = await supabase.from('alerts').select('*').eq('user_id', user.id);
+    if (error || !data || data.length === 0) return;
+
+    // Merge: add Supabase alerts not already in localStorage (by airport pair + discount)
+    let changed = false;
+    data.forEach(row => {
+      const exists = alerts.some(a =>
+        a.fromCode === row.departure_airport &&
+        a.toCode === row.arrival_airport &&
+        a.minDiscount === row.min_discount
+      );
+      if (!exists) {
+        alerts.push({
+          id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+          to: row.arrival_airport,
+          toCode: row.arrival_airport,
+          toFlag: 'no',
+          fromCode: row.departure_airport,
+          months: row.travel_months || [],
+          minDiscount: row.min_discount || 50,
+          active: row.active !== false
+        });
+        changed = true;
+      }
+    });
+    if (changed) {
+      saveAlerts();
+      renderAlerts();
+    }
+  } catch (e) {
+    console.warn('Supabase alert sync feilet:', e);
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   renderAlerts();
+  syncAlertsFromSupabase();
   // Pre-fill from oppdag.html "Opprett varsel" buttons
   const p = new URLSearchParams(window.location.search);
   if (p.get('to')) {

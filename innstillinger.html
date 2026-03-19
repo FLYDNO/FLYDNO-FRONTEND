@@ -546,9 +546,13 @@ async function confirmCancel() {
     if (!user) { showToast('Kunne ikke si opp: Ikke innlogget.', 'error'); return; }
 
     // Kanseller i Stripe (cancel_at_period_end) + oppdater DB
+    const { data: { session } } = await supabase.auth.getSession();
     const res = await fetch(SUPABASE_URL + '/functions/v1/cancel-subscription', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (session?.access_token || '')
+      },
       body: JSON.stringify({ email: user.email })
     });
     const data = await res.json();
@@ -568,9 +572,13 @@ async function confirmDelete() {
 
     // Kanseller Stripe-abonnement først
     try {
+      const { data: { session: delSession } } = await supabase.auth.getSession();
       await fetch(SUPABASE_URL + '/functions/v1/cancel-subscription', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + (delSession?.access_token || '')
+        },
         body: JSON.stringify({ email: user.email })
       });
     } catch (e) {

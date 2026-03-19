@@ -13,7 +13,7 @@
     darkMode: "class",
     theme: {
       extend: {
-        colors: { "primary": "#ff6b00", "background-dark": "#050505" },
+        colors: { "primary": "#ff6b00", "bg": "#050505", "surface": "#111111", "border": "#1e1e1e" },
         fontFamily: { "sans": ["DM Sans", "sans-serif"] }
       }
     }
@@ -274,9 +274,13 @@ async function handleRegister() {
 
     // Redirect to Stripe Checkout (7-day free trial)
     btn.textContent = 'Starter betaling...';
+    const { data: { session } } = await supabase.auth.getSession();
     const checkoutRes = await fetch(SUPABASE_URL + '/functions/v1/create-checkout-session', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (session?.access_token || '')
+      },
       body: JSON.stringify({ email })
     });
     const checkoutData = await checkoutRes.json();

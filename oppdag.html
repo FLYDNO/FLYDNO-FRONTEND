@@ -188,7 +188,7 @@
         <p class="text-slate-500 mb-6">Finn de beste destinasjonene fra norske flyplasser.</p>
         <div class="relative group">
           <span class="ms absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#ff6b00] transition-colors" style="font-size:20px">search</span>
-          <input class="w-full bg-[#111] border border-[#1e1e1e] rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none transition-all text-slate-200 placeholder:text-slate-600 text-sm" placeholder="Søk etter by, land eller flyplass..." type="text"/>
+          <input id="oppdagSearch" oninput="searchDestinations(this.value)" class="w-full bg-[#111] border border-[#1e1e1e] rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#ff6b00]/20 focus:border-[#ff6b00] outline-none transition-all text-slate-200 placeholder:text-slate-600 text-sm" placeholder="Søk etter by, land eller flyplass..." type="text"/>
         </div>
       </div>
 
@@ -478,6 +478,21 @@ function filterRegion(region, btn) {
     } else {
       card.style.display = 'none';
     }
+  });
+}
+
+function searchDestinations(q) {
+  const query = q.trim().toLowerCase();
+  document.querySelectorAll('.dest-card').forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.style.display = (!query || text.includes(query)) ? '' : 'none';
+  });
+  // Also filter quick routes
+  document.querySelectorAll('.dest-card').length === 0; // trigger reflow
+  const quickRoutes = document.querySelectorAll('section:last-of-type .divide-y > div');
+  quickRoutes.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = (!query || text.includes(query)) ? '' : 'none';
   });
 }
 
