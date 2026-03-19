@@ -342,7 +342,8 @@ async function loadDeals() {
         priceLevel: row.price_level || 'typical',
         avgPrice: row.avg_price,
         typicalLow: row.typical_price_low,
-        typicalHigh: row.typical_price_high
+        typicalHigh: row.typical_price_high,
+        travelDate: row.travel_date || ''
       }));
     } else {
       console.warn('Ingen deals fra Supabase, bruker fallback-data');
@@ -446,7 +447,8 @@ function renderDeals() {
         <span class="text-[10px] md:text-xs font-bold text-white">${escapeHtml(d.dates)}</span>
       </div>
       <p class="text-base md:text-xl font-black text-[#ff6b00] leading-none">${d.price.toLocaleString('no')} kr</p>
-      <p class="text-[10px] md:text-[11px] text-slate-600 mt-0.5 line-through">${d.orig.toLocaleString('no')} kr</p>
+      <p class="text-[10px] md:text-[11px] text-slate-500 mt-0.5">enveis</p>
+      <p class="text-[10px] md:text-[11px] text-slate-600 mt-0.5 line-through">${d.orig > 0 ? d.orig.toLocaleString('no') + ' kr' : ''}</p>
       ${priceLevelBadge}
       <div class="hidden md:flex items-center gap-1.5 mt-2 pt-2 border-t border-[#1e1e1e] text-[11px] text-slate-500">
         <span class="ms" style="font-size:13px">airlines</span>
@@ -469,12 +471,19 @@ function openDeal(idx) {
   document.getElementById('modalAirline').textContent = d.airline;
   document.getElementById('modalStops').textContent = d.direct ? 'Direktefly' : '1 stopp';
 
-  // Build Google Flights URL
-  const futureDate = new Date();
-  futureDate.setDate(futureDate.getDate() + 30);
-  const dateStr = futureDate.toISOString().split('T')[0];
-  const gfUrl = 'https://www.google.com/travel/flights?q=Flights+from+' + encodeURIComponent(d.fromCode) + '+to+' + encodeURIComponent(d.toCode) + '+on+' + dateStr + '&curr=NOK&hl=no';
-  document.getElementById('modalBookBtn').href = gfUrl;
+  // Build Google Flights URL using the actual travel date from the deal
+  // Use the travel_date stored in the deal, or fallback to dates_text parsing
+  let dateStr = '';
+  if (d.travelDate) {
+    dateStr = d.travelDate;
+  } else {
+    // Fallback: 30 days ahead
+    const fd = new Date(); fd.setDate(fd.getDate() + 30);
+    dateStr = fd.toISOString().split('T')[0];
+  }
+  // type=2 = one-way search to match our one-way prices
+  const gfUrl = 'https://www.google.com/travel/flights/search?tfs=CBwQAhooEgoyMDI2LTA0LTE4agwIAhIIL20vMDVsMnFyDAgCEggvbS8wNnpkbA&tfu=EgYIBRABGAA&hl=no&gl=no&curr=NOK#search;f=' + encodeURIComponent(d.fromCode) + ';t=' + encodeURIComponent(d.toCode) + ';d=' + dateStr + ';tt=o;px=1;c=economy';
+  document.getElementById('modalBookBtn').href = 'https://www.google.com/travel/flights?q=Flights+from+' + encodeURIComponent(d.fromCode) + '+to+' + encodeURIComponent(d.toCode) + '+departing+' + dateStr + '+one+way&curr=NOK&hl=no';
 
   document.getElementById('dealModal').style.display = 'flex';
 }
@@ -496,7 +505,7 @@ function openDeal(idx) {
         <span style="font-size:13px;color:rgba(255,255,255,0.35);text-decoration:line-through;" id="modalOrig">4 700 kr</span>
         <span style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);color:#22c55e;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;" id="modalDiscount">-47%</span>
       </div>
-      <p style="font-size:12px;color:rgba(255,255,255,0.4);">per person, tur-retur</p>
+      <p style="font-size:12px;color:rgba(255,255,255,0.4);">per person, enveis</p>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
       <div style="background:#050505;border:1px solid #1e1e1e;border-radius:10px;padding:12px;">
