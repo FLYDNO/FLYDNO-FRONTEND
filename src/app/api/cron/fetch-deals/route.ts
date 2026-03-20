@@ -155,33 +155,34 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://erhlxomyat
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
 // Determine which run type based on UTC hour:
-// Run 0 (05:00 UTC = 06:00 NO): OW extended Apr-Sep (start_date + end_date)
-// Run 1 (11:00 UTC = 12:00 NO): RT Apr-May (outbound=Apr, return=Apr+7)
-// Run 2 (17:00 UTC = 18:00 NO): RT Jul-Aug (outbound=Jul, return=Jul+7)
-function getRunConfig(): { type: 'ow_extended' | 'rt_spring' | 'rt_summer'; runIndex: number } {
+// Run 0 (05:00 UTC = 06:00 NO): OW extended — today to +6 months (183 dates)
+// Run 1 (11:00 UTC = 12:00 NO): RT near — today to +3 months (outbound=today, return=today+7)
+// Run 2 (17:00 UTC = 18:00 NO): RT far  — +3 months to +6 months (outbound=today+3m, return=today+3m+7)
+function getRunConfig(): { type: 'ow_extended' | 'rt_near' | 'rt_far'; runIndex: number } {
   const utcHour = new Date().getUTCHours()
-  if (utcHour >= 14) return { type: 'rt_summer', runIndex: 2 }   // 17:00+ UTC
-  if (utcHour >= 8)  return { type: 'rt_spring', runIndex: 1 }   // 11:00+ UTC
-  return { type: 'ow_extended', runIndex: 0 }                    // 05:00+ UTC
+  if (utcHour >= 14) return { type: 'rt_far', runIndex: 2 }    // 17:00+ UTC
+  if (utcHour >= 8)  return { type: 'rt_near', runIndex: 1 }   // 11:00+ UTC
+  return { type: 'ow_extended', runIndex: 0 }                  // 05:00+ UTC
 }
 
-// Get the current year's April 1 (or next year if we're past September)
-function getSeasonStart(): string {
-  const now = new Date()
-  const year = now.getMonth() >= 9 ? now.getFullYear() + 1 : now.getFullYear()
-  return `${year}-04-01`
+// Dynamic: always start from today
+function getWindowStart(): string {
+  const d = new Date()
+  return d.toISOString().split('T')[0]
 }
 
-function getSeasonEnd(): string {
-  const now = new Date()
-  const year = now.getMonth() >= 9 ? now.getFullYear() + 1 : now.getFullYear()
-  return `${year}-09-30`
+// Dynamic: always end 6 months from today
+function getWindowEnd(): string {
+  const d = new Date()
+  d.setMonth(d.getMonth() + 6)
+  return d.toISOString().split('T')[0]
 }
 
-function getSummerStart(): string {
-  const now = new Date()
-  const year = now.getMonth() >= 9 ? now.getFullYear() + 1 : now.getFullYear()
-  return `${year}-07-01`
+// Dynamic: midpoint = 3 months from today (for RT far window)
+function getWindowMid(): string {
+  const d = new Date()
+  d.setMonth(d.getMonth() + 3)
+  return d.toISOString().split('T')[0]
 }
 
 interface PriceEntry {
@@ -250,16 +251,16 @@ export async function GET(request: Request) {
 
   // Determine run type based on UTC hour
   const { type: runType, runIndex } = getRunConfig()
-  const seasonStart = getSeasonStart()   // Apr 1
-  const seasonEnd = getSeasonEnd()       // Sep 30
-  const summerStart = getSummerStart()   // Jul 1
+  const windowStart = getWindowStart()   // today
+  const windowEnd = getWindowEnd()       // today + 6 months
+  const windowMid = getWindowMid()       // today + 3 months
 
   // Return date = 7 days after outbound for RT calls
-  const springReturnDate = (() => {
-    const d = new Date(seasonStart); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0]
+  const nearReturnDate = (() => {
+    const d = new Date(windowStart); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0]
   })()
-  const summerReturnDate = (() => {
-    const d = new Date(summerStart); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0]
+  const farReturnDate = (() => {
+    const d = new Date(windowMid); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0]
   })()
 
   const results = { processed: 0, deals: 0, errors: 0, skipped: 0 }
@@ -274,18 +275,18 @@ export async function GET(request: Request) {
       let rtEntries: PriceEntry[] = []
 
       if (runType === 'ow_extended') {
-        // Run 1 (06:00 NO): OW with extended date range Apr-Sep (183 dates)
-        owEntries = await fetchPriceGraph(origin, dest, seasonStart, undefined, seasonEnd)
+        // Run 1 (06:00 NO): OW with full 6-month window from today (183 dates)
+        owEntries = await fetchPriceGraph(origin, dest, windowStart, undefined, windowEnd)
         results.processed++
         await sleep(200)
-      } else if (runType === 'rt_spring') {
-        // Run 2 (12:00 NO): RT Apr-May window (60 dates)
-        rtEntries = await fetchPriceGraph(origin, dest, seasonStart, springReturnDate)
+      } else if (runType === 'rt_near') {
+        // Run 2 (12:00 NO): RT near window — today to +3 months
+        rtEntries = await fetchPriceGraph(origin, dest, windowStart, nearReturnDate)
         results.processed++
         await sleep(200)
       } else {
-        // Run 3 (18:00 NO): RT Jul-Aug window (62 dates)
-        rtEntries = await fetchPriceGraph(origin, dest, summerStart, summerReturnDate)
+        // Run 3 (18:00 NO): RT far window — +3 months to +6 months
+        rtEntries = await fetchPriceGraph(origin, dest, windowMid, farReturnDate)
         results.processed++
         await sleep(200)
       }

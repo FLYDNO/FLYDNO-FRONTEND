@@ -14,7 +14,7 @@ const FAQS = [
   { q: 'Booker dere for meg?', a: 'Nei — vi sender deg en direktelenke til Google Flights der du booker direkte hos flyselskapet. Vi tar ingen provisjon og har ingen skjulte avgifter.' },
   { q: 'Kan jeg velge hvilke flyplasser jeg vil ha varsler fra?', a: 'Ja! Gå til Innstillinger og velg de flyplassene du ønsker varsler fra. Du kan også sette minimum rabatt-terskel.' },
   { q: 'Dekker dere enveis og tur/retur?', a: 'Ja, vi finner deals for begge typer. Hvert deal-kort viser både enveis-pris og tur/retur-pris slik at du kan velge selv hva som passer best.' },
-  { q: 'Hvor langt frem i tid viser dere deals?', a: 'Vi viser deals fra nærmeste måned og opp til 6 måneder frem i tid (april–september). Bruk månedsfilteret øverst på deals-siden for å filtrere på spesifikke måneder.' },
+  { q: 'Hvor langt frem i tid viser dere deals?', a: 'Vi viser alltid deals 6 måneder frem i tid fra dagens dato — akkurat som Flajts. I mars viser vi mars–september, i oktober viser vi oktober–april. Bruk månedsfilteret øverst på deals-siden for å filtrere på spesifikke måneder.' },
 ]
 
 export default function BrukerstottePage() {
