@@ -281,17 +281,17 @@ export async function GET(request: Request) {
         // Run 1 (06:00 NO): OW with full 6-month window from today (183 dates)
         owEntries = await fetchPriceGraph(origin, dest, windowStart, undefined, windowEnd)
         results.processed++
-        await sleep(100)
+        await sleep(50)
       } else if (runType === 'rt_near') {
         // Run 2 (12:00 NO): RT near window — today to +3 months
         rtEntries = await fetchPriceGraph(origin, dest, windowStart, nearReturnDate)
         results.processed++
-        await sleep(100)
+        await sleep(50)
       } else {
         // Run 3 (18:00 NO): RT far window — +3 months to +6 months
         rtEntries = await fetchPriceGraph(origin, dest, windowMid, farReturnDate)
         results.processed++
-        await sleep(100)
+        await sleep(50)
       }
 
       const ow = analyzeEntries(owEntries)
