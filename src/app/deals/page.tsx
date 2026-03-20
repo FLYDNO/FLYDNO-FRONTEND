@@ -173,9 +173,9 @@ export default function DealsPage() {
             : 99
           return {
             id: (f.id as string) || i,
-            from: (f.departure_city as string) || airportCity[originCode] || originCode,
+            from: airportCity[originCode] || (f.departure_city as string) || originCode,
             fromCode: originCode,
-            to: (f.arrival_city as string) || destCityName[destCode] || destCode,
+            to: destCityName[destCode] || (f.arrival_city as string) || destCode,
             toCode: destCode,
             flag: (f.country_code as string) || 'un',
             price,
