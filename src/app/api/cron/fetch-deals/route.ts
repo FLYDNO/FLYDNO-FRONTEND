@@ -371,14 +371,14 @@ export async function GET(request: Request) {
     timestamp: new Date().toISOString(),
     runType,
     runIndex: runIndex + 1,
-    seasonStart,
-    seasonEnd,
-    summerStart,
+    windowStart,
+    windowEnd,
+    windowMid,
     totalRoutes: ALL_ROUTES.length,
     apiCallsThisRun: results.processed,
     ...results,
     dealsUpserted: dealsToUpsert.length,
     upsertError,
-    note: '3x daily: 05:00 UTC=OW Apr-Sep | 11:00 UTC=RT Apr-May | 17:00 UTC=RT Jul-Aug',
+    note: '3x daily: 05:00 UTC=OW 6mnd | 11:00 UTC=RT nær 3mnd | 17:00 UTC=RT fjern 3-6mnd',
   })
 }
